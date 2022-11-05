@@ -6,7 +6,7 @@
 - READ "the RFC" DO SOME TEST WITH "telnet" AND "NGINX" before starting to work in this 
 
 ---
-## File hierarchy
+## __File hierarchy__
 ```
 .
 ├─ includes
@@ -17,7 +17,7 @@
 └─ README.md
 ```
 ---
-## Requirements
+## __Requirements__
 ```
 • Your program has to take a configuration file as argument, or use a default path.
 • You can’t execve another web server.
@@ -44,7 +44,7 @@
 • Your server must be able to listen to multiple ports (see Configuration file).
 ```
 ---
-## Configuration Files
+## __Configuration Files__
 ```
 In the configuration file, you should be able to:
 • Choose the port and host of each ’server’.
@@ -76,7 +76,7 @@ be using regexp):
   ∗ Your server should work with one CGI (php-CGI, Python, and so forth).
 ```
 ---
-## Allowed functions an usage
+## __Allowed functions an usage__
 <table>
   <tr>
     <th>Function</th>
@@ -219,7 +219,7 @@ be using regexp):
 - [<sys/socket.h>][sys/socket.h]
 
 ---
-## Ok, but what is HTTP?
+## __Ok, but what is HTTP?__
 
 __Hypertext Transfer Protocol__
 
@@ -233,14 +233,105 @@ Cookies are saved as HTTP Headers, which can store all kind of data request
 
 So the last basic priciple about it is that it works based on request/response pairs. So every action starts with a request using an HTTP method, and ends with a response of a HTTP status code, along with what happened to the request, data ...
 
-## What's an HTTP server?
+---
+## __What's an HTTP server?__
 
+
+---
+## __Really cool, what the actual fuck is a socket?__
+
+A socket is a mechanism OSs use to allow programs to access the network. A socket is independet of the network.
+
+The workflow of a socket would be something like:
+1. Creating the socket
+2. Identifying the socket
+3. Make the server wait for an incomming connection
+4. Send/Recive messages
+5. Closing the socket
+
+## Step One, Creating the socket
+
+To create a socket we use the fucntion <code>socket();</code>, liste above, which returns a socket_fd.
+```c++
+int server_fd = socket(domain, type, protocol);
+```
+All its parameters are integers: __domain (or address family AF)__, the communication domain in which the socket will work (AF_INET, IP | AF_INET6, IPV6 | AF_UNIX, local channel, similar to pipes | ...); __type__, type of the service it'll be using, it varies depending on the properties of the program (SOCK_STREAM, virtual service circuit | SOCK_DGRAM, datagram service | SOCK_RAW, direct IP service), I'd recommend checking with the domain to see if the service is aviable; __protocol__, it indicates which protocol is gonna be used to support the socket operations, some families have multiple protocols so they can support multiple services
+
+For a TCP/IP socket we will be using the IP family address [__AF_INET__][AF_INET], a virtual socket circuit [__SOCK_STREAM__][SOCK_STREAM], and since there are no variations of the protocol the last argument is 0
+
+    AF_INET: Address Family that your socket can comunicate to, in this case Internet Protocol v4 (IPv4).
+    SOCK_STREAM: A connection based protocol in which since the connection is established the two ends have a conversation until some end decides to end it. For example, in SOCK_DGRAM you send just one datagram, recive a respond and the comunication ends.
+The TCP socket would look something like this:
+```c++
+#include <sys/socket.h>
+...
+if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
+  write(2, "error\n", sizeof("error\n"));
+  return (1);
+}
+```
+
+## Second Step, Identifying the socket
+
+Identifying or naming a socket means we bind it to an IP and a port, a transfer address. In socket this is called binding. We use <code>bind();</code> function.
+
+The socket address is defined in a socked address structure, because sockets work in many types of comunication this interface is very general. The socket address is defined by the address family. In a AF_UNIX it would create a file.
+```c++
+int bind(int socket, const struct sockaddr *address, socklen_t address_len);
+```
+It's first parameter is the socket we just created; The second one is a sockaddr struct, which is a generic structure that allows the OS to detect the Address Family. Depending on the address family we determine what struct to use, for IP networkin __struct sockaddr_in__, defined in netinet/in.h
+```c++
+struct sockaddr_in 
+{ 
+    __uint8_t         sin_len; 
+    sa_family_t       sin_family; 
+    in_port_t         sin_port; 
+    struct in_addr    sin_addr; 
+    char              sin_zero[8]; 
+};
+```
+Before calling bind we should fill this structure: __sin_family__, the address family we use for out socket (AF_INET); __sin_port__, the port number, you can either assing one or let your OS assing one by default (by assigning 0); __sin_addr__, the IP address of your machine, you can allow you OS to choose the interface by choosing the special one 0.0.0.0 or using __INADDR_ANY__. [struct in_addr][STRUCT IN_ADDR] 
+
+The third parameter is just the size of the structure, it just : 
+```c++
+sizeof(struct sockaddr_in) 
+```
+
+the code that binds the socket would look something like this:
+```c++
+#include <sys/socket.h>
+...
+struct sockaddr_in addr;
+int port = 8080;
+memset( &addr, 0, sizeof(addr));
+addr.sin_family = AF_INET;
+addr.in_addr.s_addr = htonl(INADDR_ANY); //converts long to a network representation
+addr.sin_port = htons(port); //converts a short to a network representation
+if (bind(server_fd,(struct sockaddr_in*)&addr, sizeof(addr)) < 0){
+    write(2, "error\n", sizeof("error\n"));
+    return (1);
+}
+```
+## Third step, wait for a connection on the server
+
+Before any connection happens the server's gotta have a socket waiting for incoming conections. To achive this we use the <code>listen();</code> system call
+```c++
+int listen(int socket, int backlog);
+```
+It calls the socket it should be accepting incoming connections from, thats the first parameter. The second one is the amount of pending connections it can handle before starting to refuse them.
 
 ---
 ## BIBLIOGRAPHY
 
 - [An overview of HTTP][AOFHTTP]
-- 
+- [Some HTTP things(ESP)][ESP_THING]
+- [MND WEB DOCS select function][MND_SELECT]
+- [HTTP Server: Everything you need to know to Build a simple HTTP server from scratch][HTTP_SERVER]
+- [What is a .tpp file (ESP)][.TPP]
+- [What is a .ipp file (ESP)][.IPP]
+- [stack overflow AF_INET][AF_INET]
+- [stack overflow SOCK_STREAM][SOCK_STREAM]
+- [struct sockaddr_in][STRUCT_SOCKADDR_IN]
 
 ## LICENSE
 I Do not belive in those things
@@ -256,3 +347,12 @@ I Do not belive in those things
   [sys/socket.h]: <https://pubs.opengroup.org/onlinepubs/7908799/xns/syssocket.h.html>
   [CGI]: <https://en.wikipedia.org/wiki/Common_Gateway_Interface>
   [AOFHTTP]: <https://developer.mozilla.org/en-US/docs/Web/HTTP/Overview>
+  [ESP_THING]: <http://redesdecomputadores.umh.es/aplicacion/HTTP.          htm#:~:text=Las%20principales%20caracter%C3%ADsticas%20del%20protocolo,la%20transferencia%20de%20objetos%20multimedia>
+  [MND_SELECT]: <https://developer.mozilla.org/es/docs/Web/HTML/Element/select>
+  [HTTP_SERVER]: <https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa>
+  [.TPP]: <http://www.ficheros.org.es/archivo-tpp.php>
+  [.IPP]: <ficheros.org.es/archivo-ipp.php>
+  [AF_INET]: <https://stackoverflow.com/questions/1593946/what-is-af-inet-and-why-do-i-need-it>
+  [SOCK_STREAM]: <https://stackoverflow.com/questions/5815675/what-is-sock-dgram-and-sock-stream>
+  [STRUCT_SOCKADDR_IN]: <https://learn.microsoft.com/en-us/windows/win32/api/ws2def/ns-ws2def-sockaddr_in>
+  [STRUCT IN_ADDR]: <https://stackoverflow.com/questions/13979150/why-is-sin-addr-inside-the-structure-in-addr>
