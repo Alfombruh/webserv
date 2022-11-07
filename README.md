@@ -320,8 +320,58 @@ int listen(int socket, int backlog);
 ```
 It calls the socket it should be accepting incoming connections from, thats the first parameter. The second one is the amount of pending connections it can handle before starting to refuse them.
 
+The accept function grabs the first connection request that's pending and creates a new socket for it. The socket that was created by the <code>socket();</code> system call is just used for accepting connections. The syntax of accept is:
+```c++
+int accept(int socket, struct sockaddr *restrict address, socklen_t *restrict address_len);
+```
+It's parameters are: __socket__, the socket that's set for accepting connections with <code>listen();</code>; __address__, the address thats filled with the client that is trying to connect address; __address_len__, is the lenght of the structure.
+
+The code would look something like this:
+```c++
+if (listen(server_fd, 3) < 0){
+  write(2, "error\n", sizeof("error\n"));
+  exit(1);
+}
+if ((new_socket = accept(socket_fd, (struct sockaddr *)&address, (socklen_t *)&addrlen)) < 0){
+  write(2, "error\n", sizeof("error\n"));
+  exit (1);
+}
+``` 
+
+## Step four, Sending and Receiving
+
+Once the connection between the server and the client has been stablished we can start with the info exchange. This part is easier than the previous ones, since we use functions we are all familiar with, <code>read();</code> && <code>write()</code>.
+
+It would look something like this:
+```c++
+#define BUFF_SIZE 1024
+...
+char *buffer[BUFF_SIZE];
+
+if ((int reader = read(new_socket, buffer, BUFF_SIZE)) < 0){
+  write(2, "error\n", sizeof("error\n"));
+  return (1);
+}
+write(1, buffer, BUFF_SIZE);
+char *msg = "Server: Got your request\n";
+write(new_socket, msg, strlen(msg));
+```
+
+## Final Step, Close the socket
+
+We use the same system call we use when dealing whit FD's: <code>close();</code>
+```c++
+close(new_socket);
+```
+
+## TL;DR
+
+```c++
+
+```
+
 ---
-## BIBLIOGRAPHY
+## __BIBLIOGRAPHY__
 
 - [An overview of HTTP][AOFHTTP]
 - [Some HTTP things(ESP)][ESP_THING]
@@ -333,7 +383,7 @@ It calls the socket it should be accepting incoming connections from, thats the 
 - [stack overflow SOCK_STREAM][SOCK_STREAM]
 - [struct sockaddr_in][STRUCT_SOCKADDR_IN]
 
-## LICENSE
+## __LICENSE__
 I Do not belive in those things
 
 
