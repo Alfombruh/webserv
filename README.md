@@ -211,7 +211,7 @@ be using regexp):
 
 ```Libraries that we are using:```
 - [<arpa/inet.h>][arpa/inet.h]
-- [<sys/select.h][sys/select.h]
+- [<sys/select.h>][sys/select.h]
 - [<poll.h>][poll.h]
 - [<sys/epoll.h>][sys/epoll.h]
 - [<sys/event.h>][sys/event.h]
@@ -366,9 +366,16 @@ close(new_socket);
 
 ## TL;DR
 
-```c++
+We've learnt how to setup a simple server that works on TCP we can start writting a simple code that creates and server and waits for a request. If you follow this guide you should be able to test if your server is working by googling 0.0.0.0:8080, or 0.0.0.0:X, X being the port you use, but I'd recommend using the 8080.
+If you want to see a code doing this jump to [/test/.](/test/.)
 
-```
+Ok, now that we've done the TCP part of the code we should start on the HTTP one.
+
+## HTTP
+
+The basics of HTTP communication are that the Client sends an HTTP request to the HTTP server, and then the server processes the request and sends an HTTP response to the HTTPS client.
+
+![image](https://miro.medium.com/max/786/1*JSnJtHpU7cWUnWIgGupu7w.png)
 
 ---
 ## __BIBLIOGRAPHY__
