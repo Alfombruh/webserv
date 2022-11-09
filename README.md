@@ -2,8 +2,10 @@
 ## To-Do List
 
 - look up what .ipp and .tpp file extensions are
-- what is an HTTP server
-- READ "the RFC" DO SOME TEST WITH "telnet" AND "NGINX" before starting to work in this 
+- READ "the RFC" DO SOME TEST WITH "telnet" AND "NGINX" before starting to work in this
+- Make the server show /srcs/html/index.html when trying to access it
+- Explain to my workmates what the actual fuck I've learnt 
+- Start Working on the config files and what are they suppose to do
 
 ---
 ## __File hierarchy__
@@ -13,6 +15,9 @@
 ├─ srcs
 │  └─ main.cpp
 ├─ config
+├─ resources
+│  └─ images
+
 ├─ Makefile
 └─ README.md
 ```
@@ -234,10 +239,6 @@ Cookies are saved as HTTP Headers, which can store all kind of data request
 So the last basic priciple about it is that it works based on request/response pairs. So every action starts with a request using an HTTP method, and ends with a response of a HTTP status code, along with what happened to the request, data ...
 
 ---
-## __What's an HTTP server?__
-
-
----
 ## __Really cool, what the actual fuck is a socket?__
 
 A socket is a mechanism OSs use to allow programs to access the network. A socket is independet of the network.
@@ -367,7 +368,7 @@ close(new_socket);
 ## TL;DR
 
 We've learnt how to setup a simple server that works on TCP we can start writting a simple code that creates and server and waits for a request. If you follow this guide you should be able to test if your server is working by googling 0.0.0.0:8080, or 0.0.0.0:X, X being the port you use, but I'd recommend using the 8080.
-If you want to see a code doing this jump to [/test/.](/test/.)
+If you want to see a code doing this jump to [/resources/simpleServer/.](/resources/simpleServer/.)
 
 Ok, now that we've done the TCP part of the code we should start on the HTTP one.
 
@@ -376,6 +377,145 @@ Ok, now that we've done the TCP part of the code we should start on the HTTP one
 The basics of HTTP communication are that the Client sends an HTTP request to the HTTP server, and then the server processes the request and sends an HTTP response to the HTTPS client.
 
 ![image](https://miro.medium.com/max/786/1*JSnJtHpU7cWUnWIgGupu7w.png)
+
+Now we have to see what are they really sending/requesting
+
+## HTTP Client(Browser)
+
+The client connects to the server, the server cant connect to the user. So the client is who initiates the connection
+
+__http::/www.example.com:8080/index.html__
+
+To display the webpage the browser fetches index.html from the webserver. With www.example.com is the same but with the default(port: 80, file index.html, http protocol). So if you were to type in a browser it would come up with something like __http://www.example.com:80__, so this is what out web browsers send to the internet while we are browsing.
+
+The server can be configured so it has some default settings, like a default page when we visit a folder on the page. The webpage is decided by the name of the file, some servers have index.html others public.html. In this example we'll be using index.html.
+
+<img src="https://miro.medium.com/max/1400/1*Yqq-60D9mD4NVuhFd4IoFg.png" alt="drawing" width="400"/>
+
+We will be testing this with out little server we just made:
+
+1. Run the TCP server
+2. Type "__localhost:8080/index.html__" on your browser (instead of localhost you can type 0.0.0.0)
+3. Now look at the terminal
+
+You should be seeing something like this:
+
+![image](resources/images/http_request.png)
+
+And your browser should be saying something like this:
+
+![image](resources/images/sad_browser.png)
+
+Obviously, our response was a message that said __"Yo, Im the server\n"__, the browser cannot read that. 
+
+## HTTP Methods
+
+GET is the default method use by HTTP, but there are 9 Methods:
+
+<table>
+  <tr>
+    <th>
+    <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods">
+      HTTP Methods
+    </a>
+    </th>
+    <th>
+      Use
+    </th>
+  </tr>
+  <tr>
+    <td>GET</td>
+    <td>fetches a URL</td>
+  </tr>
+  <tr>
+    <td>HEAD</td>
+    <td>fetches info about URL</td>
+  </tr>
+  <tr>
+    <td>PUT</td>
+    <td>Puts a URL</td>
+  </tr>
+  <tr>
+    <td>POST</td>
+    <td>Send Data to a URL and get a response back</td>
+  </tr>
+  <tr>
+    <td>DELETE</td>
+    <td>Deletes an indicate data</td>
+  </tr>
+  <tr>
+    <td>CONNECT</td>
+    <td>Makes a tunel to the server</td>
+  </tr>
+  <tr>
+    <td>OPTIONS</td>
+    <td>Describes the communication options for the target</td>
+  </tr>
+  <tr>
+    <td>TRACE</td>
+    <td>Performs a message loop-back test along the path to the target resource</td>
+  </tr>
+  <tr>
+    <td>PATCH</td>
+    <td>Applies a modification to a resource</td>
+  </tr>
+</table>
+
+## HTTP Server
+
+Now It's time to start sending responses to the client. The client sends a header expecting a response from us, but we are just responding whit a simple message, let's change that.
+
+The Client's browser is expecting a response in a certain format.
+
+HTTP is nothing more complex than following the rules specified in the [__RFC__][RFC] documentation. 
+
+This is the HTTP notations for responses web-browsers expects us to use:
+
+<img src="https://miro.medium.com/max/1400/1*5QCrgA5LoA8AKR30ce6x5A.png" alt="drawing" width="400"/>
+
+If we want the client to see the response we first need to send the header, then a blank line and then the message you want. The header shown above is just an example of many, if you want to see more you cant take a look at HTTP RFCs.
+
+Now let's construct a simple header so our server client can see something else than an error:
+```c++
+char msg[] = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!"; 
+```
+The 3 minimun headers you've gotta have are these:
+
+1. <code>HTTP/1.1 200 OK</code>, the HTTP version we are using, the Status Code and the Status message
+2. <code>Content-Type: text/plain</code>, this says that the content we are sending is just plain text. There are many Content-Types, I'd suggest looking at [__this__][CONTENT-TYPE1] or [__this__][CONTENT-TYPE2]
+3. <code>Code-Lenght: 12</code>, the amount of bytes the server is sending to the client, the web-browser wont read more than those
+
+The next part is the body, we need to calculate how many bytes are we sending for the <code>Code-Lenght:</code> and also set the <code>Code-Type:</code> to the apropiate one.
+
+## Status Code and Status Message
+
+Status Codes are issued by the server to the client in response of a request. It includes codes from __IETF__ Request For Comments[(RFC)][RFC], other specifications and some aditional codes used in some common aplications of HTTP.
+
+The first digit of the Status Code specifies one of the five standard classes of responses. The message shown have defaults but human readable alternatives can be shown. Unless stated otherwise the status code is part of the HTTP/1.1 standard [__RFC231__][RFC231].
+
+So, for example, if you can't find the file the client is asking for you send the apropiate status code, if the client is trying to access a file he doesn't have permission to access you send the apropiate status code, and so on...
+
+[__List of HTTP Status Codes__][HTTPS_STATUS-CODES]
+
+If we ran the code we previusly wrote and change the <code>char msg[] = "whatever";</code> to <code>char msg[] = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";</code>, and then connect to localhost:8080 in you browser you should get something diferent.
+
+## Sending other kind of messages
+
+Now that we've sent a message, how do we send another datatypes (images, webpages, ...). Lets suppose we've entered localhost:8080/index.html, we get this in the terminal:
+
+<img src="resources/images/http_request2.png"/>
+
+For simplicitys sake we just consider the first line of the request: <code> GET /info.html HTTP/1.1 </code>. All we have to do is look for index.html in root. If we were to enter localhost:8080/srcs/html/index.html we would have to look insede of /srcs/html/ for this. There are so many cases to consider:
+
+1. The file is present
+2. The file is absent
+3. The client has no permission to see the file
+4. ...
+  
+First we have to select a status code from [__here__][STATUS-CODE], then we select the content-type [__here__][CONTENT-TYPE3], then you open the file, read the data into a variable, count the amount of bytes and set the <code>Content-Lenght</code>, and then construct the respond header. Then you add a newline and append the data from the file we wanted to send. Once this is done the final step is to just send the Header to the client
+
+
+Huge Shoutout to [__Skrew Everything__][SE] for making an easy tutorial to understand HTTP servers
 
 ---
 ## __BIBLIOGRAPHY__
@@ -413,3 +553,11 @@ I Do not belive in those things
   [SOCK_STREAM]: <https://stackoverflow.com/questions/5815675/what-is-sock-dgram-and-sock-stream>
   [STRUCT_SOCKADDR_IN]: <https://learn.microsoft.com/en-us/windows/win32/api/ws2def/ns-ws2def-sockaddr_in>
   [STRUCT IN_ADDR]: <https://stackoverflow.com/questions/13979150/why-is-sin-addr-inside-the-structure-in-addr>
+  [RFC]: <https://www.rfc-editor.org/rfc/rfc2616.html>
+  [CONTENT-TYPE1]: <https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Type>
+  [CONTENT-TYPE2]: <https://www.geeksforgeeks.org/http-headers-content-type/>
+  [RFC231]: <https://www.rfc-editor.org/rfc/rfc7231>
+  [HTTPS_STATUS-CODES]: <https://en.wikipedia.org/wiki/List_of_HTTP_status_codes>
+  [STATUS-CODE]: <https://en.wikipedia.org/wiki/List_of_HTTP_status_codes>
+  [CONTENT-TYPE3]: <https://learn.microsoft.com/en-us/previous-versions/exchange-server/exchange-10/ms526508(v=exchg.10)?redirectedfrom=MSDN>
+  [SE]: <https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa>

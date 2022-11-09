@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>calc</title>
+		<script>
+			setInterval(function(){
+				alert("Please, use me...")
+			}, 30000);
+
+			function sum(num1, num2){
+				if(!isNaN(num1 + num2)){
+					alert(num1 + num2);
+					console.log(num1 + num2);
+				}
+			}
+
+			function sub(num1, num2) {
+				if(!isNaN(num1 - num2)){
+					alert(num1 - num2);
+					console.log(num1 - num2);
+				}
+			}
+
+			function mul(num1, num2){
+				if(!isNaN(num1 * num2)){
+					alert(num1 * num2);
+					console.log(num1 * num2);
+				}
+			}
+
+			function div(num1, num2) {
+				if (num2 == 0){
+					alert("It's over 9000!");
+					console.log("It's over 9000!");
+					return;
+				}
+				if(!isNaN(num1 / num2)){
+					alert(num1 / num2);
+					console.log(num1 / num2);
+				}
+			}
+ 
+			function rest(num1, num2){
+				if (num2 == 0){
+					alert("It's over 9000!");
+					console.log("It's over 9000!");
+					return;
+				}
+				if(!isNaN(num1 % num2))
+				{
+					alert(num1 % num2);
+					console.log(num1 % num2);
+				}
+			}
+
+			function maths(){
+				var num1 = parseFloat(document.getElementById("num01").value);
+				var num2 = parseFloat(document.getElementById("num02").value);
+				if (num1 < 0 || num2 < 0){
+					alert("Error :(")
+					return ;
+				}
+				if (document.getElementById("operations").value == "+"){
+					sum(num1, num2);
+				}
+				if (document.getElementById("operations").value == "-"){
+					sub(num1, num2);
+				}
+				if (document.getElementById("operations").value == "*"){
+					mul(num1, num2);
+				}
+				if (document.getElementById("operations").value == "/"){
+					div(num1, num2);
+				}
+				if (document.getElementById("operations").value == "%"){
+					rest(num1, num2);
+				}
+			}
+		</script>
+	</head>
+	<body style="width:100%;height:1080px;font-family: sans-serif;">
+		<div style="position:absolute;height:970px;width:600px;background-color:grey;margin-left:50%;margin-top:50px;transform: translate(-50%);border-radius: 30px;">
+			<div id="Values" style="display:flex;width:100%;height:15%;">
+				<div id="num1"style="width:50%;text-align:center;font-size: 30px;padding-top: 50px;">
+					<label for="num1">First Value:</label><br>
+					<input id ="num01" style="height:50px;width:70%;font-size: 40px;" type="text" name="num1"><br>
+				</div>
+				<div id="num2" style="width:50%;text-align:center;padding-top: 50px;font-size: 30px;">
+					<label for="num2">Second Value:</label><br>
+					<input id="num02" style="height:50px;width:70%;font-size: 40px;" type="text" name="num2"><br>
+				</div>
+			</div>
+			<div id="functions" style="width:100%;height:60%;">
+				<select id="operations" style="width:100%;text-align-last:center;height:100%;border-radius:100%;background-color: lightgrey;">
+					<optgroup>
+						<option id="+">+</option>
+						<option id="-">-</option>
+						<option id="*">*</option>
+						<option id="/">/</option>
+						<option id="%">%</option>	
+					</optgroup>
+				</select>
+			</div>
+			<div id="submit" style="width:100%;height:25%;">
+				<button onclick="maths()" style="width:100%;height:100%;border-radius: 30px;background-color:red;">
+					<h1 style="font-size: 50px;">Try me!</h1>
+				</button>
+			</div>
+		</div>
+	</body>
+</html>

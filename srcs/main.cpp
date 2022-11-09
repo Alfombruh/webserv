@@ -17,7 +17,7 @@ int main(int argc, char **argv){
 	(void) argc;
 	(void) argv;
 	(void) reader;
-	char msg[] = "Yo, Im the server\n";
+	char msg[] = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 	
 	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0){
 		write(2, "error socket creation\n", sizeof("error socket creation\n"));
