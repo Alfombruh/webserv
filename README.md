@@ -8,9 +8,8 @@
 4. [Allowed Functions](#allowedfunctions)
 5. [HTTP Server](#httpserver)
 6. [Socket](#socket)
-7. [To-Do List](#todo)
-8. [Bibliography](#bibliography)
-9. [License](#license)
+7. [Bibliography](#bibliography)
+8. [License](#license)
 
 ---
 ## To-Do List <a name="todo"></a>
