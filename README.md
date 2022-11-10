@@ -1,7 +1,6 @@
 # WEBSERV
 ## To-Do List
 
-- Learn how to work with git
 - Undestand the requirements
 - Start Working on the config files and what are they suppose to do
 - READ "the RFC" DO SOME TEST WITH "telnet" AND "NGINX" before starting to work in this
