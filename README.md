@@ -1,13 +1,20 @@
 # WEBSERV
 
-## Index
+## [Index](#index) <a name="index"></a>
 
-1. [HTTP Server](#socket)
-2. [Socket](#httpserver)
+1. [To-Do List](#todo)
+2. [Requirements](#requirements)
+3. [Configuration File](#configuration)
+4. [Allowed Functions](#allowedfunctions)
+5. [HTTP Server](#httpserver)
+6. [Socket](#socket)
+7. [To-Do List](#todo)
+8. [Bibliography](#bibliography)
+9. [License](#license)
 
-## To-Do List
+---
+## To-Do List <a name="todo"></a>
 
-- Learn how to work with git
 - Undestand the requirements
 - Start Working on the config files and what are they suppose to do
 - READ "the RFC" DO SOME TEST WITH "telnet" AND "NGINX" before starting to work in this
@@ -15,7 +22,7 @@
 - Make the server show /srcs/html/index.html when trying to access it
 
 ---
-## __File hierarchy__
+## __File hierarchy__ <a name="filehierarchy"></a>
 ```
 .
 ├─ includes
@@ -38,7 +45,7 @@
 └─ README.md
 ```
 ---
-## __Requirements__
+## __Requirements__ <a name="requierements"></a>
 ```
 • Your program has to take a configuration file as argument, or use a default path.
 • You can’t execve another web server.
@@ -65,7 +72,7 @@
 • Your server must be able to listen to multiple ports (see Configuration file).
 ```
 ---
-## __Configuration Files__
+## __Configuration Files__ <a name="configuration"></a>
 ```
 In the configuration file, you should be able to:
 • Choose the port and host of each ’server’.
@@ -97,7 +104,7 @@ be using regexp):
   ∗ Your server should work with one CGI (php-CGI, Python, and so forth).
 ```
 ---
-## __Allowed functions an usage__
+## __Allowed functions an usage__ <a name="allowedfunctions"></a>
 <table>
   <tr>
     <th>Function</th>
@@ -538,7 +545,7 @@ Huge Shoutout to [__Skrew Everything__][SE] for making an easy tutorial to under
 
 
 ---
-## __BIBLIOGRAPHY__
+## __BIBLIOGRAPHY__ <a name="bibliography"></a>
 
 - [An overview of HTTP][AOFHTTP]
 - [Some HTTP things(ESP)][ESP_THING]
@@ -550,7 +557,7 @@ Huge Shoutout to [__Skrew Everything__][SE] for making an easy tutorial to under
 - [stack overflow SOCK_STREAM][SOCK_STREAM]
 - [struct sockaddr_in][STRUCT_SOCKADDR_IN]
 
-## __LICENSE__
+## __LICENSE__ <a name="license"></a>
 I Do not belive in those things
 
 
