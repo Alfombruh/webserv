@@ -1,4 +1,10 @@
 # WEBSERV
+
+## Index
+
+1. [HTTP Server](#socket)
+2. [Socket](#httpserver)
+
 ## To-Do List
 
 - Learn how to work with git
@@ -30,7 +36,6 @@
 │          └─ Makefile
 ├─ Makefile
 └─ README.md
-
 ```
 ---
 ## __Requirements__
@@ -235,7 +240,7 @@ be using regexp):
 - [<sys/socket.h>][sys/socket.h]
 
 ---
-## __Ok, but what is HTTP?__
+## __Ok, but what is HTTP?__ <a name="httpserver"></a>
 
 __Hypertext Transfer Protocol__
 
@@ -250,7 +255,7 @@ Cookies are saved as HTTP Headers, which can store all kind of data request
 So the last basic priciple about it is that it works based on request/response pairs. So every action starts with a request using an HTTP method, and ends with a response of a HTTP status code, along with what happened to the request, data ...
 
 ---
-## __Really cool, what the actual fuck is a socket?__
+## __Really cool, what the actual fuck is a socket?__ <a name="socket"></a>
 
 A socket is a mechanism OSs use to allow programs to access the network. A socket is independet of the network.
 
@@ -261,7 +266,7 @@ The workflow of a socket would be something like:
 4. Send/Recive messages
 5. Closing the socket
 
-## Step One, Creating the socket
+## Step One, Creating the socket 
 
 To create a socket we use the fucntion <code>socket();</code>, liste above, which returns a socket_fd.
 ```c++
@@ -527,6 +532,10 @@ First we have to select a status code from [__here__][STATUS-CODE], then we sele
 
 
 Huge Shoutout to [__Skrew Everything__][SE] for making an easy tutorial to understand HTTP servers
+
+---
+## __Configuration File__
+
 
 ---
 ## __BIBLIOGRAPHY__
