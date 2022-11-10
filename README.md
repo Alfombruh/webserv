@@ -1,11 +1,12 @@
 # WEBSERV
 ## To-Do List
 
-- look up what .ipp and .tpp file extensions are
-- READ "the RFC" DO SOME TEST WITH "telnet" AND "NGINX" before starting to work in this
-- Make the server show /srcs/html/index.html when trying to access it
-- Explain to my workmates what the actual fuck I've learnt 
+- Learn how to work with git
+- Undestand the requirements
 - Start Working on the config files and what are they suppose to do
+- READ "the RFC" DO SOME TEST WITH "telnet" AND "NGINX" before starting to work in this
+- look up what .ipp and .tpp file extensions are
+- Make the server show /srcs/html/index.html when trying to access it
 
 ---
 ## __File hierarchy__
@@ -13,11 +14,20 @@
 .
 ├─ includes
 ├─ srcs
+│  ├─ html
+│  │  └─ index.html
 │  └─ main.cpp
 ├─ config
 ├─ resources
 │  └─ images
-
+│      ├─ images
+│      │   ├─ http_request.png
+│      │   ├─ http_request2.png
+│      │   └─ http_browser.png
+│      └─ simpleServer
+│          ├─ client.cpp
+│          ├─ server.cpp
+│          └─ Makefile
 ├─ Makefile
 └─ README.md
 ```
