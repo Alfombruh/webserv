@@ -14,6 +14,7 @@
 ---
 ## To-Do List <a name="todo"></a>
 
+- Look at poll, epoll and those system calls
 - Undestand the requirements
 - Start Working on the config files and what are they suppose to do
 - READ "the RFC" DO SOME TEST WITH "telnet" AND "NGINX" before starting to work in this
@@ -564,6 +565,7 @@ Thanks to [__this guide__][SELECT]
 - [struct sockaddr_in][STRUCT_SOCKADDR_IN]
 - [socket programming: socket select][SELECT]
 - [socket programming: introduction][SP:INTRO]
+- [more info about socket, another tutorial][MOREINFOSOCKETS]
 
 ## __LICENSE__ <a name="license"></a>
 I Do not belive in those things
@@ -598,3 +600,4 @@ I Do not belive in those things
   [SE]: <https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa>
   [SELECT]: <http://codingbison.com/c/c-sockets-select.html>
   [SP:INTRO]: <http://codingbison.com/c/c-sockets-introduction.html>
+  [MOREINFOSOCKETS]: <https://www.linuxhowtos.org/C_C++/socket.htm>

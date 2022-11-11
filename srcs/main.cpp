@@ -1,12 +1,14 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <iomanip>
 #include <stdio.h>
-#include <sys/socket.h>
 #include <unistd.h>
 #include <stdlib.h>
-#include <netinet/in.h>
 #include <string.h>
+#include <fcntl.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 #include "../includes/webserv.h"
 
 static int error_message(std::string str){
@@ -45,7 +47,7 @@ int main(__unused int argc,__unused char **argv){
 
 	if (fill_webserv(&webserv) == 1)
 		return (1);
-	char msg[] = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+	__unused char msg[] = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 	while(1){
 		if ((webserv.new_socket = accept(webserv.server_fd, (struct sockaddr *)&webserv.addr, (socklen_t *)&webserv.addr_len)) < 0)
 			return(error_message("Error: couldn't accept package"));
@@ -53,6 +55,8 @@ int main(__unused int argc,__unused char **argv){
 			return (error_message("Error: cannot read"));
 		//if (readSocket(&webserv, &msg) == 1)
 		//	return (error_message("Error: cannot read"));
+		//fcntl(webserv.new_socket, F_SETFL, O_NONBLOCK);
+		//fcntl(1, F_SETFL, O_NONBLOCK);
 		write(webserv.new_socket, msg, strlen(msg));
 		write(1, buffer, strlen(buffer));
 		close(webserv.new_socket);

@@ -24,7 +24,7 @@ int main(__unused int argc, char **argv){
     servAddr.sin_family = AF_INET;
     servAddr.sin_port = htons(PORT);
 
-    if (inet_pton(AF_INET, "127.0.0.1", &servAddr.sin_addr) <= 0){
+    if (inet_pton(AF_INET, "10.13.8.4", &servAddr.sin_addr) <= 0){
         write(2, "error with IP conversion\n", sizeof("error with IP conversion\n"));
         return (2);
     }
