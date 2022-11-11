@@ -566,6 +566,7 @@ Thanks to [__this guide__][SELECT]
 - [socket programming: socket select][SELECT]
 - [socket programming: introduction][SP:INTRO]
 - [more info about socket, another tutorial][MOREINFOSOCKETS]
+- [an old tutorial (<2010) about sockets][OLDTUTORIAL]
 
 ## __LICENSE__ <a name="license"></a>
 I Do not belive in those things
@@ -601,3 +602,4 @@ I Do not belive in those things
   [SELECT]: <http://codingbison.com/c/c-sockets-select.html>
   [SP:INTRO]: <http://codingbison.com/c/c-sockets-introduction.html>
   [MOREINFOSOCKETS]: <https://www.linuxhowtos.org/C_C++/socket.htm>
+  [OLDTUTORIAL]: <https://www.linuxhowtos.org/C_C++/socket.htm>
