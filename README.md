@@ -1,5 +1,18 @@
 # WEBSERV
-## To-Do List
+
+## [Index](#index) <a name="index"></a>
+
+1. [To-Do List](#todo)
+2. [Requirements](#requirements)
+3. [Configuration File](#configuration)
+4. [Allowed Functions](#allowedfunctions)
+5. [HTTP Server](#httpserver)
+6. [Socket](#socket)
+7. [Bibliography](#bibliography)
+8. [License](#license)
+
+---
+## To-Do List <a name="todo"></a>
 
 - Undestand the requirements
 - Start Working on the config files and what are they suppose to do
@@ -8,10 +21,12 @@
 - Make the server show /srcs/html/index.html when trying to access it
 
 ---
-## __File hierarchy__
+## __File hierarchy__ <a name="filehierarchy"></a>
 ```
 .
 ├─ includes
+│  ├─ Response.hpp
+│  └─ webserv.h
 ├─ srcs
 │  ├─ html
 │  │  └─ index.html
@@ -27,11 +42,13 @@
 │          ├─ client.cpp
 │          ├─ server.cpp
 │          └─ Makefile
+├─ testers
+│  └─ cgi_tester
 ├─ Makefile
 └─ README.md
 ```
 ---
-## __Requirements__
+## __Requirements__ <a name="requierements"></a>
 ```
 • Your program has to take a configuration file as argument, or use a default path.
 • You can’t execve another web server.
@@ -58,7 +75,7 @@
 • Your server must be able to listen to multiple ports (see Configuration file).
 ```
 ---
-## __Configuration Files__
+## __Configuration Files__ <a name="configuration"></a>
 ```
 In the configuration file, you should be able to:
 • Choose the port and host of each ’server’.
@@ -90,7 +107,7 @@ be using regexp):
   ∗ Your server should work with one CGI (php-CGI, Python, and so forth).
 ```
 ---
-## __Allowed functions an usage__
+## __Allowed functions an usage__ <a name="allowedfunctions"></a>
 <table>
   <tr>
     <th>Function</th>
@@ -233,7 +250,7 @@ be using regexp):
 - [<sys/socket.h>][sys/socket.h]
 
 ---
-## __Ok, but what is HTTP?__
+## __Ok, but what is HTTP?__ <a name="httpserver"></a>
 
 __Hypertext Transfer Protocol__
 
@@ -248,7 +265,7 @@ Cookies are saved as HTTP Headers, which can store all kind of data request
 So the last basic priciple about it is that it works based on request/response pairs. So every action starts with a request using an HTTP method, and ends with a response of a HTTP status code, along with what happened to the request, data ...
 
 ---
-## __Really cool, what the actual fuck is a socket?__
+## __Really cool, what the actual fuck is a socket?__ <a name="socket"></a>
 
 A socket is a mechanism OSs use to allow programs to access the network. A socket is independet of the network.
 
@@ -259,7 +276,7 @@ The workflow of a socket would be something like:
 4. Send/Recive messages
 5. Closing the socket
 
-## Step One, Creating the socket
+## Step One, Creating the socket 
 
 To create a socket we use the fucntion <code>socket();</code>, liste above, which returns a socket_fd.
 ```c++
@@ -527,7 +544,14 @@ First we have to select a status code from [__here__][STATUS-CODE], then we sele
 Huge Shoutout to [__Skrew Everything__][SE] for making an easy tutorial to understand HTTP servers
 
 ---
-## __BIBLIOGRAPHY__
+## __Functions to use and how to use them__
+
+When accepting a request from a server we can use many functions, but those like <code>accept();</code> or <code>recv();</code> are blocking. This can be a problem when a server is trying to handle a big amount of clients, where the server would end up blocking a big amount of clients. So the solution to this problem would be using other socket calls, like <code>select();</code> or <code>poll();</code>, these calls let us handle multiple sockets without blocking none of them
+
+Thanks to [__this guide__][SELECT]
+
+---
+## __BIBLIOGRAPHY__ <a name="bibliography"></a>
 
 - [An overview of HTTP][AOFHTTP]
 - [Some HTTP things(ESP)][ESP_THING]
@@ -538,8 +562,10 @@ Huge Shoutout to [__Skrew Everything__][SE] for making an easy tutorial to under
 - [stack overflow AF_INET][AF_INET]
 - [stack overflow SOCK_STREAM][SOCK_STREAM]
 - [struct sockaddr_in][STRUCT_SOCKADDR_IN]
+- [socket programming: socket select][SELECT]
+- [socket programming: introduction][SP:INTRO]
 
-## __LICENSE__
+## __LICENSE__ <a name="license"></a>
 I Do not belive in those things
 
 
@@ -570,3 +596,5 @@ I Do not belive in those things
   [STATUS-CODE]: <https://en.wikipedia.org/wiki/List_of_HTTP_status_codes>
   [CONTENT-TYPE3]: <https://learn.microsoft.com/en-us/previous-versions/exchange-server/exchange-10/ms526508(v=exchg.10)?redirectedfrom=MSDN>
   [SE]: <https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa>
+  [SELECT]: <http://codingbison.com/c/c-sockets-select.html>
+  [SP:INTRO]: <http://codingbison.com/c/c-sockets-introduction.html>
