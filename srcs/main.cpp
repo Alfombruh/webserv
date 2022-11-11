@@ -1,52 +1,61 @@
+#include <iostream>
+#include <fstream>
+#include <string>
 #include <stdio.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
+#include "../includes/webserv.h"
 
-#define BUFFER_SIZE 1024
-#define BACKLOG 10
-#define PORT 8080
+static int error_message(std::string str){
+	std::cerr << str << std::endl;
+	return (1);
+}
 
-int main(int argc, char **argv){
-	int server_fd, new_socket, reader;
-	struct sockaddr_in addr;
-	char buffer[BUFFER_SIZE];
-	int addr_len = sizeof(addr);
-	(void) argc;
-	(void) argv;
-	(void) reader;
-	char msg[] = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
-	
-	if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0){
-		write(2, "error socket creation\n", sizeof("error socket creation\n"));
+static int fill_webserv(t_webserv *webserv){
+	webserv->addr_len = sizeof(webserv->addr);
+	if ((webserv->server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
+		return (error_message("Error: couldn't create socket"));
+	webserv->addr.sin_family = AF_INET;
+	webserv->addr.sin_addr.s_addr = INADDR_ANY;
+	webserv->addr.sin_port = htons(PORT);
+	if (bind(webserv->server_fd, (struct sockaddr *)&webserv->addr, sizeof(webserv->addr)) < 0)
+		return (error_message("Error: couldn't bind"));
+	if (listen(webserv->server_fd, BACKLOG) < 0)
+		return (error_message("Error: not listening"));
+	return (0);
+}
+/*
+static int readSocket(t_webserv *webserv, Response *msg){
+	ifstream is(webserv->new_socket);
+	std::string hooka;
+
+	is >> hooka;
+	Response new(msg);
+	return (0);
+}*/
+
+int main(__unused int argc,__unused char **argv){
+	t_webserv 	webserv;
+//	Response	msg;
+	char		buffer[BUFFER_SIZE];
+	int 		reader;
+
+	if (fill_webserv(&webserv) == 1)
 		return (1);
-	}
-	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = INADDR_ANY;
-    addr.sin_port = htons( PORT );
-	memset(addr.sin_zero, 0, sizeof(addr.sin_zero));
-	if (bind(server_fd, (struct sockaddr *)&addr, sizeof(addr)) < 0){
-		write(2, "error at binding\n", sizeof("error at binding\n"));
-		return (2);
-	}
-	if (listen(server_fd, BACKLOG) < 0){
-		write(2, "error at listening\n", sizeof("error at listening\n"));
-		return (3);
-	}
+	char msg[] = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 	while(1){
-		if ((new_socket = accept(server_fd, (struct sockaddr *)&addr, (socklen_t *)&addr_len)) < 0){
-			write(2, "error at accepting\n", sizeof("error at accepting\n"));
-			return (4);
-		}
-		if ((reader = read(new_socket, buffer, BUFFER_SIZE) < 0)){
-			write(2, "error at reading\n", sizeof("error at reading\n"));
-			return (5);
-		}
-		write(new_socket, msg, strlen(msg));
+		if ((webserv.new_socket = accept(webserv.server_fd, (struct sockaddr *)&webserv.addr, (socklen_t *)&webserv.addr_len)) < 0)
+			return(error_message("Error: couldn't accept package"));
+		if ((reader = read(webserv.new_socket, buffer, BUFFER_SIZE) < 0))
+			return (error_message("Error: cannot read"));
+		//if (readSocket(&webserv, &msg) == 1)
+		//	return (error_message("Error: cannot read"));
+		write(webserv.new_socket, msg, strlen(msg));
 		write(1, buffer, strlen(buffer));
-		close(new_socket);
+		close(webserv.new_socket);
 	}
 	return (0);
 }

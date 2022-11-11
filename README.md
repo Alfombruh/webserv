@@ -25,6 +25,8 @@
 ```
 .
 ├─ includes
+│  ├─ Response.hpp
+│  └─ webserv.h
 ├─ srcs
 │  ├─ html
 │  │  └─ index.html
@@ -40,6 +42,8 @@
 │          ├─ client.cpp
 │          ├─ server.cpp
 │          └─ Makefile
+├─ testers
+│  └─ cgi_tester
 ├─ Makefile
 └─ README.md
 ```
@@ -540,8 +544,11 @@ First we have to select a status code from [__here__][STATUS-CODE], then we sele
 Huge Shoutout to [__Skrew Everything__][SE] for making an easy tutorial to understand HTTP servers
 
 ---
-## __Configuration File__
+## __Functions to use and how to use them__
 
+When accepting a request from a server we can use many functions, but those like <code>accept();</code> or <code>recv();</code> are blocking. This can be a problem when a server is trying to handle a big amount of clients, where the server would end up blocking a big amount of clients. So the solution to this problem would be using other socket calls, like <code>select();</code> or <code>poll();</code>, these calls let us handle multiple sockets without blocking none of them
+
+Thanks to [__this guide__][SELECT]
 
 ---
 ## __BIBLIOGRAPHY__ <a name="bibliography"></a>
@@ -555,6 +562,8 @@ Huge Shoutout to [__Skrew Everything__][SE] for making an easy tutorial to under
 - [stack overflow AF_INET][AF_INET]
 - [stack overflow SOCK_STREAM][SOCK_STREAM]
 - [struct sockaddr_in][STRUCT_SOCKADDR_IN]
+- [socket programming: socket select][SELECT]
+- [socket programming: introduction][SP:INTRO]
 
 ## __LICENSE__ <a name="license"></a>
 I Do not belive in those things
@@ -587,3 +596,5 @@ I Do not belive in those things
   [STATUS-CODE]: <https://en.wikipedia.org/wiki/List_of_HTTP_status_codes>
   [CONTENT-TYPE3]: <https://learn.microsoft.com/en-us/previous-versions/exchange-server/exchange-10/ms526508(v=exchg.10)?redirectedfrom=MSDN>
   [SE]: <https://medium.com/from-the-scratch/http-server-what-do-you-need-to-know-to-build-a-simple-http-server-from-scratch-d1ef8945e4fa>
+  [SELECT]: <http://codingbison.com/c/c-sockets-select.html>
+  [SP:INTRO]: <http://codingbison.com/c/c-sockets-introduction.html>
