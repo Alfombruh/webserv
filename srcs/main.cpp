@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include "../includes/webserv.h"
+#include "../includes/Response.hpp"
 
 static int error_message(std::string str){
 	std::cerr << str << std::endl;
@@ -41,24 +42,23 @@ static int readSocket(t_webserv *webserv, Response *msg){
 
 int main(__unused int argc,__unused char **argv){
 	t_webserv 	webserv;
-//	Response	msg;
-	char		buffer[BUFFER_SIZE];
-	int 		reader;
+	Response	msg;
+	//char		buffer[BUFFER_SIZE];
+	//int 		reader;
 
 	if (fill_webserv(&webserv) == 1)
 		return (1);
-	__unused char msg[] = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
+	//__unused char msg[] = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 	while(1){
 		if ((webserv.new_socket = accept(webserv.server_fd, (struct sockaddr *)&webserv.addr, (socklen_t *)&webserv.addr_len)) < 0)
 			return(error_message("Error: couldn't accept package"));
-		if ((reader = read(webserv.new_socket, buffer, BUFFER_SIZE) < 0))
-			return (error_message("Error: cannot read"));
-		//if (readSocket(&webserv, &msg) == 1)
+		//if ((reader = read(webserv.new_socket, buffer, BUFFER_SIZE) < 0))
 		//	return (error_message("Error: cannot read"));
-		//fcntl(webserv.new_socket, F_SETFL, O_NONBLOCK);
-		//fcntl(1, F_SETFL, O_NONBLOCK);
-		write(webserv.new_socket, msg, strlen(msg));
-		write(1, buffer, strlen(buffer));
+		if (msg.readSocket(webserv.new_socket) == 1)
+			return (error_message("Error: cannot read"));
+	//	write(webserv.new_socket, msg, strlen(msg));
+	//	write(1, buffer, strlen(buffer));
+		msg.writeResponse(webserv.new_socket);
 		close(webserv.new_socket);
 	}
 	return (0);
