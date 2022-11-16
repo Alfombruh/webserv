@@ -9,8 +9,7 @@
 #include <fcntl.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include "../includes/webserv.h"
-#include "../includes/Response.hpp"
+#include "includes/webserv.h"
 
 static int error_message(std::string str){
 	std::cerr << str << std::endl;

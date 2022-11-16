@@ -1,11 +1,12 @@
 NAME = webserv
 CC = clang++ 
 CFLAGS = -Werror -Wall -Wextra -g3 -fsanitize=address -std=c++98 
-FILES = srcs/main
+FILES = main
 SRCS = $(addsuffix .cpp, $(FILES))
 OBJS = $(addsuffix .o, $(FILES))
 INCLUDES = includes/Response.hpp
 
+#.SILENT:
 
 .cpp.o: $(SRCS)
 	$(CC) $(CFLAGS) -I $(INCLUDES) -c $^ -o $@
