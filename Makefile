@@ -4,7 +4,9 @@ CFLAGS = -Werror -Wall -Wextra -g3 -fsanitize=address -std=c++98
 FILES = main
 SRCS = $(addsuffix .cpp, $(FILES))
 OBJS = $(addsuffix .o, $(FILES))
-INCLUDES = includes/Response.hpp
+INCLUDES =	includes/webserv.hpp
+			includes/Response.hpp
+
 
 #.SILENT:
 

@@ -17,33 +17,13 @@ static int error_message(std::string str)
 	return (1);
 }
 
-static int fill_webserv(t_webserv *webserv)
-{
-	webserv->addr_len = sizeof(webserv->addr);
-	if ((webserv->server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-		return (error_message("Error: couldn't create socket"));
-	webserv->addr.sin_family = AF_INET;
-	webserv->addr.sin_addr.s_addr = INADDR_ANY;
-	webserv->addr.sin_port = htons(PORT);
-	if (bind(webserv->server_fd, (struct sockaddr *)&webserv->addr, sizeof(webserv->addr)) < 0)
-		return (error_message("Error: couldn't bind"));
-	if (listen(webserv->server_fd, BACKLOG) < 0)
-		return (error_message("Error: not listening"));
-	return (0);
-}
-
-char *getReqString(char *buffer)
-{
-}
 
 int main(__unused int argc, __unused char **argv)
 {
 	t_webserv webserv;
-	char buffer[BUFFER_SIZE];
-	// getReqString()
-	int reader;
+    memset(&webserv);
 
-	if (fill_webserv(&webserv) == 1)
+	if (init_server(&webserv) == 1)
 		return (1);
 	__unused char msg[] = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 	while (1)

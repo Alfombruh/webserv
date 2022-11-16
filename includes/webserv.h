@@ -15,4 +15,6 @@ typedef struct s_webserv{
     struct sockaddr_in addr;
 } t_webserv;
 
+int init_server(t_webserv &webserv);
+
 #endif
