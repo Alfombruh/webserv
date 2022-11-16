@@ -16,6 +16,9 @@ all: $(NAME)
 $(NAME): $(OBJS) $(INCLUDES)
 	$(CC) $(CFLAGS) -I $(INCLUDES) $(OBJS) -o $@
 
+run: $(NAME)
+	./webserv
+
 clean: 
 	$(RM) *.dSYM
 	$(RM) $(OBJS)

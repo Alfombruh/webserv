@@ -14,6 +14,8 @@
 ---
 ## To-Do List <a name="todo"></a>
 
+- Implement select y esas weahs
+- Create custom exceptions 
 - Look at poll, epoll and those system calls
 - Undestand the requirements
 - Start Working on the config files and what are they suppose to do
