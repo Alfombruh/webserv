@@ -1,41 +1,50 @@
 #include "webserv.h"
+#include <fstream>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
 
-class Server{
-    private:
-         int sd;
-         int new_socket;
-         int addr_len;
-         struct sockaddr_in addr;
-    public:
-        int launch(void);
-        int wait(void);
-};
+Server::Server(string path)
+{
+    (void)path;
+    // config.parse(path);
+}
 
-int Server::launch(void){
+int Server::setup(void)
+{
     addr_len = sizeof(addr);
     if ((sd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-        return (error_message("Error: couldn't create socket"));
+        throw serverException("couldn't create socket");
     addr.sin_family = AF_INET;
     addr.sin_addr.s_addr = INADDR_ANY;
     addr.sin_port = htons(PORT);
     if (bind(sd, (struct sockaddr *)&addr, sizeof(addr)) < 0)
-        return (error_message("Error: couldn't bind"));
+        throw serverException("not binding");
     if (listen(sd, BACKLOG) < 0)
-        return (error_message("Error: not listening"));
+         throw serverException("not listening");
     return (0);
 }
 
-int Server::wait(){
-    int new_socket;
-
+int Server::run()
+{
+    char msg[] = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
     while (1)
     {
         if ((new_socket = accept(sd, (struct sockaddr *)&addr, (socklen_t *)&addr_len)) < 0)
-            return (error_message("Error: couldn't accept package"));
+            throw serverException("couldn't accept package");
         if ((reader = read(new_socket, buffer, BUFFER_SIZE) < 0))
-            return (error_message("Error: cannot read"));
+            throw serverException("cannot read");
         write(new_socket, msg, strlen(msg));
         write(1, buffer, strlen(buffer));
         close(new_socket);
     }
 }
+
+Server::serverException::serverException(const char *msg) : msg((char *)msg){};
+const char *Server::serverException::what() const throw()
+{
+    // return (strcat("Server Error: ", msg));
+    return (msg);
+};

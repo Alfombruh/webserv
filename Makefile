@@ -1,11 +1,14 @@
 NAME = webserv
 CC = clang++ 
 CFLAGS = -Werror -Wall -Wextra -g3 -fsanitize=address -std=c++98 
-FILES = main
+FILES = main \
+		srcs/errors	\
+		srcs/classes/Server 
+
 SRCS = $(addsuffix .cpp, $(FILES))
 OBJS = $(addsuffix .o, $(FILES))
-INCLUDES =	includes/webserv.hpp
-			includes/Response.hpp
+
+INCLUDES =	includes/ 
 
 
 #.SILENT:

@@ -1,11 +1,17 @@
 #ifndef WEBSERV_H
 #define WEBSERV_H
 
-#include "Response.hpp"
+#include <iostream>
+#include "../srcs/classes/Server.hpp"
+//#include "../srcs/classes/Request.hpp"
+//#include "../srcs/classes/Response.hpp"
 
 #define BUFFER_SIZE 1024
 #define BACKLOG     10
 #define PORT        8080
+
+using std::string;
+using std::cout;
 
 typedef struct s_webserv{
     int server_fd;
@@ -15,6 +21,8 @@ typedef struct s_webserv{
     struct sockaddr_in addr;
 } t_webserv;
 
+
 int init_server(t_webserv &webserv);
+int errorMessage(std::string msg);
 
 #endif
