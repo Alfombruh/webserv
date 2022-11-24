@@ -3,3 +3,6 @@
         Changelog Created 
         Readme Updated, select explained
         Tried implementing select, but actually really breaks the program
+## [Version 0.0.1] (11-24-2022)
+    Alf + Ionmi:
+        Server now works with select

@@ -656,6 +656,7 @@ Thanks to [__this guide__][SELECT] and also [__this other guide__][BLOCKING_SOCK
 - [more info about socket, another tutorial][MOREINFOSOCKETS]
 - [an old tutorial (<2010) about sockets][OLDTUTORIAL]
 - [Dealing With and Getting Around Blocking Sockets][BLOCKING_SOCKETS]
+- [Wipedia About Berkeley Sockets][WIKI_SOCKEC]
 
 ## __LICENSE__ <a name="license"></a>
 I Do not belive in those things
@@ -693,3 +694,4 @@ I Do not belive in those things
   [MOREINFOSOCKETS]: <https://www.linuxhowtos.org/C_C++/socket.htm>
   [OLDTUTORIAL]: <https://www.linuxhowtos.org/C_C++/socket.htm>
   [BLOCKING_SOCKETS]: <http://dwise1.net/pgm/sockets/blocking.html>
+  [WIKI_SOCKEC]: <https://en.wikipedia.org/wiki/Berkeley_sockets#Header_files>
