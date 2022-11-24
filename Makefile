@@ -22,7 +22,7 @@ $(NAME): $(OBJS) $(INCLUDES)
 	$(CC) $(CFLAGS) -I $(INCLUDES) $(OBJS) -o $@
 
 run: $(NAME)
-	./webserv
+	./webserv config/default.conf
 
 clean: 
 	$(RM) *.dSYM

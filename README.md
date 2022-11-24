@@ -344,7 +344,7 @@ if (bind(server_fd,(struct sockaddr_in*)&addr, sizeof(addr)) < 0){
 ```
 ## Third step, wait for a connection on the server
 
-Before any connection happens the server's gotta have a socket waiting for incoming conections. To achive this we use the <code>listen();</code> system call
+Before any connection happens the server's gotta have a socket waiting for incoming connections. To achive this we use the <code>listen();</code> system call
 ```c++
 int listen(int socket, int backlog);
 ```
@@ -547,11 +547,97 @@ First we have to select a status code from [__here__][STATUS-CODE], then we sele
 Huge Shoutout to [__Skrew Everything__][SE] for making an easy tutorial to understand HTTP servers
 
 ---
-## __Functions to use and how to use them__
+## __Making a non blocking server__
 
-When accepting a request from a server we can use many functions, but those like <code>accept();</code> or <code>recv();</code> are blocking. This can be a problem when a server is trying to handle a big amount of clients, where the server would end up blocking a big amount of clients. So the solution to this problem would be using other socket calls, like <code>select();</code> or <code>poll();</code>, these calls let us handle multiple sockets without blocking none of them
+When accepting a request from a server we can use many functions, but those like <code>accept();</code> or <code>recv();</code> are blocking. This can be a problem when a server is trying to handle a big amount of clients, where the server would end up blocking a big amount of clients. So the solution to this problem would be using other socket calls, like <code>select();</code> or <code>poll();</code>, these calls let us handle multiple sockets without blocking none of them.
 
-Thanks to [__this guide__][SELECT]
+The easiest way to get around this problem would be making a thread pool, but since we cant use any of the pthread functions we have to use one of the commands used above. The one we'll be using is gonna be <code>select();</code>
+
+## Introduction
+
+Sockets are by definition blocking. If you dont know this you probably havent dealed with sockets too much. Every developer that has worked with sockets has had to learn a way around this.
+
+Why are sockets blocking? Well just as any other function when you call it it enters the fucntions, does it thing and returns a value. If the function is too long it take some time until it returns something. In case of sockets, since their task is to wait for something to read, so it will block until it reads something from the socket. So a socket will hang until data is aviable to be read. In <code>accept();</code>'s case untill the client tries to connect to the server.
+
+## How to deal with blocking sockets
+
+1. __Using the__<code>select();</code>__system call__
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Before using select we have to understand how it works. It takes a number of file descriptors that you want to read from, it checks which of them are ready to be read or wrote and gives them back. So it does not block that way.
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;The basic way of using it is to initilize the fd_set in a loop, then test all the sockets and then deal with the ones that hold some info to work with.
+
+1. __Using non-blocking sockets__
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This would seem to be the easiest way around it. Well sockets are blocking, what if they were not? Sockets have many options and one of them is to make them non-blocking. It seems that easy untill you realize that turning it off makes the dealing with the socket more complicated. I wont elaborate more on this.
+
+2. __With a thread pool__
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;I'd recommend doing this method, but since the subject I've to stick to doesnt allow me I wont be using it. With this method you make a thread pool of the amount of connections you want your server to be able to handle, and you assing each thread with a socket to stablish the connection on.
+
+
+## Now, using select();
+
+Using select makes you learn about new concepts, data types, macros and so on...
+
+Here is the basic problem: if there is a socket holding some data the socket will return it, but if it has nothing in it it'll hold there. Knowing that you cant work with the sockets that have info in them and ignore the rest of them.
+
+This is what select lets us do. We have 3 set_fd, the read, write and exception ones you pass them and it checks wether they are ready to perform their operations.
+
+```
+int select (int nfds, fd_set *read-fds, fd_set *write-fds, fd_set *except-fds, struct timeval *timeout);
+
+  int nfds
+    The highest-numbered file descriptor in any of the three sets, plus 1. The usual thing 
+    is to pass FD_SETSIZE as the value of this argument.
+    In Winsock, this parameter is ignored; it is included only for compatibility with
+    Berkeley sockets.
+  fd_set *read-fds
+    An optional pointer to a set of sockets to be checked for readability.
+  fd_set *write-fds
+    An optional pointer to a set of sockets to be checked for writability
+  fd_set *except-fds
+    An optional pointer to a set of sockets to be checked for exceptional conditions.
+    struct timeval *timeout
+    The maximum time for select to wait, or NULL for blocking operation.
+  
+  Return Values
+    1 or greater -- The total number of sockets that are ready.
+    zero -- The time limit expired; ie, none of the sockets are ready.
+    -1 -- An error occurred. In Winsock, this return value will be SOCKET_ERROR.
+    Use the applicable function to identify the actual error (eg, in Winsock, 
+    call WSAGetLastError()).
+```
+
+We have a new data type, the ft_set. Its a set of file descriptors and as far as it concerns us a set of sockets. We create a set of sockets to let select know where to work. Its also the way select returns the socket we can work with. This obviously tells us that select edits fd_set, therefore each and every time we call select it changes our fd_set __we have to re-initialize our fd_set__.
+
+These are the macros we are going to use to work with an fd_set:
+```
+int FD_SETSIZE
+  The value of this macro is the maximum number of file descriptors that a fd_set
+  object can hold information about. On systems with a fixed maximum number, FD_SETSIZE
+  is at least that number. On some systems, including GNU, there is no absolute limit on
+  the number of descriptors open, but this macro still has a constant value which controls 
+  the number of bits in an fd_set; if you get a file descriptor with a value as high as
+  FD_SETSIZE, you cannot put that descriptor into an fd_set.
+
+void FD_ZERO (fd_set *set)
+  This macro initializes the file descriptor set set to be the empty set.
+
+void FD_SET (int filedes, fd_set *set)
+  This macro adds filedes to the file descriptor set set.
+
+void FD_CLR (int filedes, fd_set *set)
+  This macro removes filedes from the file descriptor set set.
+
+int FD_ISSET (int filedes, fd_set *set)
+  This macro returns a nonzero value (true) if filedes is a member of the file descriptor 
+  set set, and zero (false) otherwise.
+```  
+
+So the normal procedure would be to start with FD_ZERO, and then set each socket individualy each socket with FD_SET. The next step would be checking if select return 1 or greater and then you would compare with the returned set through FD_ISSET
+
+Thanks to [__this guide__][SELECT] and also [__this other guide__][BLOCKING_SOCKETS]
 
 ---
 ## __BIBLIOGRAPHY__ <a name="bibliography"></a>
@@ -569,6 +655,7 @@ Thanks to [__this guide__][SELECT]
 - [socket programming: introduction][SP:INTRO]
 - [more info about socket, another tutorial][MOREINFOSOCKETS]
 - [an old tutorial (<2010) about sockets][OLDTUTORIAL]
+- [Dealing With and Getting Around Blocking Sockets][BLOCKING_SOCKETS]
 
 ## __LICENSE__ <a name="license"></a>
 I Do not belive in those things
@@ -605,3 +692,4 @@ I Do not belive in those things
   [SP:INTRO]: <http://codingbison.com/c/c-sockets-introduction.html>
   [MOREINFOSOCKETS]: <https://www.linuxhowtos.org/C_C++/socket.htm>
   [OLDTUTORIAL]: <https://www.linuxhowtos.org/C_C++/socket.htm>
+  [BLOCKING_SOCKETS]: <http://dwise1.net/pgm/sockets/blocking.html>
