@@ -11,7 +11,7 @@ class Server
 private:
     //**** sockets ****
     int server; //main connection socket descriptor
-    int client; //client's new socket
+    //int client; //client's new socket
     int max_socket; //maximun number of the fd_set
     //**** fd_set's ****
     fd_set  current_set;

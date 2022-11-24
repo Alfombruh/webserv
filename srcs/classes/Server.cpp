@@ -16,6 +16,7 @@ Server::Server(string path)
 
 void Server::acceptConnection(void)
 {
+    int client; //clients new socket that'll be added to the socket list;
     struct sockaddr_in client_addr;
     int clientAddrLen = sizeof(client_addr);
     if ((client = accept(server, (struct sockaddr *)&client_addr, (socklen_t *)&clientAddrLen)) <= 0)
@@ -30,7 +31,6 @@ void Server::handleConnection(int newClient)
     long valread;
     string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 
-    cout << "ionmi sexo\n";
     char buffer[30000] = {0};
     valread = read(newClient, buffer, 30000);
     printf("%s\n", buffer);
@@ -68,7 +68,6 @@ int Server::run()
     max_socket = server;
     while (1)
     {
-        cout << max_socket << ": first max socket\n";
         ready_set = current_set;
         if (select(max_socket + 1, &ready_set, NULL, NULL, &timeout) < 0)
             throw serverException("select couldnt be setup'd correctly");
@@ -79,18 +78,10 @@ int Server::run()
             if (i == server)
             {
                 acceptConnection();
-                cout << "ionmi maracas\n";
                 continue; // las sigue haciendo
             }
             handleConnection(i);
         }
-        // if ((new_socket = accept(server, (struct sockaddr *)&addr, (socklen_t *)&addr_len)) < 0)
-        //     throw serverException("couldn't accept package");
-        // if ((reader = read(new_socket, buffer, BUFFER_SIZE) < 0))
-        //     throw serverException("cannot read");
-        // write(new_socket, msg, strlen(msg));
-        // write(1, buffer, strlen(buffer));
-        // close(new_socket);
     }
 }
 
