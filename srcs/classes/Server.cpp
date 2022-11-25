@@ -74,34 +74,26 @@ int Server::setup(void)
 
 int Server::run()
 {
-	FD_ZERO(&current_set);
-	FD_SET(server, &current_set);
-	max_socket = server;
-	while (true)
-	{
-		// cout << max_socket << ": first max socket\n";
-		ready_set = current_set;
-		if (select(max_socket + 1, &ready_set, NULL, NULL, &timeout) < 0)
-			throw serverException("select couldnt be setup'd correctly");
-		for (int i = 0; i <= max_socket; i++)
-		{
-			if (FD_ISSET(i, &ready_set) == 0)
-				continue; // ionmi hace cosas raras
-			if (i == server)
-			{
-				acceptConnection();
-				continue; // las sigue haciendo
-			}
-			handleConnection(i);
-		}
-		// if ((new_socket = accept(server, (struct sockaddr *)&addr, (socklen_t *)&addr_len)) < 0)
-		//     throw serverException("couldn't accept package");
-		// if ((reader = read(new_socket, buffer, BUFFER_SIZE) < 0))
-		//     throw serverException("cannot read");
-		// write(new_socket, msg, strlen(msg));
-		// write(1, buffer, strlen(buffer));
-		// close(new_socket);
-	}
+    FD_ZERO(&current_set);
+    FD_SET(server, &current_set);
+    max_socket = server;
+    while (1)
+    {
+        ready_set = current_set;
+        if (select(max_socket + 1, &ready_set, NULL, NULL, &timeout) < 0)
+            throw serverException("select couldnt be setup'd correctly");
+        for (int i = 0; i <= max_socket; i++)
+        {
+            if (FD_ISSET(i, &ready_set) == 0)
+                continue; // ionmi hace cosas raras
+            if (i == server)
+            {
+                acceptConnection();
+                continue; // las sigue haciendo
+            }
+            handleConnection(i);
+        }
+    }
 }
 
 Server::serverException::serverException(const char *msg) : msg((char *)msg){};

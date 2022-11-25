@@ -3,50 +3,46 @@
 ## [Index](#index) <a name="index"></a>
 
 1. [To-Do List](#todo)
-2. [Requirements](#requirements)
-3. [Configuration File](#configuration)
-4. [Allowed Functions](#allowedfunctions)
-5. [HTTP Server](#httpserver)
-6. [Socket](#socket)
-7. [Bibliography](#bibliography)
-8. [License](#license)
+2. [File hierarchy](#filehierarchy)
+3. [Requirements](#requirements)
+4. [Configuration File](#configuration)
+5. [Allowed Functions](#allowedfunctions)
+6. [HTTP Server](#httpserver)
+7. [Socket](#socket)
+8. [Making a non Blocking server](#nonblockinserver)
+9. [Bibliography](#bibliography)
+10. [License](#license)
 
 ---
 ## To-Do List <a name="todo"></a>
 
-- Implement select y esas weahs
+- Start working on the Response/Request objects
 - Create custom exceptions 
-- Look at poll, epoll and those system calls
 - Undestand the requirements
 - Start Working on the config files and what are they suppose to do
 - READ "the RFC" DO SOME TEST WITH "telnet" AND "NGINX" before starting to work in this
 - look up what .ipp and .tpp file extensions are
-- Make the server show /srcs/html/index.html when trying to access it
 
 ---
 ## __File hierarchy__ <a name="filehierarchy"></a>
 ```
 .
-├─ includes
-│  ├─ Response.hpp
+├─ 📁includes
 │  └─ webserv.h
-├─ srcs
-│  ├─ html
-│  │  └─ index.html
-│  └─ main.cpp
-├─ config
-├─ resources
-│  └─ images
-│      ├─ images
-│      │   ├─ http_request.png
-│      │   ├─ http_request2.png
-│      │   └─ http_browser.png
-│      └─ simpleServer
-│          ├─ client.cpp
-│          ├─ server.cpp
-│          └─ Makefile
-├─ testers
-│  └─ cgi_tester
+├─ 📁srcs
+│  ├─ 📁classes
+│  │  └─ *.cpp/&.hpp
+│  └─ *.cpp
+├─ 📁public
+│  ├─ 📁html
+│  └─ 📁img
+├─ main.cpp
+├─ 📁config
+├─ 📁resources
+│  ├─ 📁images
+│  └─ 📁simpleServer    
+├─ 📁testers
+├─ changelog  
 ├─ Makefile
 └─ README.md
 ```
@@ -547,7 +543,7 @@ First we have to select a status code from [__here__][STATUS-CODE], then we sele
 Huge Shoutout to [__Skrew Everything__][SE] for making an easy tutorial to understand HTTP servers
 
 ---
-## __Making a non blocking server__
+## __Making a non blocking server__ <a name="nonblockinserver"></a>
 
 When accepting a request from a server we can use many functions, but those like <code>accept();</code> or <code>recv();</code> are blocking. This can be a problem when a server is trying to handle a big amount of clients, where the server would end up blocking a big amount of clients. So the solution to this problem would be using other socket calls, like <code>select();</code> or <code>poll();</code>, these calls let us handle multiple sockets without blocking none of them.
 
@@ -637,6 +633,11 @@ int FD_ISSET (int filedes, fd_set *set)
 
 So the normal procedure would be to start with FD_ZERO, and then set each socket individualy each socket with FD_SET. The next step would be checking if select return 1 or greater and then you would compare with the returned set through FD_ISSET
 
+The general way of dealing with <code>select();</code> is to make a loop that periodically calls select. You send select a list of sockets, and when select returns you'll go through each socket seeing if it's ready, the process it and go check the next one.
+
+I'll recommend watching this video, which is how I implemented select into my server. [Jacob Sorber's video on select][JS_SELECT] and for further understanding of this I'd go watch this [really nice tutorial of a wholesome Scottish dude][SCOTLANDFOREVER]. The rest if for you to figure out.
+
+
 Thanks to [__this guide__][SELECT] and also [__this other guide__][BLOCKING_SOCKETS]
 
 ---
@@ -695,3 +696,5 @@ I Do not belive in those things
   [OLDTUTORIAL]: <https://www.linuxhowtos.org/C_C++/socket.htm>
   [BLOCKING_SOCKETS]: <http://dwise1.net/pgm/sockets/blocking.html>
   [WIKI_SOCKEC]: <https://en.wikipedia.org/wiki/Berkeley_sockets#Header_files>
+  [JS_SELECT]: <https://www.youtube.com/watch?v=Y6pFtgRdUts&t=480s>
+  [SCOTLANDFOREVER]: <https://www.youtube.com/watch?v=dquxuXeZXgo>
