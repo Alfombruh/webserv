@@ -10,3 +10,7 @@
         Added a new entry on the README about select and fixed the File hierarchy
         Tidied up some things on the server class and methods so its less confusing
         
+## [Version 0.1.1] (11-25-2022)
+	Ionmi:
+		Request and Response classes are now created and integrated in client lifecycle
+		Request parsing started
