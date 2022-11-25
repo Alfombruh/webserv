@@ -25,6 +25,7 @@ Server::~Server()
 
 void Server::acceptConnection(void)
 {
+	int client;
 	struct sockaddr_in client_addr;
 	int clientAddrLen = sizeof(client_addr);
 	if ((client = accept(server, (struct sockaddr *)&client_addr, (socklen_t *)&clientAddrLen)) <= 0)
