@@ -1,9 +1,11 @@
 NAME = webserv
 CC = clang++ 
 CFLAGS = -Werror -Wall -Wextra -g3 -fsanitize=address -std=c++98 
-FILES = main \
-		srcs/errors	\
-		srcs/classes/Server 
+FILES = main 					\
+		srcs/errors				\
+		srcs/classes/Server		\
+		srcs/classes/Request	\
+		srcs/classes/Response	\
 
 SRCS = $(addsuffix .cpp, $(FILES))
 OBJS = $(addsuffix .o, $(FILES))

@@ -2,11 +2,17 @@
 #define SERVER_HPP
 
 #include "webserv.h"
+#include "Request.hpp"
+#include "Response.hpp"
 #include <fstream>
 #include <exception>
 #include <netinet/in.h>
 
-class Server
+using std::make_pair;
+
+typedef std::map<int, std::pair<Request *, Response *> > ClientMap;
+
+class Server		
 {
 private:
     //**** sockets ****
@@ -25,8 +31,10 @@ private:
     void    acceptConnection(void);
     void    handleConnection(int newClient);
     //****
+	ClientMap clients;
 public:
     Server(std::string is);
+    ~Server();
     int setup(void);
     int run(void);
 
