@@ -14,3 +14,5 @@
 	Ionmi:
 		Request and Response classes are now created and integrated in client lifecycle
 		Request parsing started
+    Alf:
+        Started adding things on the README about HTTP Methods (not too much)

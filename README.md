@@ -10,8 +10,9 @@
 6. [HTTP Server](#httpserver)
 7. [Socket](#socket)
 8. [Making a non Blocking server](#nonblockinserver)
-9. [Bibliography](#bibliography)
-10. [License](#license)
+9. [Response && Request](#IO)
+10. [Bibliography](#bibliography)
+11. [License](#license)
 
 ---
 ## To-Do List <a name="todo"></a>
@@ -641,6 +642,22 @@ I'll recommend watching this video, which is how I implemented select into my se
 Thanks to [__this guide__][SELECT] and also [__this other guide__][BLOCKING_SOCKETS]
 
 ---
+## __Response && Request__ <a name="IO"></a>
+
+To actually start with the section we have to read a little bit about the HTTP Methods on the [RFC7231][RFC7231].
+If we want to Implement HTTP methods to our server we have to first understand what they are, how they work and what are the standards.
+
+The subject says that we have to implement, at least, GET | POST | DELETE. So Ill be trying to figure out how to proccess these and make a response for the clients petition.
+
+## The GET Method 
+
+This method requests some data transfer of a selected representation. 
+
+//have to find what the standards of this are :)
+
+
+
+---
 ## __BIBLIOGRAPHY__ <a name="bibliography"></a>
 
 - [An overview of HTTP][AOFHTTP]
@@ -698,3 +715,5 @@ I Do not belive in those things
   [WIKI_SOCKEC]: <https://en.wikipedia.org/wiki/Berkeley_sockets#Header_files>
   [JS_SELECT]: <https://www.youtube.com/watch?v=Y6pFtgRdUts&t=480s>
   [SCOTLANDFOREVER]: <https://www.youtube.com/watch?v=dquxuXeZXgo>
+  [RFC7231]: <https://www.rfc-editor.org/rfc/rfc7232>
+  [GETMETHOD]: <https://www.rfc-editor.org/rfc/rfc7231#section-9.1>
