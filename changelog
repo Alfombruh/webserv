@@ -14,3 +14,8 @@
 	Ionmi:
 		Request and Response classes are now created and integrated in client lifecycle
 		Request parsing started
+
+## [Version 0.1.2] (11-28-2022)
+	Ionmi:
+		Request header parsing and getters done
+		Client now deleted from map when client session is closed

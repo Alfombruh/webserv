@@ -9,30 +9,16 @@ using std::string;
 class Response
 {
 	size_t clientId;
-	struct s_statusLine
-	{
-		string protocolVersion;
-		string statusCode;
-		string statusText;
-	};
-	struct s_ResponseHeaders
-	{
-		string host;
-		string userAgent;
-		string accept;
-		string acceptLanguage;
-		string acceptEncoding;
-	};
-	struct s_generalHeaders
-	{
-		string connection;
-		string upgradeInsecureResponses;
-	};
-	struct s_representationHeaders
-	{
-		string contentType;
-		string contentLength;
-	};
+
+	// STATUS LINE
+	string protocolVersion;
+	string statusCode;
+	string statusText;
+
+	// HEADERS
+	StrStrMap headers;
+
+	// BODY
 	string body;
 
 public:
@@ -41,7 +27,8 @@ public:
 
 	// bool parseResponse(string rawRes);
 
-	//GETTERS - SETTERS
+	// GETTERS - SETTERS
+	string getHeader(string header);
 	size_t getClientId() const;
 };
 

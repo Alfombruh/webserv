@@ -17,37 +17,22 @@ enum METHOD
 class Request
 {
 	size_t clientId;
-	struct s_statusLine
-	{
-		METHOD method;
-		string route;
-		string protocolVersion;
-	} statusLine;
-	struct s_requestHeaders
-	{
-		string host;
-		string userAgent;
-		string accept;
-		string acceptLanguage;
-		string acceptEncoding;
-	} requestHeaders;
-	struct s_generalHeaders
-	{
-		string connection;
-		string upgradeInsecureRequests;
-	} generalHeaders;
-	struct s_representationHeaders
-	{
-		string contentType;
-		string contentLength;
-	} representationHeaders;
+
+ 	//STATUS LINE
+	METHOD method;
+	string route;
+	string protocolVersion;
+
+ 	//HEADERS
+	StrStrMap headers;
+	
+	//BODY
 	string body;
 
 	void printReqAtributes();
 	bool parseStatusLine(string rawStatusLine);
 	bool parseHeaders(string rawHeaders);
 	bool parseBody(string rawBody);
-	string getValue(string &str, string key, size_t keyLength);
 
 public:
 	Request(int clientId);
@@ -56,6 +41,7 @@ public:
 	// PARSING
 	bool parseRequest(string rawReq);
 	// GETTERS - SETTERS
+	string getHeader(string header);
 	size_t getClientId() const;
 };
 
