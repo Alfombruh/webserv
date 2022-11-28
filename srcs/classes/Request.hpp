@@ -43,13 +43,18 @@ class Request
 	} representationHeaders;
 	string body;
 
+	void printReqAtributes();
+	bool parseStatusLine(string rawStatusLine);
+	bool parseHeaders(string rawHeaders);
+	bool parseBody(string rawBody);
+	string getValue(string &str, string key, size_t keyLength);
+
 public:
 	Request(int clientId);
 	~Request();
 
 	// PARSING
-	bool parseRequest(char *rawReq);
-	bool parseStatusLine(string rawStatusLine);
+	bool parseRequest(string rawReq);
 	// GETTERS - SETTERS
 	size_t getClientId() const;
 };
