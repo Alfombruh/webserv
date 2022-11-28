@@ -38,6 +38,7 @@ public:
 	Request(int clientId);
 	~Request();
 
+	void clearReq();
 	// PARSING
 	bool parseRequest(string rawReq);
 	// GETTERS - SETTERS

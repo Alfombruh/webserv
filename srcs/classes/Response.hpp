@@ -26,6 +26,7 @@ public:
 	~Response();
 
 	// bool parseResponse(string rawRes);
+	void clearReq();
 
 	// GETTERS - SETTERS
 	string getHeader(string header);

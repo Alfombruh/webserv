@@ -5,6 +5,14 @@ Request::Request(int clientId) : clientId((size_t)clientId) {}
 
 Request::~Request() {}
 
+void Request::clearReq()
+{
+	route.clear();
+	protocolVersion.clear();
+	headers.clear();
+	body.clear();
+}
+
 /* raw request tiene caracteres no printeables */
 bool Request::parseRequest(string rawReq)
 {
@@ -28,7 +36,7 @@ bool Request::parseRequest(string rawReq)
 
 string Request::getHeader(string header)
 {
-	if(headers.find(header) != headers.end())
+	if (headers.find(header) != headers.end())
 		return NULL;
 	return headers.at(header);
 };
@@ -36,20 +44,19 @@ string Request::getHeader(string header)
 size_t Request::getClientId() const { return clientId; };
 
 // PRIVATE
-
 void Request::printReqAtributes()
 {
 	// STATUS LINE
-	cout << "status line:\n";
+	cout << "STATUS LINE:\n";
 	cout << "method:" << method << "$\n";
 	cout << "route:" << route << "$\n";
 	cout << "protocol version:" << protocolVersion << "$\n";
-	// REQUEST HEADERS
-	cout << "\nheaders:\n";
+	// HEADERS
+	cout << "\nHEADERS:\n";
 	for (StrStrMap::iterator it = headers.begin(); it != headers.end(); ++it)
 		cout << it->first << ":" << it->second << "$\n";
 	// BODY
-	cout << "\nbody headers:\n";
+	cout << "\nBODY:\n";
 };
 
 bool Request::parseStatusLine(string rawStatusLine)
@@ -102,6 +109,7 @@ bool Request::parseHeaders(string rawHeaders)
 	}
 	return true;
 };
+
 bool Request::parseBody(string rawBody)
 {
 	body = rawBody;
