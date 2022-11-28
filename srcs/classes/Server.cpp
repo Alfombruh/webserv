@@ -20,7 +20,6 @@ Server::~Server()
 		delete it->second.first;
 		delete it->second.second;
 	}
-	
 }
 
 void Server::acceptConnection(void)
@@ -39,16 +38,26 @@ void Server::acceptConnection(void)
 void Server::handleConnection(int newClient)
 {
 	long valread;
+	string rawReq;
 	string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
-
 	char buffer[30000] = {0};
+
 	valread = read(newClient, buffer, 30000);
-	if(clients.at(newClient).first->parseRequest(buffer) == FAILED)
+	for (size_t i = 0; buffer[i]; i++)
+	{
+		if (isprint(buffer[i]) || buffer[i] == '\n')
+			rawReq.push_back(buffer[i]);
+	}
+	if (clients.at(newClient).first->parseRequest(rawReq) == FAILED)
 		throw serverException("bad request");
-	// printf("%s\n", buffer);
 	write(newClient, hello.c_str(), hello.length());
 	printf("------------------Hello message sent-------------------\n");
+
+	//CLOSE-CLEAR CLIENT FROM SET AND MAP
 	close(newClient);
+	delete clients.at(newClient).first;
+	delete clients.at(newClient).second;
+	clients.erase(newClient);
 	FD_CLR(newClient, &current_set);
 }
 
@@ -75,26 +84,26 @@ int Server::setup(void)
 
 int Server::run()
 {
-    FD_ZERO(&current_set);
-    FD_SET(server, &current_set);
-    max_socket = server;
-    while (1)
-    {
-        ready_set = current_set;
-        if (select(max_socket + 1, &ready_set, NULL, NULL, &timeout) < 0)
-            throw serverException("select couldnt be setup'd correctly");
-        for (int i = 0; i <= max_socket; i++)
-        {
-            if (FD_ISSET(i, &ready_set) == 0)
-                continue; // ionmi hace cosas raras
-            if (i == server)
-            {
-                acceptConnection();
-                continue; // las sigue haciendo
-            }
-            handleConnection(i);
-        }
-    }
+	FD_ZERO(&current_set);
+	FD_SET(server, &current_set);
+	max_socket = server;
+	while (1)
+	{
+		ready_set = current_set;
+		if (select(max_socket + 1, &ready_set, NULL, NULL, &timeout) < 0)
+			throw serverException("select couldnt be setup'd correctly");
+		for (int i = 0; i <= max_socket; i++)
+		{
+			if (FD_ISSET(i, &ready_set) == 0)
+				continue; // ionmi hace cosas raras
+			if (i == server)
+			{
+				acceptConnection();
+				continue; // las sigue haciendo
+			}
+			handleConnection(i);
+		}
+	}
 }
 
 Server::serverException::serverException(const char *msg) : msg((char *)msg){};

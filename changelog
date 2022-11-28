@@ -16,3 +16,8 @@
 		Request parsing started
     Alf:
         Started adding things on the README about HTTP Methods (not too much)
+
+## [Version 0.1.2] (11-28-2022)
+	Ionmi:
+		Request header parsing and getters done
+		Client now deleted from map when client session is closed

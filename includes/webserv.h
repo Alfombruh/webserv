@@ -4,6 +4,8 @@
 #include <iostream>
 #include <map>
 
+typedef std::map<std::string, std::string> StrStrMap;
+
 #include "../srcs/classes/Server.hpp"
 #include "../srcs/classes/Request.hpp"
 #include "../srcs/classes/Response.hpp"
@@ -17,6 +19,7 @@
 
 using std::string;
 using std::cout;
+
 
 typedef struct s_webserv{
     int server_fd;
