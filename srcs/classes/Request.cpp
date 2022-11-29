@@ -29,12 +29,10 @@ bool Request::parseRequest(string rawReq)
 	// BODY
 	if (parseBody(rawReq.substr(endHeaders + 2)) == FAILED)
 		return false;
-
-	printReqAtributes();
 	return true;
 };
 
-string Request::getHeader(string header)
+const string Request::getHeader(const string header) const
 {
 	if (headers.find(header) != headers.end())
 		return NULL;
@@ -43,6 +41,39 @@ string Request::getHeader(string header)
 
 size_t Request::getClientId() const { return clientId; };
 
+const string &Request::getRoute() const { return route; };
+
+const METHOD &Request::getMethod() const { return method; };
+
+bool Request::isInRoute(const string route) const
+{
+	size_t i = 0;
+	if (route == this->route)
+		return true;
+	while (i < route.length() && i < this->route.length())
+	{
+		if (route[i] != this->route[i])
+			return false;
+		i++;
+	}
+	if (route == "/" || (i < this->route.length() && this->route[i] == '/'))
+		return true;
+	return false;
+}
+
+void Request::updateRoute(const string route)
+{
+	string tmp;
+	size_t i = route.length();
+
+	if(route == "/")
+		return;
+	while (i < this->route.length())
+		tmp += this->route[i++];
+	if (tmp.empty())
+		tmp = "/";
+	this->route = (const string)tmp;
+}
 // PRIVATE
 void Request::printReqAtributes()
 {
@@ -68,11 +99,11 @@ bool Request::parseStatusLine(string rawStatusLine)
 	while (rawStatusLine.at(i) != ' ')
 		method.push_back(rawStatusLine.at(i++));
 	if (method == "GET")
-		method = GET;
+		this->method = GET;
 	else if (method == "POST")
-		method = POST;
+		this->method = POST;
 	else if (method == "DELETE")
-		method = DELETE;
+		this->method = DELETE;
 	else
 		return false;
 	// ROUTE

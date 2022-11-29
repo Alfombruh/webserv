@@ -21,3 +21,9 @@
 	Ionmi:
 		Request header parsing and getters done
 		Client now deleted from map when client session is closed
+
+## [Version 0.1.3] (11-29-2022)
+	Ionmi:
+		Routing
+		Res.text()
+		Bad request 

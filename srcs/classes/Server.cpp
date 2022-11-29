@@ -39,7 +39,6 @@ void Server::handleConnection(int newClient)
 {
 	long valread;
 	string rawReq;
-	string hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 12\n\nHello world!";
 	char buffer[30000] = {0};
 
 	valread = read(newClient, buffer, 30000);
@@ -48,17 +47,30 @@ void Server::handleConnection(int newClient)
 		if (isprint(buffer[i]) || buffer[i] == '\n')
 			rawReq.push_back(buffer[i]);
 	}
+	Router router(*clients.at(newClient).first, *clients.at(newClient).second);
 	if (clients.at(newClient).first->parseRequest(rawReq) == FAILED)
-		throw serverException("bad request");
-	write(newClient, hello.c_str(), hello.length());
-	printf("------------------Hello message sent-------------------\n");
-
-	//CLOSE-CLEAR CLIENT FROM SET AND MAP
+	{
+		string badReq = "HTTP/1.1 400 Bad Request\n\n";
+		write(newClient, badReq.c_str(), badReq.length());
+	}
+	else
+		handleRouting(router, newClient);
+	// printf("------------------Hello message sent-------------------\n");
+	// CLOSE-CLEAR CLIENT FROM SET AND MAP
 	close(newClient);
 	delete clients.at(newClient).first;
 	delete clients.at(newClient).second;
 	clients.erase(newClient);
 	FD_CLR(newClient, &current_set);
+}
+
+void Server::handleRouting(Router &router, int client)
+{
+	string hello;
+	if (router.use("/", &index))
+		return;
+	hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 13\n\n404 not found";
+	write(client, hello.c_str(), hello.length());
 }
 
 int Server::setup(void)

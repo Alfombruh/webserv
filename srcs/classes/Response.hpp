@@ -31,6 +31,9 @@ public:
 	// GETTERS - SETTERS
 	string getHeader(string header);
 	size_t getClientId() const;
+
+	// RESPONSES
+	void text(const string msg);
 };
 
 #endif

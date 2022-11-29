@@ -29,10 +29,10 @@ class Request
 	//BODY
 	string body;
 
-	void printReqAtributes();
 	bool parseStatusLine(string rawStatusLine);
 	bool parseHeaders(string rawHeaders);
 	bool parseBody(string rawBody);
+	void printReqAtributes();
 
 public:
 	Request(int clientId);
@@ -42,8 +42,12 @@ public:
 	// PARSING
 	bool parseRequest(string rawReq);
 	// GETTERS - SETTERS
-	string getHeader(string header);
+	const string getHeader(const string header) const;
 	size_t getClientId() const;
+	const string &getRoute() const;
+	const METHOD &getMethod() const;
+	bool isInRoute(const string route) const;
+	void updateRoute(const string route);
 };
 
 #endif

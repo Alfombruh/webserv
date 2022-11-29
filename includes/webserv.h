@@ -6,9 +6,10 @@
 
 typedef std::map<std::string, std::string> StrStrMap;
 
-#include "../srcs/classes/Server.hpp"
 #include "../srcs/classes/Request.hpp"
 #include "../srcs/classes/Response.hpp"
+#include "../srcs/classes/Server.hpp"
+#include "../srcs/classes/Router.hpp"
 
 #define MAX_CONNECTIONS 1000
 #define TIMEOUT         60
@@ -19,7 +20,6 @@ typedef std::map<std::string, std::string> StrStrMap;
 
 using std::string;
 using std::cout;
-
 
 typedef struct s_webserv{
     int server_fd;

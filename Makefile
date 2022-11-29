@@ -6,6 +6,9 @@ FILES = main 					\
 		srcs/classes/Server		\
 		srcs/classes/Request	\
 		srcs/classes/Response	\
+		srcs/classes/Router		\
+		routes/index			\
+		routes/about			\
 
 SRCS = $(addsuffix .cpp, $(FILES))
 OBJS = $(addsuffix .o, $(FILES))

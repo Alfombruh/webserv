@@ -4,13 +4,19 @@
 #include "webserv.h"
 #include "Request.hpp"
 #include "Response.hpp"
+#include "Router.hpp"
 #include <fstream>
 #include <exception>
 #include <netinet/in.h>
+#include "../../routes/routes.h"
 
 using std::make_pair;
 
+class Request;
+class Response;
 typedef std::map<int, std::pair<Request *, Response *> > ClientMap;
+
+class Router;
 
 class Server		
 {
@@ -30,6 +36,7 @@ private:
     //**** private functions ********************************
     void    acceptConnection(void);
     void    handleConnection(int newClient);
+    void    handleRouting(Router &router, int client);
     //****
 	ClientMap clients;
 public:
