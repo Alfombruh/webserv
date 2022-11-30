@@ -6,7 +6,6 @@
 #include "Response.hpp"
 // #include "Server.hpp"
 
-
 class Router
 {
 	// static std::vector<string> routes;
@@ -18,10 +17,11 @@ public:
 	// Router(string configPath);
 	~Router(){};
 
-	bool use( const string route, bool(*func)(Router &)) ;
-	bool get( const string route, void (*get)(Request &, Response &)) const ;
-	bool post( const string route, void (*post)(Request &, Response &)) const ;
-	bool delet( const string route, void (*delet)(Request &, Response &)) const ;
+	bool use(const string route, bool (*func)(Router &));
+	bool get(const string route, void (*get)(Request &, Response &)) const;
+	bool post(const string route, void (*post)(Request &, Response &)) const;
+	bool delet(const string route, void (*delet)(Request &, Response &)) const;
+	bool notFound() const;
 };
 
 #endif

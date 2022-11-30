@@ -66,11 +66,14 @@ void Server::handleConnection(int newClient)
 
 void Server::handleRouting(Router &router, int client)
 {
-	string hello;
-	if (router.use("/", &index))
-		return;
-	hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 13\n\n404 not found";
-	write(client, hello.c_str(), hello.length());
+	(void) client;
+	router.use("/", &index);
+	// string hello;
+	// if (router.use("/", &index))
+	// 	return;
+	// clients.at(newClient).second->res.
+	// hello = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: 13\n\n404 not found";
+	// write(client, hello.c_str(), hello.length());
 }
 
 int Server::setup(void)

@@ -2,21 +2,23 @@
 #define RESPONSE_HPP
 
 #include "webserv.h"
+#include "unistd.h"
+#include <vector>
 
 using std::cout;
 using std::string;
+
 
 class Response
 {
 	size_t clientId;
 
 	// STATUS LINE
-	string protocolVersion;
-	string statusCode;
-	string statusText;
+	static string protocolVersion;
+	string stringStatus;
 
 	// HEADERS
-	StrStrMap headers;
+	std::vector<string> headers;
 
 	// BODY
 	string body;
@@ -26,14 +28,16 @@ public:
 	~Response();
 
 	// bool parseResponse(string rawRes);
-	void clearReq();
+	string stringifyResponse();
+	void clearResponse();
 
 	// GETTERS - SETTERS
-	string getHeader(string header);
 	size_t getClientId() const;
 
 	// RESPONSES
-	void text(const string msg);
+	Response  &status(const string status);
+	Response  &text(const string &msg);
+	void send();
 };
 
 #endif

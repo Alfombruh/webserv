@@ -27,3 +27,10 @@
 		Routing
 		Res.text()
 		Bad request 
+## [Version 0.1.4] (11-30-2022)
+	Ionmi:
+		Res.text() improved
+		Res.status() created
+		Res.send() created
+		router.notFound()
+

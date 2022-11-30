@@ -35,3 +35,8 @@ bool Router::delet(const string route, void (*delet)(Request &, Response &)) con
 	delet(req, res);
 	return true;
 };
+bool Router::notFound() const
+{
+	res.status(STATUS_404).text(req.getRoute() + "does not exist").send();
+	return false;
+};

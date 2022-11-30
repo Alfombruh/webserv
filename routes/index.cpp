@@ -3,19 +3,19 @@
 static void get(Request &rec, Response &res)
 {
 	(void)rec;
-	res.text("has llegado a index.get");
+	res.status(STATUS_200).text("has llegado a index.get").send();
 };
 
 static void post(Request &rec, Response &res)
 {
 	(void)rec;
-	res.text("has llegado a index.post");
+	res.status(STATUS_200).text("has llegado a index.post").send();
 };
 
 static void delet(Request &rec, Response &res)
 {
 	(void)rec;
-	res.text("has llegado a index.delete");
+	res.status(STATUS_200).text("has llegado a index.delete").send();
 };
 
 bool index(Router &router)
@@ -29,5 +29,5 @@ bool index(Router &router)
 		return true;
 	if (router.delet("/", &delet))
 		return true;
-	return false;
+	return router.notFound();
 };

@@ -3,19 +3,19 @@
 static void get(Request &rec, Response &res)
 {
 	(void)rec;
-	res.text("has llegado a about.get");
+	res.status(STATUS_200).text("has llegado a about.get").send();
 };
 
 static void post(Request &rec, Response &res)
 {
 	(void)rec;
-	res.text("has llegado a about.post");
+	res.status(STATUS_200).text("has llegado a about.post").send();
 };
 
 static void delet(Request &rec, Response &res)
 {
 	(void)rec;
-	res.text("has llegado a about.delete");
+	res.status(STATUS_200).text("has llegado a about.delete").send();
 };
 
 bool about(Router &router)
