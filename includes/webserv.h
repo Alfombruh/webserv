@@ -17,6 +17,7 @@ typedef std::map<std::string, std::string> StrStrMap;
 #define BUFFER_SIZE     1024
 #define BACKLOG         10
 #define PORT            8080
+#define HOST          	"Aisha"
 #define FAILED          false
 
 using std::string;

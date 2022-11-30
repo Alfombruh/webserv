@@ -42,6 +42,7 @@ const string Request::getHeader(const string header) const
 size_t Request::getClientId() const { return clientId; };
 
 const string &Request::getRoute() const { return route; };
+const string &Request::getAbsoluteRoute() const { return absolutRoute; };
 
 const METHOD &Request::getMethod() const { return method; };
 
@@ -110,6 +111,7 @@ bool Request::parseStatusLine(string rawStatusLine)
 	i++;
 	while (rawStatusLine.at(i) != ' ')
 		route.push_back(rawStatusLine.at(i++));
+	absolutRoute = route;
 	// PROTOCOL VERSION
 	i++;
 	while (i < rawStatusLine.length())

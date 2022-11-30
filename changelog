@@ -27,10 +27,17 @@
 		Routing
 		Res.text()
 		Bad request 
+
 ## [Version 0.1.4] (11-30-2022)
 	Ionmi:
 		Res.text() improved
 		Res.status() created
 		Res.send() created
 		router.notFound()
+
+## [Version 0.1.5] (11-30-2022)
+	Ionmi + Alf:
+		Res.html() improved
+		Res.img() created
+		serve full static pages
 

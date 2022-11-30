@@ -2,11 +2,6 @@
 
 Router::Router(Request &req, Response &res) : req(req), res(res){};
 
-// Router::Router(string configPath)
-// {
-// 	(void)configPath;
-// };
-
 bool Router::use(const string route, bool (*callback)(Router &))
 {
 	if (req.isInRoute(route) == false)
@@ -37,6 +32,11 @@ bool Router::delet(const string route, void (*delet)(Request &, Response &)) con
 };
 bool Router::notFound() const
 {
-	res.status(STATUS_404).text(req.getRoute() + "does not exist").send();
+	res.status(STATUS_404).text(req.getAbsoluteRoute() + " does not exist").send();
 	return false;
 };
+
+const string Router::getReqRoute() const
+{
+	return req.getRoute();
+}

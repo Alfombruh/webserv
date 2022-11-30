@@ -9,6 +9,8 @@ FILES = main 					\
 		srcs/classes/Router		\
 		routes/index			\
 		routes/about			\
+		routes/public			\
+		routes/profile			\
 
 SRCS = $(addsuffix .cpp, $(FILES))
 OBJS = $(addsuffix .o, $(FILES))
@@ -31,6 +33,7 @@ run: $(NAME)
 
 clean: 
 	$(RM) *.dSYM
+	$(RM) *.DS_Store
 	$(RM) $(OBJS)
 
 fclean: clean

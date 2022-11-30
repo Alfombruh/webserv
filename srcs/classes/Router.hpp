@@ -22,6 +22,7 @@ public:
 	bool post(const string route, void (*post)(Request &, Response &)) const;
 	bool delet(const string route, void (*delet)(Request &, Response &)) const;
 	bool notFound() const;
+	const string getReqRoute() const;
 };
 
 #endif

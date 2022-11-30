@@ -21,6 +21,7 @@ class Request
  	//STATUS LINE
 	METHOD method;
 	string route;
+	string absolutRoute;
 	string protocolVersion;
 
  	//HEADERS
@@ -45,6 +46,7 @@ public:
 	const string getHeader(const string header) const;
 	size_t getClientId() const;
 	const string &getRoute() const;
+	const string &getAbsoluteRoute() const;
 	const METHOD &getMethod() const;
 	bool isInRoute(const string route) const;
 	void updateRoute(const string route);

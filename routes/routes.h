@@ -11,5 +11,7 @@ class Router;
 
 bool about(Router &router);
 bool index(Router &router);
+bool profile(Router &router);
+bool publicFolder(Router &router);
 
 #endif

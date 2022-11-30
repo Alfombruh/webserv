@@ -1,7 +1,11 @@
 #include "webserv.h"
 #include "Response.hpp"
 
-Response::Response(int clientId) : clientId((size_t)clientId) {}
+Response::Response(int clientId) : clientId((size_t)clientId)
+{
+	headers.push_back("Host: " + (string)HOST);
+	// HERE WE INITIALIZE ALL STATIC HEADERS HOST, PORT, LOCATION...
+}
 
 string Response::protocolVersion = "HTTP/1.1";
 
@@ -35,8 +39,6 @@ void Response::clearResponse()
 size_t Response::getClientId() const { return clientId; };
 
 // RESPONSES
-// #define ERROR(status) (!(status > 100))
-
 Response &Response::status(const string status)
 {
 	stringStatus = status;
@@ -48,16 +50,38 @@ Response &Response::text(const string &msg)
 	headers.push_back("Content-Type: text/plain");
 	headers.push_back("Content-Length: " + std::to_string(msg.length()));
 	body = msg;
+	return *this;
+};
 
-	// string headers = "HTTP/1.1 200 OK\nContent-Type: text/plain\nContent-Length: " + std::to_string(msg.length()) + "\n\n";
-	// headers += msg;
+Response &Response::html(const string filename)
+{
+	std::ifstream file(filename);
+	string tmp((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+	file.close();
+	body = tmp;
+	// cout << body << "\n";
+	headers.push_back("Content-Type: text/html");
+	headers.push_back("Content-Length: " + std::to_string(body.length()));
+	return *this;
+};
+
+Response &Response::img(const string filename)
+{
+	std::ifstream file(filename);
+	string tmp((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+	file.close();
+	body = tmp;
+	headers.push_back("Content-Type: image/png");
+	headers.push_back("Content-Length: " + std::to_string(body.length()));
 	return *this;
 };
 
 void Response::send()
 {
-	cout << "-------------res-------------\n";
-	cout << stringifyResponse();
-	cout << "-----------------------------\n";
-	write(clientId, stringifyResponse().c_str(), stringifyResponse().length());
+	string response = stringifyResponse();
+	// cout << "-------------res-------------\n";
+	// cout << response;
+	// cout << "-----------------------------\n";
+	write(clientId, response.c_str(), response.length());
+	clearResponse();
 };

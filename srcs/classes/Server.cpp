@@ -54,7 +54,7 @@ void Server::handleConnection(int newClient)
 		write(newClient, badReq.c_str(), badReq.length());
 	}
 	else
-		handleRouting(router, newClient);
+		router.use("/", &index);
 	// printf("------------------Hello message sent-------------------\n");
 	// CLOSE-CLEAR CLIENT FROM SET AND MAP
 	close(newClient);
@@ -67,7 +67,7 @@ void Server::handleConnection(int newClient)
 void Server::handleRouting(Router &router, int client)
 {
 	(void) client;
-	router.use("/", &index);
+	(void) router;
 	// string hello;
 	// if (router.use("/", &index))
 	// 	return;
