@@ -48,36 +48,56 @@ Response &Response::status(const string status)
 Response &Response::text(const string &msg)
 {
 	headers.push_back("Content-Type: text/plain");
-	headers.push_back("Content-Length: " + std::to_string(msg.length()));
+	headers.push_back("Connection: close");
 	body = msg;
 	return *this;
 };
 
-Response &Response::html(const string filename)
+string Response::readFile(const string filename)
 {
 	std::ifstream file(filename);
 	string tmp((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 	file.close();
-	body = tmp;
+	return tmp;
+}
+
+Response &Response::html(const string filename)
+{
+	body = readFile(filename);
 	// cout << body << "\n";
 	headers.push_back("Content-Type: text/html");
-	headers.push_back("Content-Length: " + std::to_string(body.length()));
+	headers.push_back("Connection: close");
 	return *this;
 };
 
 Response &Response::img(const string filename)
 {
-	std::ifstream file(filename);
-	string tmp((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
-	file.close();
-	body = tmp;
+	body = readFile(filename);
 	headers.push_back("Content-Type: image/png");
-	headers.push_back("Content-Length: " + std::to_string(body.length()));
+	headers.push_back("Connection: close");
+	return *this;
+};
+
+Response &Response::css(const string filename)
+{
+	body = readFile(filename);
+	headers.push_back("Content-Type: text/css");
+	headers.push_back("Connection: close");
+	return *this;
+};
+
+Response &Response::js(const string filename)
+{
+	body = readFile(filename);
+	headers.push_back("Content-Type: aplication/javascript");
+	headers.push_back("Connection: close");
 	return *this;
 };
 
 void Response::send()
 {
+	if (!body.empty())
+		headers.push_back("Content-Length: " + std::to_string(body.length()));
 	string response = stringifyResponse();
 	// cout << "-------------res-------------\n";
 	// cout << response;

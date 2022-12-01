@@ -26,6 +26,7 @@ class Response
 	// BODY
 	string body;
 
+	string readFile(const string filename);
 public:
 	Response(int clientId);
 	~Response();
@@ -42,6 +43,8 @@ public:
 	Response &text(const string &msg);
 	Response &html(const string filename);
 	Response &img(const string filename);
+	Response &css(const string filename);
+	Response &js(const string filename);
 	void send();
 };
 

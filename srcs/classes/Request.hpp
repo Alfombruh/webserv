@@ -2,6 +2,7 @@
 #define REQUEST_HPP
 
 #include "webserv.h"
+#include "Response.hpp"
 #include <string>
 
 using std::cout;
@@ -30,7 +31,7 @@ class Request
 	//BODY
 	string body;
 
-	bool parseStatusLine(string rawStatusLine);
+	bool parseStatusLine(string rawStatusLine, Response &res);
 	bool parseHeaders(string rawHeaders);
 	bool parseBody(string rawBody);
 	void printReqAtributes();
@@ -41,13 +42,14 @@ public:
 
 	void clearReq();
 	// PARSING
-	bool parseRequest(string rawReq);
+	bool parseRequest(string rawReq, Response &res);
 	// GETTERS - SETTERS
 	const string getHeader(const string header) const;
 	size_t getClientId() const;
 	const string &getRoute() const;
 	const string &getAbsoluteRoute() const;
 	const METHOD &getMethod() const;
+	const string getMethodStr() const;
 	bool isInRoute(const string route) const;
 	void updateRoute(const string route);
 };

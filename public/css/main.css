@@ -1,0 +1,275 @@
+.main {
+  margin-top: 85px;
+  background-color: black;
+  background-image: url(/public/images/labanda.jpg);
+  /* Para dejar la imagen de fondo centrada, horizontal y verticamlmente */
+  background-position: center 200px;
+  /* Para que la imagen de fondo no se repita */
+  background-repeat: no-repeat;
+  /* La imagen se fija en la ventana de visualización para que la altura de la imagen no supere a la del contenido */
+  background-attachment: fixed;
+  /* La imagen de fondo se reescala automáticamente con el cambio del ancho de ventana del navegador */
+  background-position: center 200px;
+  /* background-size: contain; */
+  background-size: cover;
+}
+
+#main {
+  margin-top: 85px;
+  background-color: black;
+  background-image: url(/public/images/labanda.jpg);
+  /* Para dejar la imagen de fondo centrada, horizontal y verticamlmente */
+  background-position: center 200px;
+  /* Para que la imagen de fondo no se repita */
+  background-repeat: no-repeat;
+  /* La imagen se fija en la ventana de visualización para que la altura de la imagen no supere a la del contenido */
+  background-attachment: fixed;
+  /* La imagen de fondo se reescala automáticamente con el cambio del ancho de ventana del navegador */
+  background-position: center 250px;
+  /* background-size: auto; */
+  background-size: cover;
+  padding-bottom: 2rem;
+}
+
+#main #firstCover>.wrapper {
+  min-height: 20px;
+}
+
+#main #firstCover>.wrapper h2 {
+  color: black;
+  padding-top: 3rem;
+}
+
+#firstCover {
+  background-color: white;
+  margin-top: -150px;
+  width: 100%;
+  padding-top: 20px;
+  /* Added a percentage value for top/bottom padding to keep the wrapper inside of the parent */
+  -webkit-transform: skewY(-5deg);
+  -moz-transform: skewY(-5deg);
+  -ms-transform: skewY(-5deg);
+  -o-transform: skewY(-5deg);
+  transform: skewY(-5deg);
+}
+
+#firstCover>.wrapper {
+  -webkit-transform: skewY(5deg);
+  -moz-transform: skewY(5deg);
+  -ms-transform: skewY(5deg);
+  -o-transform: skewY(5deg);
+  transform: skewY(5deg);
+  margin: 0;
+  padding: 0;
+  margin-top: 80px;
+  text-align: center;
+  min-height: 400px;
+}
+
+#spoiler {
+  justify-items: center;
+  max-width: 320px;
+  height: auto;
+}
+
+#firstCover .wrapper h2 {
+  color: rgb(216, 1, 1);
+  padding-bottom: 10rem;
+}
+
+#quotes {
+  display: flex;
+  justify-content: space-between;
+  padding: 15rem 2rem;
+  margin: 0;
+}
+
+#quotes {
+  animation: fadeIn ease 6s;
+  -webkit-animation: fadeIn ease 6s;
+  -moz-animation: fadeIn ease 6s;
+  -o-animation: fadeIn ease 6s;
+  -ms-animation: fadeIn ease 6s;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-moz-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-o-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@-ms-keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+#quotes h2 {
+  color: white;
+  font-size: 1.5rem;
+}
+
+#walterQuoteDiv {
+  text-align: left;
+  max-width: 45%;
+}
+
+#jesseQuoteDiv {
+  text-align: right;
+  max-width: 45%;
+}
+
+#walterQuote {
+  text-align: left;
+}
+
+#jesseQuote {
+  text-align: right;
+}
+
+#secondCover {
+  background-color: white;
+  margin-bottom: -150px;
+  width: 100%;
+  padding: 5% 20px;
+  /* Added a percentage value for top/bottom padding to keep the wrapper inside of the parent */
+  -webkit-transform: skewY(-5deg);
+  -moz-transform: skewY(-5deg);
+  -ms-transform: skewY(-5deg);
+  -o-transform: skewY(-5deg);
+  transform: skewY(-5deg);
+  min-height: 400px;
+}
+
+#secondCover>.wrapper {
+  -webkit-transform: skewY(5deg);
+  -moz-transform: skewY(5deg);
+  -ms-transform: skewY(5deg);
+  -o-transform: skewY(5deg);
+  transform: skewY(5deg);
+  text-align: center;
+  padding-top: 1rem;
+  min-height: 300px;
+}
+
+#Titles h1 {
+  text-align: center;
+  color: black;
+  font-size: 3rem;
+  padding-bottom: 5rem;
+}
+
+/* ------------------------------------characters-------------------------------------  */
+
+input {
+  border: none;
+  border-bottom: solid black;
+  width: 10rem;
+}
+
+button {
+  border-style: solid;
+  border: 3px solid black;
+  background-color: transparent;
+  padding: 0 3px;
+  transition: 300ms;
+}
+
+button:hover {
+  background-color: black;
+  color: white;
+}
+
+.inportCharacterDiv {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+
+.inportedDiv {
+  display: block;
+  margin: 3rem 5rem;
+  background-color: black;
+  color: white;
+  width: min-content;
+  box-shadow: 2px 2px 2px 2px black;
+  padding-bottom: 1rem;
+}
+
+.inportedDiv h4 {
+  font-size: 2rem;
+  padding-top: 1rem;
+}
+
+.inportedDiv button {
+  border-style: solid;
+  border: 3px solid white;
+  background-color: transparent;
+  padding: 0 3px;
+  transition: 300ms;
+  color: white;
+  margin-top: 1rem;
+}
+
+.inportedDiv button:hover {
+  background-color: white;
+  color: black;
+}
+
+.inportCharacterDiv img {
+  max-width: 60%;
+  min-width: 300px;
+  height: auto;
+  text-align: center;
+  padding: 1rem;
+}
+
+#favoriteCharacters .characterButtonGreen {
+  border-style: solid;
+  border: 3px solid greenyellow;
+  background-color: transparent;
+  padding: 0 3px;
+  transition: 300ms;
+  color: greenyellow;
+  margin-top: 1rem;
+}
+
+#favoriteCharacters .characterButtonGreen:hover {
+  background-color: greenyellow;
+  color: black;
+}

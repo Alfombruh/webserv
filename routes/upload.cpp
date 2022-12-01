@@ -3,22 +3,22 @@
 static void get(Request &req, Response &res)
 {
 	(void)req;
-	res.status(STATUS_200).text("has llegado a about.get").send();
+	res.status(STATUS_300).html("./public/html/upload.html").send();
 };
 
 static void post(Request &req, Response &res)
 {
 	(void)req;
-	res.status(STATUS_200).text("has llegado a about.post").send();
+	res.status(STATUS_200).text("has llegado a upload.post").send();
 };
 
 static void delet(Request &req, Response &res)
 {
 	(void)req;
-	res.status(STATUS_200).text("has llegado a about.delete").send();
+	res.status(STATUS_200).text("has llegado a upload.delete").send();
 };
 
-bool about(Router &router)
+bool upload(Router &router)
 {
 	if (router.get("/", &get))
 		return true;
@@ -26,5 +26,5 @@ bool about(Router &router)
 		return true;
 	if (router.delet("/", &delet))
 		return true;
-	return false;
+	return router.notFound();
 };

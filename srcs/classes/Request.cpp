@@ -14,14 +14,14 @@ void Request::clearReq()
 }
 
 /* raw request tiene caracteres no printeables */
-bool Request::parseRequest(string rawReq)
+bool Request::parseRequest(string rawReq, Response &res)
 {
 	size_t endStatusLine = rawReq.find("\n");
 	size_t endHeaders = rawReq.find("\n\n");
 
 	// cout << rawReq << "\n";
 	// STATUS LINE
-	if (parseStatusLine(rawReq.substr(0, endStatusLine)) == FAILED)
+	if (parseStatusLine(rawReq.substr(0, endStatusLine), res) == FAILED)
 		return false;
 	// HEADERS
 	if (parseHeaders(rawReq.substr(endStatusLine + 1, endHeaders - (endStatusLine + 1))) == FAILED)
@@ -45,6 +45,22 @@ const string &Request::getRoute() const { return route; };
 const string &Request::getAbsoluteRoute() const { return absolutRoute; };
 
 const METHOD &Request::getMethod() const { return method; };
+
+const string Request::getMethodStr() const
+{
+	switch (method)
+	{
+	case 0:
+		return "GET";
+	case 1:
+		return "POST";
+	case 2:
+		return "DELETE";
+	default:
+		break;
+	}
+}
+
 
 bool Request::isInRoute(const string route) const
 {
@@ -91,7 +107,7 @@ void Request::printReqAtributes()
 	cout << "\nBODY:\n";
 };
 
-bool Request::parseStatusLine(string rawStatusLine)
+bool Request::parseStatusLine(string rawStatusLine, Response &res)
 {
 	size_t i = 0;
 	string method;
@@ -106,7 +122,10 @@ bool Request::parseStatusLine(string rawStatusLine)
 	else if (method == "DELETE")
 		this->method = DELETE;
 	else
+	{
+		res.status(STATUS_405).send();
 		return false;
+	}
 	// ROUTE
 	i++;
 	while (rawStatusLine.at(i) != ' ')
@@ -117,7 +136,10 @@ bool Request::parseStatusLine(string rawStatusLine)
 	while (i < rawStatusLine.length())
 		protocolVersion.push_back(rawStatusLine.at(i++));
 	if (protocolVersion != "HTTP/1.1")
+	{
+		res.status(STATUS_505).send();
 		return false;
+	}
 	return true;
 };
 

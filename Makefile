@@ -8,9 +8,8 @@ FILES = main 					\
 		srcs/classes/Response	\
 		srcs/classes/Router		\
 		routes/index			\
-		routes/about			\
+		routes/upload			\
 		routes/public			\
-		routes/profile			\
 
 SRCS = $(addsuffix .cpp, $(FILES))
 OBJS = $(addsuffix .o, $(FILES))

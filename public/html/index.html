@@ -1,91 +1,82 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>calc</title>
-  </head>
-  <body style="width: 100%; height: 1080px; font-family: sans-serif">
-    <div
-      style="
-        position: absolute;
-        height: 970px;
-        width: 600px;
-        background-color: grey;
-        margin-left: 50%;
-        margin-top: 50px;
-        transform: translate(-50%);
-        border-radius: 30px;
-      "
-    >
-      <div id="Values" style="display: flex; width: 100%; height: 15%">
-        <div
-          id="num1"
-          style="
-            width: 50%;
-            text-align: center;
-            font-size: 30px;
-            padding-top: 50px;
-          "
-        >
-          <label for="num1">First Value:</label><br />
-          <input
-            id="num01"
-            style="height: 50px; width: 70%; font-size: 40px"
-            type="text"
-            name="num1"
-          /><br />
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/public/css/style.css">
+</head>
+
+<body>
+    <header class="header">
+        <div>
+            <a href="/" class="logo"><img id="logoImg" src="/public/images/42-Urduliz-Logo-web.png" alt="Logo"></a>
         </div>
-        <div
-          id="num2"
-          style="
-            width: 50%;
-            text-align: center;
-            padding-top: 50px;
-            font-size: 30px;
-          "
-        >
-          <label for="num2">Second Value:</label><br />
-          <input
-            id="num02"
-            style="height: 50px; width: 70%; font-size: 40px"
-            type="text"
-            name="num2"
-          /><br />
+        <nav>
+            <input class="menu-btn" type="checkbox" id="menu-btn" />
+            <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
+            <ul class="menu">
+                <li><a href="./upload">Upload</a></li>
+                <li><a target="_blank" href="https://www.42urduliz.com">42 Uduliz</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main class="main">
+
+        <div id="firstCover">
+            <div class="wrapper">
+                <img id="spoiler" src="/public/images/spoiler.png">
+                <h2>In case you have not seen Breaking Bad yet, this might ruin your future experience.</h2>
+            </div>
         </div>
-      </div>
-      <div id="functions" style="width: 100%; height: 60%">
-        <select
-          id="operations"
-          style="
-            width: 100%;
-            text-align-last: center;
-            height: 100%;
-            border-radius: 100%;
-            background-color: lightgrey;
-          "
-        >
-          <optgroup>
-            <option id="+">+</option>
-            <option id="-">-</option>
-            <option id="*">*</option>
-            <option id="/">/</option>
-            <option id="%">%</option>
-          </optgroup>
-        </select>
-      </div>
-      <div id="submit" style="width: 100%; height: 25%">
-        <button
-          onclick="maths()"
-          style="
-            width: 100%;
-            height: 100%;
-            border-radius: 30px;
-            background-color: red;
-          "
-        >
-          <img src="public/img/labanda.jpg" />
-          <h1 style="font-size: 50px">Try me!</h1>
-        </button>
-      </div>
-    </div>
-  </body>
+        <div id="quotes">
+            <div id="walterQuoteDiv">
+                <h2 id="walterQuote"></h2>
+                <!-- "I am Heisenberg" -->
+            </div>
+            <div id="jesseQuoteDiv">
+                <h2 id="jesseQuote"></h2>
+                <!-- "Yeah, B****. Magnets!" -->
+            </div>
+        </div>
+        <div id="secondCover">
+            <div class="wrapper">
+                <div id="Titles">
+                    <h1>Main Characters</h1>
+                </div>
+                <div id="topNineCharacters" class="inportCharacterDiv">
+                </div>
+            </div>
+        </div>
+
+    </main>
+    <footer class="footer">
+        <div class="footerDiv">
+            <h3>Menu</h3>
+            <ul id="webPages">
+                <li><a href="/">Home</a></l1>
+				<li><a href="/upload">Upload</a></li>
+				<li><a target="_blank" href="https://www.42urduliz.com">42 Uduliz</a></li>
+				<li><a href="https://www.flaticon.es/iconos-gratis/instagram" title="iconos">Iconos creados por Freepik - Flaticon</a></li>
+            </ul>
+        </div>
+        <div class="footerDiv">
+            <h3>Social</h3>
+            <ul>
+                <li><a target="_blank" href="https://www.facebook.com/fundaciontef"><img
+                            src="/public/images/facebook.png"></a></li>
+                <li><a target="_blank" href="https://www.instagram.com/42urdulizftef/"><img
+                            src="/public/images/instagram.png"></a></li>
+                <li><a target="_blank" href="https://twitter.com/42urdulizftef"><img src="/public/images/twitter.png"></a>
+                </li>
+                <li><a target="_blank" href="https://www.youtube.com/user/fundaciontef"><img src="/public/images/youtube.png"></a>
+                </li>
+            </ul>
+        </div>
+    </footer>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="/public/js/app.js"></script>
+</body>
+
 </html>

@@ -41,3 +41,11 @@
 		Res.img() created
 		serve full static pages
 
+## [Version 0.1.6] (12-1-2022)
+	Ionmi:
+		Res.js() created
+		Res.css() created
+		now really serving FULL static pages
+		new web page (needs to be modified)
+		custom responses when method not allowed nor supported
+

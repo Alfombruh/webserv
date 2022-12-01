@@ -32,7 +32,10 @@ bool Router::delet(const string route, void (*delet)(Request &, Response &)) con
 };
 bool Router::notFound() const
 {
-	res.status(STATUS_404).text(req.getAbsoluteRoute() + " does not exist").send();
+	if (getReqRoute() == "/")
+		res.status(STATUS_405).text(req.getMethodStr() + " method is not supported for " + req.getAbsoluteRoute()).send();
+	else
+		res.status(STATUS_404).text(req.getAbsoluteRoute() + " does not exist").send();
 	return false;
 };
 

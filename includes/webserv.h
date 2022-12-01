@@ -19,6 +19,7 @@ typedef std::map<std::string, std::string> StrStrMap;
 #define PORT            8080
 #define HOST          	"Aisha"
 #define FAILED          false
+#define REQ_PARSED		true
 
 using std::string;
 using std::cout;

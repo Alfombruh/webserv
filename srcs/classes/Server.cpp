@@ -48,12 +48,7 @@ void Server::handleConnection(int newClient)
 			rawReq.push_back(buffer[i]);
 	}
 	Router router(*clients.at(newClient).first, *clients.at(newClient).second);
-	if (clients.at(newClient).first->parseRequest(rawReq) == FAILED)
-	{
-		string badReq = "HTTP/1.1 400 Bad Request\n\n";
-		write(newClient, badReq.c_str(), badReq.length());
-	}
-	else
+	if (clients.at(newClient).first->parseRequest(rawReq, *clients.at(newClient).second) == REQ_PARSED)
 		router.use("/", &index);
 	// printf("------------------Hello message sent-------------------\n");
 	// CLOSE-CLEAR CLIENT FROM SET AND MAP
