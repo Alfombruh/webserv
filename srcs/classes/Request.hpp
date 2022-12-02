@@ -19,21 +19,22 @@ class Request
 {
 	size_t clientId;
 
- 	//STATUS LINE
+	// STATUS LINE
 	METHOD method;
 	string route;
 	string absolutRoute;
+	StrStrMap routeVars;
 	string protocolVersion;
 
- 	//HEADERS
+	// HEADERS
 	StrStrMap headers;
-	
-	//BODY
+
+	// BODY
 	string body;
 
+	bool parseRequest(string statusHeader, Response &res);
 	bool parseStatusLine(string rawStatusLine, Response &res);
 	bool parseHeaders(string rawHeaders);
-	bool parseBody(string rawBody);
 	void printReqAtributes();
 
 public:
@@ -41,13 +42,16 @@ public:
 	~Request();
 
 	void clearReq();
+
 	// PARSING
-	bool parseRequest(string rawReq, Response &res);
+	bool readRequest(int clientSd, Response &res);
 	// GETTERS - SETTERS
 	const string getHeader(const string header) const;
 	size_t getClientId() const;
 	const string &getRoute() const;
 	const string &getAbsoluteRoute() const;
+	const StrStrMap &getHeaders() const;
+	const string &getBody() const;
 	const METHOD &getMethod() const;
 	const string getMethodStr() const;
 	bool isInRoute(const string route) const;

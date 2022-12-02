@@ -14,20 +14,49 @@ void Request::clearReq()
 }
 
 /* raw request tiene caracteres no printeables */
-bool Request::parseRequest(string rawReq, Response &res)
+bool Request::readRequest(int clientSd, Response &res)
 {
-	size_t endStatusLine = rawReq.find("\n");
-	size_t endHeaders = rawReq.find("\n\n");
+	ssize_t ret;
+	char character;
+	string statusHeader;
 
-	// cout << rawReq << "\n";
+	// STATUS LINE AND HEADERS PARSING
+	while (true)
+	{
+		if (read(clientSd, &character, 1) == -1)
+			return false;
+		if (!isprint(character) && character != '\n')
+			continue;
+		if (statusHeader.back() == '\n' && character == '\n')
+		{
+			statusHeader.pop_back();
+			break;
+		}
+		statusHeader.push_back(character);
+	}
+	// BODY PARSING
+	char buffer[1024];
+	while (true)
+	{
+		if ((ret = read(clientSd, buffer, 1024)) == -1)
+			return false;
+		body.append(buffer, ret);
+		if (ret < 1024)
+			break;
+	}
+	if (parseRequest(statusHeader, res) == FAILED)
+		return false;
+	return true;
+}
+bool Request::parseRequest(string statusHeader, Response &res)
+{
+	size_t endStatusLine = statusHeader.find("\n");
+
 	// STATUS LINE
-	if (parseStatusLine(rawReq.substr(0, endStatusLine), res) == FAILED)
+	if (parseStatusLine(statusHeader.substr(0, endStatusLine), res) == FAILED)
 		return false;
 	// HEADERS
-	if (parseHeaders(rawReq.substr(endStatusLine + 1, endHeaders - (endStatusLine + 1))) == FAILED)
-		return false;
-	// BODY
-	if (parseBody(rawReq.substr(endHeaders + 2)) == FAILED)
+	if (parseHeaders(statusHeader.substr(endStatusLine + 1)) == FAILED)
 		return false;
 	return true;
 };
@@ -43,6 +72,8 @@ size_t Request::getClientId() const { return clientId; };
 
 const string &Request::getRoute() const { return route; };
 const string &Request::getAbsoluteRoute() const { return absolutRoute; };
+const StrStrMap &Request::getHeaders() const { return headers; };
+const string &Request::getBody() const { return body; };
 
 const METHOD &Request::getMethod() const { return method; };
 
@@ -60,7 +91,6 @@ const string Request::getMethodStr() const
 		break;
 	}
 }
-
 
 bool Request::isInRoute(const string route) const
 {
@@ -83,7 +113,7 @@ void Request::updateRoute(const string route)
 	string tmp;
 	size_t i = route.length();
 
-	if(route == "/")
+	if (route == "/")
 		return;
 	while (i < this->route.length())
 		tmp += this->route[i++];
@@ -130,6 +160,33 @@ bool Request::parseStatusLine(string rawStatusLine, Response &res)
 	i++;
 	while (rawStatusLine.at(i) != ' ')
 		route.push_back(rawStatusLine.at(i++));
+	if (route.find("?") != string::npos)
+	{
+		size_t i = 0;
+		string tmp;
+		while (i < route.size() && route[i] != '?')
+			tmp.push_back(route[i++]);
+		i++;
+		route = tmp;
+		tmp.clear();
+		while (i < route.size())
+		{
+			string tmp2;
+			while (i < route.size() && route[i] != '=')
+				tmp.push_back(route[i++]);
+			if (i == route.size())
+			{
+				res.status(STATUS_400).text("variables incorrect").send();
+				return false;
+			}
+			while (i < route.size() || route[i] != '&')
+				tmp2.push_back(route[i++]);
+			i++;
+			routeVars[tmp] = tmp2;
+		}
+		cout << routeVars[0]<<"\n";
+		cout << route << "\n";
+	}
 	absolutRoute = route;
 	// PROTOCOL VERSION
 	i++;
@@ -162,11 +219,5 @@ bool Request::parseHeaders(string rawHeaders)
 		key.clear();
 		value.clear();
 	}
-	return true;
-};
-
-bool Request::parseBody(string rawBody)
-{
-	body = rawBody;
 	return true;
 };

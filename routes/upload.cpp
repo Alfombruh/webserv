@@ -8,7 +8,18 @@ static void get(Request &req, Response &res)
 
 static void post(Request &req, Response &res)
 {
-	(void)req;
+	StrStrMap headers = req.getHeaders();
+	for (StrStrMap::iterator it = headers.begin(); it != headers.end(); it++)
+	{
+		if (it->first == "content-type" && it->second != "image/png" && it->second != "image/jpg")
+		{
+			res.status(STATUS_451).text("only image/png or image/jpg").send();
+			return;
+		}
+	}
+	std::ofstream file("picture.png", std::ofstream::binary | std::ofstream::out);
+	file.write(req.getBody().c_str(), req.getBody().size());
+	file.close();
 	res.status(STATUS_200).text("has llegado a upload.post").send();
 };
 

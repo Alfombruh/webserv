@@ -36,7 +36,6 @@ private:
     //**** private functions ********************************
     void    acceptConnection(void);
     void    handleConnection(int newClient);
-    void    handleRouting(Router &router, int client);
     //****
 	ClientMap clients;
 public:

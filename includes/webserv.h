@@ -20,6 +20,7 @@ typedef std::map<std::string, std::string> StrStrMap;
 #define HOST          	"Aisha"
 #define FAILED          false
 #define REQ_PARSED		true
+#define MAX_BODY		100000
 
 using std::string;
 using std::cout;
