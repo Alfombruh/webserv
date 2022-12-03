@@ -9,24 +9,52 @@ static void get(Request &req, Response &res)
 static void post(Request &req, Response &res)
 {
 	StrStrMap headers = req.getHeaders();
-	for (StrStrMap::iterator it = headers.begin(); it != headers.end(); it++)
+	if (headers.find("content-type") == headers.end() ||
+		(headers.at("content-type") != "image/png" && headers.at("content-type") != "image/jpg"))
 	{
-		if (it->first == "content-type" && it->second != "image/png" && it->second != "image/jpg")
-		{
-			res.status(STATUS_451).text("only image/png or image/jpg").send();
-			return;
-		}
+		res.status(STATUS_451).text("content-type must be image/png or image/jpg").send();
+		return;
 	}
-	std::ofstream file("picture.png", std::ofstream::binary | std::ofstream::out);
+	const char *value = req.getUrlVar("filename");
+	if (value == NULL)
+	{
+		res.status(STATUS_206).text("specify a filename: url?filename=exaple-filename").send();
+		return;
+	}
+	if (req.getBody().empty())
+	{
+		res.status(STATUS_204).text("body is empty").send();
+		return;
+	}
+	string filename = value;
+	filename += headers.at("content-type") == "image/png" ? ".png" : ".jpg";
+	if (access(("image_galery/" + filename).c_str(), F_OK) != -1)
+	{
+		res.status(STATUS_409).text("filename: " + filename + " allready exists").send();
+		return;
+	}
+	std::ofstream file("image_galery/" + filename, std::ofstream::binary | std::ofstream::out);
 	file.write(req.getBody().c_str(), req.getBody().size());
 	file.close();
-	res.status(STATUS_200).text("has llegado a upload.post").send();
+	res.status(STATUS_201).text("filename: " + filename + " uploaded").send();
 };
 
 static void delet(Request &req, Response &res)
 {
-	(void)req;
-	res.status(STATUS_200).text("has llegado a upload.delete").send();
+	const char *value = req.getUrlVar("filename");
+	string filename = value ? value : "";
+	if (value == NULL || (filename.find(".png") == string::npos && filename.find(".jpg") == string::npos))
+	{
+		res.status(STATUS_206).text("specify a filename: url?filename=exaple-filename.png").send();
+		return;
+	}
+	if (access(("image_galery/" + filename).c_str(), F_OK) != -1)
+	{
+		remove(("image_galery/" + filename).c_str());
+		res.status(STATUS_200).text("filename: " + filename + " deleted").send();
+		return;
+	}
+	res.status(STATUS_200).text("filename: " + filename + " does not exist").send();
 };
 
 bool upload(Router &router)

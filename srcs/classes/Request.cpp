@@ -17,37 +17,49 @@ void Request::clearReq()
 bool Request::readRequest(int clientSd, Response &res)
 {
 	ssize_t ret;
-	char character;
+	char buffer[1024];
 	string statusHeader;
+	size_t i;
 
 	// STATUS LINE AND HEADERS PARSING
-	while (true)
+	if ((ret = read(clientSd, buffer, 1024)) == -1 || ret == 0)
 	{
-		if (read(clientSd, &character, 1) == -1)
-			return false;
-		if (!isprint(character) && character != '\n')
+		res.status(STATUS_400).send();
+		return false;
+	}
+	for (i = 0; i < (size_t)ret; i++)
+	{
+		if (!isprint(buffer[i]) && buffer[i] != '\n')
 			continue;
-		if (statusHeader.back() == '\n' && character == '\n')
+		if (statusHeader.back() == '\n' && buffer[i] == '\n')
 		{
 			statusHeader.pop_back();
+			i++;
 			break;
 		}
-		statusHeader.push_back(character);
+		statusHeader.push_back(buffer[i]);
 	}
+	while (i < (size_t)ret)
+		body.push_back(buffer[i++]);
+	if (parseRequest(statusHeader, res) == FAILED)
+		return false;
+
 	// BODY PARSING
-	char buffer[1024];
+	if (ret != 1024)
+		return true;
 	while (true)
 	{
-		if ((ret = read(clientSd, buffer, 1024)) == -1)
+		if ((ret = read(clientSd, buffer, 1024)) == -1 || ret == 0)
 			return false;
+		if (ret == 0)
+			break;
 		body.append(buffer, ret);
 		if (ret < 1024)
 			break;
 	}
-	if (parseRequest(statusHeader, res) == FAILED)
-		return false;
 	return true;
 }
+
 bool Request::parseRequest(string statusHeader, Response &res)
 {
 	size_t endStatusLine = statusHeader.find("\n");
@@ -72,6 +84,12 @@ size_t Request::getClientId() const { return clientId; };
 
 const string &Request::getRoute() const { return route; };
 const string &Request::getAbsoluteRoute() const { return absolutRoute; };
+const char *Request::getUrlVar(const string key) const
+{
+	if (routeVars.find(key) == routeVars.end())
+		return NULL;
+	return routeVars.at(key).c_str();
+};
 const StrStrMap &Request::getHeaders() const { return headers; };
 const string &Request::getBody() const { return body; };
 
@@ -129,12 +147,15 @@ void Request::printReqAtributes()
 	cout << "method:" << method << "$\n";
 	cout << "route:" << route << "$\n";
 	cout << "protocol version:" << protocolVersion << "$\n";
+	cout << "\nVARS:\n";
+	for (StrStrMap::iterator it = routeVars.begin(); it != routeVars.end(); ++it)
+		cout << it->first << ":" << it->second << "$\n";
 	// HEADERS
 	cout << "\nHEADERS:\n";
 	for (StrStrMap::iterator it = headers.begin(); it != headers.end(); ++it)
 		cout << it->first << ":" << it->second << "$\n";
 	// BODY
-	cout << "\nBODY:\n";
+	cout << "\nBODY:\n" << body << "$\n";
 };
 
 bool Request::parseStatusLine(string rawStatusLine, Response &res)
@@ -143,7 +164,7 @@ bool Request::parseStatusLine(string rawStatusLine, Response &res)
 	string method;
 
 	// METHOD
-	while (rawStatusLine.at(i) != ' ')
+	while (rawStatusLine.at(i) != ' ' && i < rawStatusLine.size())
 		method.push_back(rawStatusLine.at(i++));
 	if (method == "GET")
 		this->method = GET;
@@ -158,39 +179,13 @@ bool Request::parseStatusLine(string rawStatusLine, Response &res)
 	}
 	// ROUTE
 	i++;
-	while (rawStatusLine.at(i) != ' ')
+	while (rawStatusLine.at(i) != ' ' && i < rawStatusLine.size())
 		route.push_back(rawStatusLine.at(i++));
-	if (route.find("?") != string::npos)
-	{
-		size_t i = 0;
-		string tmp;
-		while (i < route.size() && route[i] != '?')
-			tmp.push_back(route[i++]);
-		i++;
-		route = tmp;
-		tmp.clear();
-		while (i < route.size())
-		{
-			string tmp2;
-			while (i < route.size() && route[i] != '=')
-				tmp.push_back(route[i++]);
-			if (i == route.size())
-			{
-				res.status(STATUS_400).text("variables incorrect").send();
-				return false;
-			}
-			while (i < route.size() || route[i] != '&')
-				tmp2.push_back(route[i++]);
-			i++;
-			routeVars[tmp] = tmp2;
-		}
-		cout << routeVars[0]<<"\n";
-		cout << route << "\n";
-	}
+	parseUrlVars();
 	absolutRoute = route;
 	// PROTOCOL VERSION
 	i++;
-	while (i < rawStatusLine.length())
+	while (i < rawStatusLine.size())
 		protocolVersion.push_back(rawStatusLine.at(i++));
 	if (protocolVersion != "HTTP/1.1")
 	{
@@ -199,6 +194,35 @@ bool Request::parseStatusLine(string rawStatusLine, Response &res)
 	}
 	return true;
 };
+
+void Request::parseUrlVars()
+{
+	size_t varPos = 0;
+	while (varPos < route.size() && route.at(varPos) != '?')
+		varPos++;
+	if (varPos == route.size())
+		return;
+	string str = route;
+	route.clear();
+	for (size_t i = 0; i < varPos; i++)
+		route.push_back(str.at(i));
+	varPos++;
+	string tmp;
+	while (varPos < str.size())
+	{
+		while (varPos < str.size() && str.at(varPos) != '=')
+			tmp.push_back(str.at(varPos++));
+		if (varPos == str.size())
+			return;
+		varPos++;
+		routeVars[tmp];
+		routeVars[tmp].clear();
+		while (varPos < str.size() && str.at(varPos) != '?')
+			routeVars[tmp].push_back(str.at(varPos++));
+		varPos++;
+		tmp.clear();
+	}
+}
 
 bool Request::parseHeaders(string rawHeaders)
 {
