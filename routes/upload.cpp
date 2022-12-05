@@ -8,10 +8,12 @@ static void get(Request &req, Response &res)
 
 static void post(Request &req, Response &res)
 {
+	cout << "Body: " << req.getBody() << "\n";
 	StrStrMap headers = req.getHeaders();
 	if (headers.find("content-type") == headers.end() ||
 		(headers.at("content-type") != "image/png" && headers.at("content-type") != "image/jpg"))
 	{
+		cout << "headers: " << headers.at("content-type") << "\n";
 		res.status(STATUS_451).text("content-type must be image/png or image/jpg").send();
 		return;
 	}

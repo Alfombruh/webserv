@@ -1,39 +1,121 @@
+//   console.log("hola");
+//   const input = document.querySelector("#sexo");
+//   input.addEventListener("change", () => {
+// 	const reader = new FileReader();
+//     const files = input.files;
+//     if (files) {
+// 		let _datos = {
+// 			titulo: "foo",
+// 			principal: "bar",
+// 			Id:1
+// 		  }
+//       let data = new FormData();
+//       data.append("file", files[0], files[0].name);
+// 	  console.log("data:" , data)
+// 	  console.log("filename:" , files[0].)
+//       fetch("/upload?filename=" + files[0].name, {
+//         method: "POST",
+// 		// body: JSON.stringify(data),
+//         body: "1234",
+//         headers: { "Content-type": "image/png" },
+//       })
+//         .then((response) => console.log(response))
+//         .catch((err) => console.log(err));
+//       //   axios
+//       //     .post("/upload", data, {
+//       //       headers: {
+//       //         accept: "application/json",
+//       //         "Content-Type": `image/png`,
+//       //       },
+//       //     })
+//       //     .then(function (response) {
+//       //       console.log(response);
+//       //     })
+//       //     .catch(function (error) {
+//       //       console.log(error);
+//       //     });
+//     //   console.log(files[0]);
+//     }
+//   });
 window.addEventListener("load", function () {
-  console.log("hola");
   const input = document.querySelector("#sexo");
+  function convertDataURIToBinary(dataURI) {
+    var BASE64_MARKER = ";base64,";
+    var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
+    var base64 = dataURI.substring(base64Index);
+    var raw = window.atob(base64);
+    var rawLength = raw.length;
+    var array = new Uint8Array(new ArrayBuffer(rawLength));
+
+    for (i = 0; i < rawLength; i++) {
+      array[i] = raw.charCodeAt(i);
+    }
+    return array;
+  }
   input.addEventListener("change", () => {
+    if (!window.FileReader) return; // Browser is not compatible
+
     const files = input.files;
-    if (files) {
-		let _datos = {
-			titulo: "foo",
-			principal: "bar", 
-			Id:1
-		  }
-      let data = new FormData();
-      data.append("file", files[0], files[0].name);
-      fetch("/upload", {
-        method: "POST",
-		// body: JSON.stringify(_datos),
-        body: "1234",
-        headers: { "Content-type": "image/png" },
-      })
+    if (!files | !files[0]) return;
+
+    let reader = new FileReader();
+
+    let f = input.files[0];
+
+    reader.onloadend = function () {
+      var binaryImg = convertDataURIToBinary(reader.result);
+      //   console.log("String Output: ", reader.result);
+      //   axios({
+      //     method: "post",
+      //     url: "/upload?filename=" + files[0].name,
+      //     headers: { "content-type": "image/png" },
+      //     data: {
+      //       body: "bar", // This is the body part
+      //     },
+      //   })
+      axios
+        .post("/upload?filename=" + files[0].name, {body:"hjjghklñ"}, {
+          headers: { "Content-Type": "text/plain"},
+        })
         .then((response) => console.log(response))
         .catch((err) => console.log(err));
-      //   axios
-      //     .post("/upload", data, {
-      //       headers: {
-      //         accept: "application/json",
-      //         "Content-Type": `image/png`,
-      //       },
+      //   let fetchHasAccount = {
+      //     method: "POST",
+      //     // body: JSON.stringify({"email":"hola"}),
+      //     headers: {
+      //       "Content-Type": "text/plain",
+      //       "Connection": "close",
+      //       // "accept-encoding": "gzip, deflate, br",
+      //       "Accept": "*/*",
+      //     },
+      //     body: "hola",
+      //   };
+      //   fetch("/upload", fetchHasAccount)
+      //     .then((res) => res.json())
+      //     .then((data) => {
+      //       console.log(data);
       //     })
-      //     .then(function (response) {
-      //       console.log(response);
-      //     })
-      //     .catch(function (error) {
-      //       console.log(error);
-      //     });
-      console.log(files[0]);
-    }
+      //     .catch((error) => error);
+      //   axios.post("/upload?filename=" + files[0].name, {body: "sdsfdgfhj"}, {
+      //     body: "dsasfdhk"
+      // })
+      //   fetch("/upload?filename=" + files[0].name, {
+      //     method: "POST",
+      //   })
+    };
+    reader.readAsDataURL(f);
+    // var reader = new FileReader();
+
+    // reader.onload = function (evt) {
+    //   if (evt.target.readyState != 2) return;
+    //   if (evt.target.error) {
+    //     alert("Error while reading file");
+    //     return;
+    //   }
+    //   //   input.value = evt.target.result;
+    // };
+
+    // reader.readAsText(evt.target.files[0]);
   });
 });
 // https://breakingbadapi.com/documentation

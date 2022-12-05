@@ -31,9 +31,9 @@ bool Request::readRequest(int clientSd, Response &res)
 	{
 		if (!isprint(buffer[i]) && buffer[i] != '\n')
 			continue;
-		if (statusHeader.back() == '\n' && buffer[i] == '\n')
+		if (statusHeader[statusHeader.size() - 1] == '\n' && buffer[i] == '\n')
 		{
-			statusHeader.pop_back();
+			statusHeader.substr(0, statusHeader.size() - 1);
 			i++;
 			break;
 		}
