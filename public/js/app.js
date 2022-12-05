@@ -1,42 +1,4 @@
-//   console.log("hola");
-//   const input = document.querySelector("#sexo");
-//   input.addEventListener("change", () => {
-// 	const reader = new FileReader();
-//     const files = input.files;
-//     if (files) {
-// 		let _datos = {
-// 			titulo: "foo",
-// 			principal: "bar",
-// 			Id:1
-// 		  }
-//       let data = new FormData();
-//       data.append("file", files[0], files[0].name);
-// 	  console.log("data:" , data)
-// 	  console.log("filename:" , files[0].)
-//       fetch("/upload?filename=" + files[0].name, {
-//         method: "POST",
-// 		// body: JSON.stringify(data),
-//         body: "1234",
-//         headers: { "Content-type": "image/png" },
-//       })
-//         .then((response) => console.log(response))
-//         .catch((err) => console.log(err));
-//       //   axios
-//       //     .post("/upload", data, {
-//       //       headers: {
-//       //         accept: "application/json",
-//       //         "Content-Type": `image/png`,
-//       //       },
-//       //     })
-//       //     .then(function (response) {
-//       //       console.log(response);
-//       //     })
-//       //     .catch(function (error) {
-//       //       console.log(error);
-//       //     });
-//     //   console.log(files[0]);
-//     }
-//   });
+
 window.addEventListener("load", function () {
   const input = document.querySelector("#sexo");
   function convertDataURIToBinary(dataURI) {
@@ -64,58 +26,23 @@ window.addEventListener("load", function () {
 
     reader.onloadend = function () {
       var binaryImg = convertDataURIToBinary(reader.result);
-      //   console.log("String Output: ", reader.result);
-      //   axios({
-      //     method: "post",
-      //     url: "/upload?filename=" + files[0].name,
-      //     headers: { "content-type": "image/png" },
-      //     data: {
-      //       body: "bar", // This is the body part
-      //     },
-      //   })
-      axios
-        .post("/upload?filename=" + files[0].name, {body:"hjjghklñ"}, {
-          headers: { "Content-Type": "text/plain"},
+      let fetchHasAccount = {
+        method: "POST",
+        headers: {
+          "Content-Type": "image/png",
+          Connection: "close",
+          Accept: "*/*",
+        },
+        body: binaryImg,
+      };
+      fetch("/galery?filename=" + files[0].name, fetchHasAccount)
+        .then((res) => res.json())
+        .then((data) => {
+          console.log(data);
         })
-        .then((response) => console.log(response))
-        .catch((err) => console.log(err));
-      //   let fetchHasAccount = {
-      //     method: "POST",
-      //     // body: JSON.stringify({"email":"hola"}),
-      //     headers: {
-      //       "Content-Type": "text/plain",
-      //       "Connection": "close",
-      //       // "accept-encoding": "gzip, deflate, br",
-      //       "Accept": "*/*",
-      //     },
-      //     body: "hola",
-      //   };
-      //   fetch("/upload", fetchHasAccount)
-      //     .then((res) => res.json())
-      //     .then((data) => {
-      //       console.log(data);
-      //     })
-      //     .catch((error) => error);
-      //   axios.post("/upload?filename=" + files[0].name, {body: "sdsfdgfhj"}, {
-      //     body: "dsasfdhk"
-      // })
-      //   fetch("/upload?filename=" + files[0].name, {
-      //     method: "POST",
-      //   })
+        .catch((error) => error);
     };
     reader.readAsDataURL(f);
-    // var reader = new FileReader();
-
-    // reader.onload = function (evt) {
-    //   if (evt.target.readyState != 2) return;
-    //   if (evt.target.error) {
-    //     alert("Error while reading file");
-    //     return;
-    //   }
-    //   //   input.value = evt.target.result;
-    // };
-
-    // reader.readAsText(evt.target.files[0]);
   });
 });
 // https://breakingbadapi.com/documentation

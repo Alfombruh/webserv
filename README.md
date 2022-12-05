@@ -69,7 +69,7 @@
 • You server must have default error pages if none are provided.
 • You can’t use fork for something else than CGI (like PHP, or Python, and so forth).
 • You must be able to serve a fully static website.
-• Clients must be able to upload files.
+• Clients must be able to images files.
 • You need at least GET, POST, and DELETE methods.
 • Stress tests your server. It must stay available at all cost.
 • Your server must be able to listen to multiple ports (see Configuration file).
@@ -94,7 +94,7 @@ be using regexp):
   ◦ Turn on or off directory listing.
   ◦ Set a default file to answer if the request is a directory.
   ◦ Execute CGI based on certain file extension (for example .php).
-  ◦ Make the route able to accept uploaded files and configure where they should
+  ◦ Make the route able to accept imagesed files and configure where they should
     be saved.
     ∗ Do you wonder what a [CGI][CGI] is?
     ∗ Because you won’t call the CGI directly, use the full path as PATH_INFO.

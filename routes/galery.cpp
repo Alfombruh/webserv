@@ -3,17 +3,15 @@
 static void get(Request &req, Response &res)
 {
 	(void)req;
-	res.status(STATUS_300).html("./public/html/upload.html").send();
+	res.status(STATUS_300).html("./public/html/galery.html").send();
 };
 
 static void post(Request &req, Response &res)
 {
-	cout << "Body: " << req.getBody() << "\n";
 	StrStrMap headers = req.getHeaders();
 	if (headers.find("content-type") == headers.end() ||
 		(headers.at("content-type") != "image/png" && headers.at("content-type") != "image/jpg"))
 	{
-		cout << "headers: " << headers.at("content-type") << "\n";
 		res.status(STATUS_451).text("content-type must be image/png or image/jpg").send();
 		return;
 	}
@@ -29,7 +27,7 @@ static void post(Request &req, Response &res)
 		return;
 	}
 	string filename = value;
-	filename += headers.at("content-type") == "image/png" ? ".png" : ".jpg";
+	// filename += headers.at("content-type") == "image/png" ? ".png" : ".jpg";
 	if (access(("image_galery/" + filename).c_str(), F_OK) != -1)
 	{
 		res.status(STATUS_409).text("filename: " + filename + " allready exists").send();
@@ -59,7 +57,7 @@ static void delet(Request &req, Response &res)
 	res.status(STATUS_200).text("filename: " + filename + " does not exist").send();
 };
 
-bool upload(Router &router)
+bool galery(Router &router)
 {
 	if (router.get("/", &get))
 		return true;

@@ -8,7 +8,7 @@ FILES = main 					\
 		srcs/classes/Response	\
 		srcs/classes/Router		\
 		routes/index			\
-		routes/upload			\
+		routes/galery			\
 		routes/public			\
 
 SRCS = $(addsuffix .cpp, $(FILES))

@@ -23,7 +23,7 @@ bool index(Router &router)
 {
 	if (router.use("/public", &publicFolder))
 		return true;
-	if (router.use("/upload", &upload))
+	if (router.use("/galery", &galery))
 		return true;
 	if (router.get("/", &get))
 		return true;

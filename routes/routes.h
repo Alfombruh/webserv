@@ -9,7 +9,7 @@
 class Router;
 
 bool index(Router &router);
-bool upload(Router &router);
+bool galery(Router &router);
 bool publicFolder(Router &router);
 
 #endif
