@@ -53,4 +53,10 @@
 	Ionmi:
 		image post
 		image delete
+		
+## [Version 0.2.0] (12-6-2022)
+	Ionmi:
+		Access removed 
+		C++11 methods removed  
+		webpage finished, besided CGIs 
 

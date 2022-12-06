@@ -3,7 +3,6 @@
 static void get(Request &req, Response &res)
 {
 	(void)req;
-	// res.status(STATUS_200).text("has llegado a index.get").send();
 	res.status(STATUS_300).html("./public/html/index.html").send();
 };
 
@@ -19,11 +18,20 @@ static void delet(Request &req, Response &res)
 	res.status(STATUS_200).text("has llegado a index.delete").send();
 };
 
+static void getFavicon(Request &req, Response &res)
+{
+	(void)req;
+	res.status(STATUS_300).img("./public/images/42-Urduliz-Logo-web.png").send();
+};
+
 bool index(Router &router)
 {
+
 	if (router.use("/public", &publicFolder))
 		return true;
-	if (router.use("/upload", &upload))
+	if (router.use("/galery", &galery))
+		return true;
+	if (router.get("/favicon.ico", &getFavicon))
 		return true;
 	if (router.use("/cgi-bin", &cgi))
 		return true;

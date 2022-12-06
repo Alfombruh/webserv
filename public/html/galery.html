@@ -26,9 +26,10 @@
 		<div id="firstCover">
 			<div class="wrapper">
 				<div class="custom-input-file col-md-6 col-sm-6 col-xs-6">
-					<input type="file" name="sexo" id="sexo" accept="image/png, image/jpeg" class="input-file">
+					<input type="file" name="image-post" id="image-post" accept="image/png, image/jpeg" class="input-file">
 					Subir imagen
-					</div>
+				</div>
+				<p id="post-input-feedback" style="margin-top: 5px; font-size: 12px"></p>             
 			</div>
 		</div>
 		<div id="quotes">
@@ -41,12 +42,14 @@
 				<!-- "Yeah, B****. Magnets!" -->
 			</div>
 		</div>
-		<div id="secondCover">
+		<div id="secondCover">+
             <div class="wrapper">
-                <div id="Titles">
-                    <h1>FAVORITES</h1>
-                </div>
-                <div id="favoriteCharacters" class="inportCharacterDiv">   
+				<div id="Titles" style="margin-bottom: 25px;">
+                    <h2>Borrar imagen</h2>
+             	</div>
+                <input type="text" id="delete-input" placeholder="example.png">
+                <button onclick="deleteGalery()">Borrar</button>     
+				<p id="delete-input-feedback" style="margin-top: 5px; font-size: 12px"></p>             
                 </div>
             </div>
         </div>
@@ -56,7 +59,7 @@
 			<h3>Menu</h3>
 			<ul id="webPages">
 				<li><a href="/">Home</a></l1>
-				<li><a href="/upload">Upload</a></li>
+				<li><a href="/images">images</a></li>
 				<li><a target="_blank" href="https://www.42urduliz.com">42 Uduliz</a></li>
 				<li><a href="https://www.flaticon.es/iconos-gratis/instagram" title="iconos">Iconos creados por Freepik
 						- Flaticon</a></li>
