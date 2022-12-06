@@ -1,5 +1,6 @@
 #include "routes.h"
 
+
 static void get(Request &req, Response &res)
 {
 	(void)req;
@@ -27,8 +28,8 @@ static void post(Request &req, Response &res)
 		return;
 	}
 	string filename = value;
-	// filename += headers.at("content-type") == "image/png" ? ".png" : ".jpg";
-	if (access(("image_galery/" + filename).c_str(), F_OK) != -1)
+	std::ifstream found(("image_galery/" + filename).c_str());
+	if (found.good())
 	{
 		res.status(STATUS_409).text("filename: " + filename + " allready exists").send();
 		return;
@@ -48,13 +49,14 @@ static void delet(Request &req, Response &res)
 		res.status(STATUS_206).text("specify a filename: url?filename=exaple-filename.png").send();
 		return;
 	}
-	if (access(("image_galery/" + filename).c_str(), F_OK) != -1)
+	std::ifstream found(("image_galery/" + filename).c_str());
+	if (found.good())
 	{
 		remove(("image_galery/" + filename).c_str());
 		res.status(STATUS_200).text("filename: " + filename + " deleted").send();
 		return;
 	}
-	res.status(STATUS_200).text("filename: " + filename + " does not exist").send();
+	res.status(STATUS_404).text("filename: " + filename + " does not exist").send();
 };
 
 bool galery(Router &router)
