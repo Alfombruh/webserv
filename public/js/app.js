@@ -73,29 +73,28 @@ window.addEventListener("load", function () {
       //       body: "bar", // This is the body part
       //     },
       //   })
-      axios
-        .post("/upload?filename=" + files[0].name, {body:"hjjghklñ"}, {
-          headers: { "Content-Type": "text/plain"},
-        })
-        .then((response) => console.log(response))
-        .catch((err) => console.log(err));
-      //   let fetchHasAccount = {
-      //     method: "POST",
-      //     // body: JSON.stringify({"email":"hola"}),
-      //     headers: {
-      //       "Content-Type": "text/plain",
-      //       "Connection": "close",
-      //       // "accept-encoding": "gzip, deflate, br",
-      //       "Accept": "*/*",
-      //     },
-      //     body: "hola",
-      //   };
-      //   fetch("/upload", fetchHasAccount)
-      //     .then((res) => res.json())
-      //     .then((data) => {
-      //       console.log(data);
-      //     })
-      //     .catch((error) => error);
+      // axios
+      //   .post("/upload?filename=" + files[0].name, "dfasdf", {
+      //     headers: { "Content-Type": "text/plain"},
+      //   })
+      //   .then((response) => console.log(response))
+      //   .catch((err) => console.log(err));
+        let fetchHasAccount = {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain",
+            "Connection": "close",
+            // "accept-encoding": "gzip, deflate, br",
+            "Accept": "*/*",
+          },
+          body: "hola",
+        };
+        fetch("/upload", fetchHasAccount)
+          .then((res) => res.json())
+          .then((data) => {
+            console.log(data);
+          })
+          .catch((error) => error);
       //   axios.post("/upload?filename=" + files[0].name, {body: "sdsfdgfhj"}, {
       //     body: "dsasfdhk"
       // })

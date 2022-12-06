@@ -1,6 +1,6 @@
 NAME = webserv
 CC = clang++ 
-CFLAGS = -Werror -Wall -Wextra -g3 -fsanitize=address -std=c++98 
+CFLAGS = -Werror -Wall -Wextra -g3 -fsanitize=address
 FILES = main 					\
 		srcs/errors				\
 		srcs/classes/Server		\
@@ -8,6 +8,7 @@ FILES = main 					\
 		srcs/classes/Response	\
 		srcs/classes/Router		\
 		routes/index			\
+		routes/cgi				\
 		routes/upload			\
 		routes/public			\
 

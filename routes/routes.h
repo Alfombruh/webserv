@@ -11,5 +11,6 @@ class Router;
 bool index(Router &router);
 bool upload(Router &router);
 bool publicFolder(Router &router);
+bool cgi(Router &router);
 
 #endif
