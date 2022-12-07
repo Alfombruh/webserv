@@ -36,7 +36,7 @@ class Request
 	bool parseStatusLine(string rawStatusLine, Response &res);
 	void parseUrlVars();
 	bool parseHeaders(string rawHeaders);
-	void printReqAtributes();
+	char *urlDecode(const char *str);
 
 public:
 	Request(int clientId);
@@ -44,6 +44,7 @@ public:
 
 	void clearReq();
 
+	void printReqAtributes();
 	// PARSING
 	bool readRequest(int clientSd, Response &res);
 	// GETTERS - SETTERS
@@ -51,7 +52,7 @@ public:
 	size_t getClientId() const;
 	const string &getRoute() const;
 	const string &getAbsoluteRoute() const;
-	const char *getUrlVar(const string key) const;
+	const string getUrlVar(const string key) const;
 	const StrStrMap &getHeaders() const;
 	const string &getBody() const;
 	const METHOD &getMethod() const;

@@ -32,10 +32,10 @@
 }
 
 .custom-input-file {
-	background-color: white;
-	color: black;
-	border-style: solid;
-	border: 3px solid black;
+	background-color: white !important;
+	color: black !important;
+	border-style: solid !important;
+	border: 3px solid black !important;
 	cursor: pointer;
 	font-size: 18px;
 	font-weight: bold;
@@ -49,8 +49,8 @@
 }
 
 .custom-input-file:hover {
-	background-color: black;
-	color: white;
+	background-color: black !important;
+	color: white !important;
 }
 
 .custom-input-file .input-file {
@@ -103,6 +103,17 @@
 	margin-top: 80px;
 	text-align: center;
 	min-height: 400px;
+}
+
+#user-session-div {
+	padding: 5rem;
+}
+
+#user-session-div input {
+	margin: 1rem;
+	border: none;
+	border-bottom: solid black;
+	width: 20rem;
 }
 
 #spoiler {
@@ -242,6 +253,13 @@ input {
 	border: none;
 	border-bottom: solid black;
 	width: 10rem;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+	outline-width: 0;
 }
 
 button {

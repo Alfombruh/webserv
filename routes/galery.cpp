@@ -10,14 +10,13 @@ static void get(Request &req, Response &res)
 static void post(Request &req, Response &res)
 {
 	string contentType = req.getHeader("content-type");
-	const string null = NULL;
-	if (contentType == null || (contentType != "image/png" && contentType != "image/jpg"))
+	if (contentType.empty()|| (contentType != "image/png" && contentType != "image/jpg"))
 	{
 		res.status(STATUS_451).text("content-type must be image/png or image/jpg").send();
 		return;
 	}
-	const char *value = req.getUrlVar("filename");
-	if (value == NULL)
+	string value = req.getUrlVar("filename");
+	if (value.empty())
 	{
 		res.status(STATUS_206).text("specify a filename: url?filename=exaple-filename").send();
 		return;
@@ -42,9 +41,8 @@ static void post(Request &req, Response &res)
 
 static void delet(Request &req, Response &res)
 {
-	const char *value = req.getUrlVar("filename");
-	string filename = value ? value : "";
-	if (value == NULL || (filename.find(".png") == string::npos && filename.find(".jpg") == string::npos))
+	string filename = req.getUrlVar("filename");
+	if (filename.empty() || (filename.find(".png") == string::npos && filename.find(".jpg") == string::npos))
 	{
 		res.status(STATUS_206).text("specify a filename: url?filename=exaple-filename.png").send();
 		return;

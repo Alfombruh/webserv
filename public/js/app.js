@@ -14,42 +14,154 @@ window.addEventListener("load", function () {
     return array;
   }
   const input = document.querySelector("#image-post");
-  input.addEventListener("change", () => {
-    if (!window.FileReader) return; // Browser is not compatible
+  if (input) {
+    input.addEventListener("change", () => {
+      if (!window.FileReader) return; // Browser is not compatible
 
-    const feedback = document.querySelector("#post-input-feedback");
-    const files = input.files;
-    if (!files | !files[0]) return;
+      const feedback = document.querySelector("#post-input-feedback");
+      const files = input.files;
+      if (!files | !files[0]) return;
 
-    let reader = new FileReader();
+      let reader = new FileReader();
 
-    let f = input.files[0];
+      let f = input.files[0];
 
-    reader.onloadend = function () {
-      var binaryImg = convertDataURIToBinary(reader.result);
-      let fetchPostGalery = {
-        method: "POST",
-        headers: {
-          "Content-Type": "image/png",
-          Connection: "close",
-          Accept: "*/*",
-        },
-        body: binaryImg,
+      reader.onloadend = function () {
+        var binaryImg = convertDataURIToBinary(reader.result);
+        let fetchPostGalery = {
+          method: "POST",
+          headers: {
+            "Content-Type": "image/png",
+            Connection: "close",
+            Accept: "*/*",
+          },
+          body: binaryImg,
+        };
+        fetch("/galery?filename=" + files[0].name, fetchPostGalery)
+          .then((res) => {
+            feedback.innerHTML =
+              res.status === 201
+                ? "Imagen " + files[0].name + " subida"
+                : res.status === 409
+                ? "Imagen " + files[0].name + " ya existe"
+                : "Error en la llamada a api";
+          })
+          .catch((error) => error);
       };
-      fetch("/galery?filename=" + files[0].name, fetchPostGalery)
-        .then((res) => {
-          feedback.innerHTML =
-            res.status === 201
-              ? "Imagen " + files[0].name + " subida"
-              : res.status === 409
-              ? "Imagen " + files[0].name + " ya existe"
-              : "Error en la llamada a api";
-        })
-        .catch((error) => error);
+      reader.readAsDataURL(f);
+    });
+  }
+
+  function getCookie(cookieName) {
+    let cookie = {};
+    document.cookie.split(";").forEach(function (el) {
+      let [key, value] = el.split("=");
+      cookie[key.trim()] = value;
+    });
+    return cookie[cookieName];
+  }
+  function deleteCookie(name) {
+    document.cookie =
+      name + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+  }
+  const cookie = getCookie("42webserv_session");
+  const sessionDiv = document.querySelector("#user-session-div");
+  if (sessionDiv && cookie == null) {
+    sessionDiv.innerHTML =
+      '<label for="name">Nombre</label><br>' +
+      '<input type="text" id="login-name" name="name" maxlength="20" placeholder="John Doe"><br>' +
+      '<label for="about">Sobre tí</label><br>' +
+      '<input type="text" id="login-about" name="about" maxlength="50" placeholder="Me gustan las albondigas"><br>' +
+      '<input onClick="logIn()"class="custom-input-file" type="submit" value="Iniciar sesion">' +
+      '<p id="login-input-feedback" style="margin-top: 5px; font-size: 12px; color: red;"></p>';
+  } else if (sessionDiv && cookie) {
+    let fetchLogin = {
+      method: "GET",
+      headers: {
+        Connection: "close",
+        Accept: "*/*",
+      },
     };
-    reader.readAsDataURL(f);
-  });
+    fetch("/login", fetchLogin)
+      .then((res) => (res.status === 300 ? res.json() : location.reload()))
+      .then((data) => {
+        if (data) {
+          sessionDiv.innerHTML =
+            "<h1>¡Hola " +
+            data.name +
+            "!</h1><br>" +
+            "<h3>" +
+            data.about +
+            "</h3>" +
+            '<input onClick="logOut()"class="custom-input-file" type="submit" value="Cerrar sesion">';
+        } else deleteCookie("42webserv_session");
+      })
+      .catch((error) => console.log(error));
+  }
 });
+
+function replaceAll(string, search, replace) {
+  return string.split(search).join(replace);
+}
+function makeid(length) {
+  var result = "";
+  var characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  var charactersLength = characters.length;
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+//LOG OUT
+const logOut = () => {
+  console.log("logout");
+  let fetchLogin = {
+    method: "DELETE",
+    headers: {
+      Connection: "close",
+      Accept: "*/*",
+    },
+  };
+  fetch("/login", fetchLogin)
+    .then((res) => {
+      if (res.status === 200) location.reload();
+      else console.log("bad request");
+    })
+    .catch((error) => console.log(error));
+};
+
+//LOG IN
+const logIn = () => {
+  const nameInput = document.querySelector("#login-name").value;
+  const aboutInput = document.querySelector("#login-about").value;
+  const feedback = document.querySelector("#login-input-feedback");
+  if (nameInput === "" || aboutInput === "") {
+    feedback.innerHTML = "rellena los campos";
+    return;
+  }
+  feedback.innerHTML = "";
+  let fetchLogin = {
+    method: "POST",
+    headers: {
+      "Content-Type": "text/plain",
+      Connection: "close",
+      Accept: "*/*",
+    },
+    body: makeid(32),
+  };
+  //   replaceAll(nameInput, " ", "+");
+  //   replaceAll(aboutInput, " ", "+");
+  const route = "/login?name=" + nameInput + "&about=" + aboutInput;
+  console.log(route);
+  fetch("/login?name=" + nameInput + "&about=" + aboutInput, fetchLogin)
+    .then((res) => {
+      if (res.status === 201) location.reload();
+      else console.log("bad request");
+    })
+    .catch((error) => error);
+};
 
 //DELETE GALERY
 function deleteGalery() {
@@ -58,7 +170,7 @@ function deleteGalery() {
   if (!input.endsWith(".jpg") && !input.endsWith(".png")) {
     feedback.innerHTML =
       "el nomre del archivo no es valido: example.png | example.jpg";
-	  return ;
+    return;
   }
   let fetchDeleteGalery = {
     method: "DELETE",
@@ -68,7 +180,6 @@ function deleteGalery() {
       Accept: "text/plain",
     },
   };
-  console.log(input);
 
   const url = "/galery?filename=" + input;
   fetch(url, fetchDeleteGalery)
@@ -80,4 +191,3 @@ function deleteGalery() {
     })
     .catch((error) => error);
 }
-

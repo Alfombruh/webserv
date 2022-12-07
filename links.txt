@@ -1,0 +1,2 @@
+https://stackoverflow.com/questions/15676774/best-practice-session-handling-timeout
+para el ifstream de sessions https://stackoverflow.com/questions/20739453/using-getline-with-file-input-in-c

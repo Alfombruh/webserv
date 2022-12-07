@@ -26,10 +26,11 @@ static void getFavicon(Request &req, Response &res)
 
 bool index(Router &router)
 {
-
 	if (router.use("/public", &publicFolder))
 		return true;
 	if (router.use("/galery", &galery))
+		return true;
+	if (router.use("/login", &login))
 		return true;
 	if (router.get("/favicon.ico", &getFavicon))
 		return true;

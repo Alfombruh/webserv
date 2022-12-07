@@ -75,8 +75,8 @@ bool Request::parseRequest(string statusHeader, Response &res)
 
 const string Request::getHeader(const string header) const
 {
-	if (headers.find(header) != headers.end())
-		return NULL;
+	if (headers.find(header) == headers.end())
+		return "";
 	return headers.at(header);
 };
 
@@ -84,11 +84,11 @@ size_t Request::getClientId() const { return clientId; };
 
 const string &Request::getRoute() const { return route; };
 const string &Request::getAbsoluteRoute() const { return absolutRoute; };
-const char *Request::getUrlVar(const string key) const
+const string Request::getUrlVar(const string key) const
 {
 	if (routeVars.find(key) == routeVars.end())
 		return NULL;
-	return routeVars.at(key).c_str();
+	return routeVars.at(key);
 };
 const StrStrMap &Request::getHeaders() const { return headers; };
 const string &Request::getBody() const { return body; };
@@ -155,7 +155,8 @@ void Request::printReqAtributes()
 	for (StrStrMap::iterator it = headers.begin(); it != headers.end(); ++it)
 		cout << it->first << ":" << it->second << "$\n";
 	// BODY
-	cout << "\nBODY:\n" << body << "$\n";
+	cout << "\nBODY:\n"
+		 << body << "$\n";
 };
 
 bool Request::parseStatusLine(string rawStatusLine, Response &res)
@@ -194,10 +195,46 @@ bool Request::parseStatusLine(string rawStatusLine, Response &res)
 	}
 	return true;
 };
+char *Request::urlDecode(const char *str)
+{
+	// int d = 0; /* whether or not the string is decoded */
+	// char *dStr = malloc(strlen(str) + 1);
+	// char eStr[] = "00"; /* for a hex code */
+	// strcpy(dStr, str);
+	// while (!d)
+	// {
+	// 	d = 1;
+	// 	int i; /* the counter for the string */
+	// 	for (i = 0; i < strlen(dStr); ++i)
+	// 	{
+	// 		if (dStr[i] == '%')
+	// 		{
+	// 			if (dStr[i + 1] == 0)
+	// 				return dStr;
+	// 			if (isxdigit(dStr[i + 1]) && isxdigit(dStr[i + 2]))
+	// 			{
+	// 				d = 0;
+	// 				/* combine the next to numbers into one */
+	// 				eStr[0] = dStr[i + 1];
+	// 				eStr[1] = dStr[i + 2];
+	// 				/* convert it to decimal */
+	// 				long int x = strtol(eStr, NULL, 16);
+	// 				/* remove the hex */
+	// 				memmove(&dStr[i + 1], &dStr[i + 3], strlen(&dStr[i + 3]) + 1);
+	// 				dStr[i] = x;
+	// 			}
+	// 		}
+	// 	}
+	// }
+	// return dStr;
+	(void)str;
+	return NULL;
+};
 
 void Request::parseUrlVars()
 {
 	size_t varPos = 0;
+
 	while (varPos < route.size() && route.at(varPos) != '?')
 		varPos++;
 	if (varPos == route.size())
@@ -217,8 +254,8 @@ void Request::parseUrlVars()
 		varPos++;
 		routeVars[tmp];
 		routeVars[tmp].clear();
-		while (varPos < str.size() && str.at(varPos) != '?')
-			routeVars[tmp].push_back(str.at(varPos++));
+		while (varPos < str.size() && str.at(varPos) != '&')
+			routeVars[tmp].push_back(str.at(varPos) == '+' ? ' ' : str.at(varPos++));
 		varPos++;
 		tmp.clear();
 	}

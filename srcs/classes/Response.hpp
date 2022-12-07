@@ -41,10 +41,13 @@ public:
 	// RESPONSES
 	Response &status(const string status);
 	Response &text(const string &msg);
+	Response &json(const string &json);
 	Response &html(const string filename);
 	Response &img(const string filename);
 	Response &css(const string filename);
 	Response &js(const string filename);
+	Response &cookie(const string &hash);
+	Response &expireCookie();
 	void send();
 };
 

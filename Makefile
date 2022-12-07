@@ -8,6 +8,7 @@ FILES = main 					\
 		srcs/classes/Response	\
 		srcs/classes/Router		\
 		routes/index			\
+		routes/login			\
 		routes/galery			\
 		routes/public			\
 

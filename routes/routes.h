@@ -9,6 +9,7 @@
 class Router;
 
 bool index(Router &router);
+bool login(Router &router);
 bool galery(Router &router);
 bool publicFolder(Router &router);
 
