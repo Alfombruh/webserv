@@ -31,6 +31,9 @@ $(NAME): $(OBJS) $(INCLUDES)
 run: $(NAME)
 	./webserv config/default.conf
 
+test:
+	./testers/tester http://localhost:8080
+
 clean: 
 	$(RM) *.dSYM
 	$(RM) *.DS_Store

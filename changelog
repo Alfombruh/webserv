@@ -71,4 +71,5 @@
 ## [Version 0.3.2] (12-7-2022)
 	Ionmi:
 		sessiones y cookies
+	Readme && testers && testers files && fixed segfault in POST
 

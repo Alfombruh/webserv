@@ -1,2 +1,17 @@
 https://stackoverflow.com/questions/15676774/best-practice-session-handling-timeout
+
 para el ifstream de sessions https://stackoverflow.com/questions/20739453/using-getline-with-file-input-in-c
+
+
+"Transfer-Enconding: chunked"
+{
+    https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
+
+    https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#transfer-encoding-response-header
+
+    https://www.rfc-editor.org/rfc/rfc9112#section-7.1
+
+    https://www.rfc-editor.org/rfc/rfc9112#section-6-1
+
+    https://stackoverflow.com/questions/5142649/how-to-send-http-reply-using-chunked-encoding
+}

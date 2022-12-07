@@ -87,7 +87,7 @@ const string &Request::getAbsoluteRoute() const { return absolutRoute; };
 const string Request::getUrlVar(const string key) const
 {
 	if (routeVars.find(key) == routeVars.end())
-		return NULL;
+		return "";
 	return routeVars.at(key);
 };
 const StrStrMap &Request::getHeaders() const { return headers; };
