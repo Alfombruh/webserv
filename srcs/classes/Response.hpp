@@ -27,6 +27,7 @@ class Response
 	string body;
 
 	string readFile(const string filename);
+
 public:
 	Response(int clientId);
 	~Response();
@@ -41,6 +42,7 @@ public:
 	// RESPONSES
 	Response &status(const string status);
 	Response &text(const string &msg);
+	Response &redirect(string path);
 	Response &text_python(const string filename, char **env);
 	Response &json(const string &json);
 	Response &html(const string filename);

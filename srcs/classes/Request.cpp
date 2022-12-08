@@ -1,7 +1,7 @@
 #include "webserv.h"
 #include "Request.hpp"
 
-Request::Request(int clientId, sockaddr_in client_addr) : clientId((size_t)clientId), client_addr(client_addr){}
+Request::Request(int clientId, sockaddr_in client_addr) : clientId((size_t)clientId), client_addr(client_addr) {}
 
 Request::~Request() {}
 
@@ -14,15 +14,46 @@ void Request::clearReq()
 }
 
 /* raw request tiene caracteres no printeables */
+bool Request::readChunkedRequest(int clientSd, Response &res, string &firstChunk)
+{
+	size_t i;
+	ssize_t ret;
+	char buffer[1024];
+	string request = firstChunk;
+
+	res.status(STATUS_100).send();
+	while (true)
+	{
+		memset(buffer, 0, 1024);
+		if ((ret = read(clientSd, buffer, 1024)) == -1 || ret == 0)
+			return false;
+		if (ret == 0)
+			break;
+		for (i = 0; i < (size_t)ret; i++)
+		{
+			if (request[request.size() - 4] == '0' && request[request.size() - 3] == '\r' &&
+				request[request.size() - 2] == '\n' && request[request.size() - 1] == '\r' &&
+				buffer[i] == '\n')
+				return parseChunkedRequest(request.substr(0, request.size() - 4), res);
+			request.push_back(buffer[i]);
+			if (std::isxdigit(request[request.size() - 2]) == 1 &&
+				request[request.size() - 1] == '\r' && buffer[i] == '\n')
+				res.status(STATUS_100).send();
+		}
+	}
+	return true;
+};
+
 bool Request::readRequest(int clientSd, Response &res)
 {
 	ssize_t ret;
-	char buffer[400000];
+	char buffer[1024];
+	memset(buffer, 0, 1024);
 	string statusHeader;
 	size_t i;
 
 	// STATUS LINE AND HEADERS PARSING
-	if ((ret = read(clientSd, buffer, 400000)) == -1 || ret == 0)
+	if ((ret = read(clientSd, buffer, 1024)) == -1 || ret == 0)
 	{
 		res.status(STATUS_400).send();
 		return false;
@@ -39,29 +70,54 @@ bool Request::readRequest(int clientSd, Response &res)
 		}
 		statusHeader.push_back(buffer[i]);
 	}
+	if (statusHeader.find("chunked") != string::npos)
+		return readChunkedRequest(clientSd, res, statusHeader);
 	while (i < (size_t)ret)
 		body.push_back(buffer[i++]);
 	if (parseRequest(statusHeader, res) == FAILED)
 		return false;
 
 	// BODY PARSING
-	if (ret != 400000)
+	if (ret != 1024)
 		return true;
 	while (true)
 	{
-		if ((ret = read(clientSd, buffer, 400000)) == -1 || ret == 0)
+		memset(buffer, 0, 1024);
+		if ((ret = read(clientSd, buffer, 1024)) == -1 || ret == 0)
 			return false;
 		if (ret == 0)
 			break;
 		body.append(buffer, ret);
-		if (ret < 400000)
+		if (ret < 1024)
 			break;
 	}
 	return true;
 }
 
+bool Request::parseChunkedRequest(string rawRequest, Response &res)
+{
+	size_t i;
+	string statusHeader;
+	for (i = 0; i < rawRequest.size(); i++)
+	{
+		if (!isprint(rawRequest[i]) && rawRequest[i] != '\n')
+			continue;
+		if (statusHeader[statusHeader.size() - 1] == '\n' && rawRequest[i] == '\n')
+		{
+			statusHeader.substr(0, statusHeader.size() - 1);
+			i++;
+			break;
+		}
+		statusHeader.push_back(rawRequest[i]);
+	}
+	while (i < rawRequest.size())
+		body.push_back(rawRequest[i++]);
+	return parseRequest(statusHeader, res);
+};
+
 bool Request::parseRequest(string statusHeader, Response &res)
 {
+	// cout << statusHeader << "\n";
 	size_t endStatusLine = statusHeader.find("\n");
 
 	// STATUS LINE
@@ -70,6 +126,95 @@ bool Request::parseRequest(string statusHeader, Response &res)
 	// HEADERS
 	if (parseHeaders(statusHeader.substr(endStatusLine + 1)) == FAILED)
 		return false;
+	// printReqAtributes();
+	return true;
+};
+
+bool Request::parseStatusLine(string rawStatusLine, Response &res)
+{
+	size_t i = 0;
+	string method;
+
+	// METHOD
+	while (rawStatusLine.at(i) != ' ' && i < rawStatusLine.size())
+		method.push_back(rawStatusLine.at(i++));
+	if (method == "GET")
+		this->method = GET;
+	else if (method == "POST")
+		this->method = POST;
+	else if (method == "DELETE")
+		this->method = DELETE;
+	else
+	{
+		res.status(STATUS_405).send();
+		return false;
+	}
+	// ROUTE
+	i++;
+	while (rawStatusLine.at(i) != ' ' && i < rawStatusLine.size())
+		route.push_back(rawStatusLine.at(i++));
+	parseUrlVars();
+	absolutRoute = route;
+	// PROTOCOL VERSION
+	i++;
+	while (i < rawStatusLine.size())
+		protocolVersion.push_back(rawStatusLine.at(i++));
+	if (protocolVersion != "HTTP/1.1")
+	{
+		res.status(STATUS_505).send();
+		return false;
+	}
+	return true;
+};
+
+void Request::parseUrlVars()
+{
+	size_t varPos = 0;
+
+	while (varPos < route.size() && route.at(varPos) != '?')
+		varPos++;
+	if (varPos == route.size())
+		return;
+	string str = route;
+	route.clear();
+	for (size_t i = 0; i < varPos; i++)
+		route.push_back(str.at(i));
+	varPos++;
+	string tmp;
+	while (varPos < str.size())
+	{
+		while (varPos < str.size() && str.at(varPos) != '=')
+			tmp.push_back(str.at(varPos++));
+		if (varPos == str.size())
+			return;
+		varPos++;
+		routeVars[tmp];
+		routeVars[tmp].clear();
+		while (varPos < str.size() && str.at(varPos) != '&')
+			routeVars[tmp].push_back(str.at(varPos) == '+' ? ' ' : str.at(varPos++));
+		varPos++;
+		tmp.clear();
+	}
+}
+
+bool Request::parseHeaders(string rawHeaders)
+{
+	size_t i = 0;
+	size_t length = rawHeaders.length();
+	string key;
+	string value;
+	while (i < length)
+	{
+		while (i < length && rawHeaders[i] != ':')
+			key.push_back(tolower(rawHeaders[i++]));
+		i += 2;
+		while (i < length && rawHeaders[i] != '\n')
+			value.push_back(rawHeaders[i++]);
+		i++;
+		headers.insert(make_pair(key, value));
+		key.clear();
+		value.clear();
+	}
 	return true;
 };
 
@@ -147,7 +292,7 @@ void Request::printReqAtributes()
 {
 	// STATUS LINE
 	cout << "STATUS LINE:\n";
-	cout << "method:" << method << "$\n";
+	cout << "method:" << getMethodStr() << "$\n";
 	cout << "route:" << route << "$\n";
 	cout << "absolutRoute:" << absolutRoute << "$\n";
 	cout << "protocol version:" << protocolVersion << "$\n";
@@ -161,54 +306,17 @@ void Request::printReqAtributes()
 	// BODY
 	cout << "\nBODY:\n"
 		 << body << "$\n";
-	cout << "\nBODY:\n" << body << "$\n";
 
-	cout << "SERVER_PROTOCOL: " << this->env.SERVER_PROTOCOL << "$\n";
-	cout << "REQUEST_METHOD:" << this->env.REQUEST_METHOD << "$\n";
-	cout << "PATH_INFO: " << this->env.PATH_INFO << "$\n";
-	cout << "PATH_TRANSLATED: " << this->env.PATH_TRANSLATED << "$\n";
-	cout << "REMOTE_ADDR: " << this->env.REMOTE_ADDR << "$\n";
-	cout << "REMOTE_PORT: " << this->env.REMOTE_PORT << "$\n";
-	cout << "REMOTE_ADDR: " << this->env.SERVER_NAME<< "$\n";
-	cout << "REMOTE_PORT: " << this->env.SERVER_PORT << "$\n";
+	// cout << "SERVER_PROTOCOL:" << this->env.SERVER_PROTOCOL << "$\n";
+	// cout << "REQUEST_METHOD:" << this->env.REQUEST_METHOD << "$\n";
+	// cout << "PATH_INFO:" << this->env.PATH_INFO << "$\n";
+	// cout << "PATH_TRANSLATED:" << this->env.PATH_TRANSLATED << "$\n";
+	// cout << "REMOTE_ADDR:" << this->env.REMOTE_ADDR << "$\n";
+	// cout << "REMOTE_PORT:" << this->env.REMOTE_PORT << "$\n";
+	// cout << "REMOTE_ADDR:" << this->env.SERVER_NAME << "$\n";
+	// cout << "REMOTE_PORT:" << this->env.SERVER_PORT << "$\n";
 };
 
-bool Request::parseStatusLine(string rawStatusLine, Response &res)
-{
-	size_t i = 0;
-	string method;
-
-	// METHOD
-	while (rawStatusLine.at(i) != ' ' && i < rawStatusLine.size())
-		method.push_back(rawStatusLine.at(i++));
-	if (method == "GET")
-		this->method = GET;
-	else if (method == "POST")
-		this->method = POST;
-	else if (method == "DELETE")
-		this->method = DELETE;
-	else
-	{
-		res.status(STATUS_405).send();
-		return false;
-	}
-	// ROUTE
-	i++;
-	while (rawStatusLine.at(i) != ' ' && i < rawStatusLine.size())
-		route.push_back(rawStatusLine.at(i++));
-	parseUrlVars();
-	absolutRoute = route;
-	// PROTOCOL VERSION
-	i++;
-	while (i < rawStatusLine.size())
-		protocolVersion.push_back(rawStatusLine.at(i++));
-	if (protocolVersion != "HTTP/1.1")
-	{
-		res.status(STATUS_505).send();
-		return false;
-	}
-	return true;
-};
 char *Request::urlDecode(const char *str)
 {
 	// int d = 0; /* whether or not the string is decoded */
@@ -245,53 +353,3 @@ char *Request::urlDecode(const char *str)
 	return NULL;
 };
 
-void Request::parseUrlVars()
-{
-	size_t varPos = 0;
-
-	while (varPos < route.size() && route.at(varPos) != '?')
-		varPos++;
-	if (varPos == route.size())
-		return;
-	string str = route;
-	route.clear();
-	for (size_t i = 0; i < varPos; i++)
-		route.push_back(str.at(i));
-	varPos++;
-	string tmp;
-	while (varPos < str.size())
-	{
-		while (varPos < str.size() && str.at(varPos) != '=')
-			tmp.push_back(str.at(varPos++));
-		if (varPos == str.size())
-			return;
-		varPos++;
-		routeVars[tmp];
-		routeVars[tmp].clear();
-		while (varPos < str.size() && str.at(varPos) != '&')
-			routeVars[tmp].push_back(str.at(varPos) == '+' ? ' ' : str.at(varPos++));
-		varPos++;
-		tmp.clear();
-	}
-}
-
-bool Request::parseHeaders(string rawHeaders)
-{
-	size_t i = 0;
-	size_t length = rawHeaders.length();
-	string key;
-	string value;
-	while (i < length)
-	{
-		while (i < length && rawHeaders[i] != ':')
-			key.push_back(tolower(rawHeaders[i++]));
-		i += 2;
-		while (i < length && rawHeaders[i] != '\n')
-			value.push_back(rawHeaders[i++]);
-		i++;
-		headers.insert(make_pair(key, value));
-		key.clear();
-		value.clear();
-	}
-	return true;
-};

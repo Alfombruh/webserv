@@ -17,7 +17,7 @@ Response::~Response() {}
 string Response::stringifyResponse()
 {
 	if (stringStatus.empty())
-		return NULL;
+		stringStatus = STATUS_200;
 	// STATUS LINE
 	string response = (protocolVersion + " " + stringStatus + "\n");
 	// HEADERS
@@ -51,12 +51,17 @@ Response &Response::status(const string status)
 Response &Response::text(const string &msg)
 {
 	headers.push_back("Content-Type: text/plain");
-	headers.push_back("Connection: close");
 	body = msg;
 	return *this;
 };
 
-Response &Response::text_python(const string filename, char**env)
+Response &Response::redirect(string path)
+{
+	headers.push_back("Location: " + path);
+	return *this;
+};
+
+Response &Response::text_python(const string filename, char **env)
 {
 	pid_t pid;
 	pid = fork();
@@ -66,19 +71,20 @@ Response &Response::text_python(const string filename, char**env)
 	if (pid == 0)
 	{
 		int fd = open("t.txt", O_CREAT | O_TRUNC | O_RDWR, 0644);
-		if (fd < 0) {
+		if (fd < 0)
+		{
 			perror("open()");
 			exit(EXIT_FAILURE);
 		}
 		char *cstr = new char[filename.length() + 2];
 		cstr[0] = '.';
 		strcpy(cstr + 1, filename.c_str());
-		char *pythonArgs[]={cstr,NULL};
+		char *pythonArgs[] = {cstr, NULL};
 		cout << "pythonArgs: " << pythonArgs[0] << "\n";
 		close(STDOUT_FILENO);
 		dup2(fd, STDOUT_FILENO);
-		execve(pythonArgs[0],pythonArgs, env);
-		printf("execl returned! errno is [%d]\n",errno);
+		execve(pythonArgs[0], pythonArgs, env);
+		printf("execl returned! errno is [%d]\n", errno);
 		perror("The error message is :");
 	}
 	else
@@ -94,7 +100,6 @@ Response &Response::text_python(const string filename, char**env)
 Response &Response::json(const string &json)
 {
 	headers.push_back("Content-Type: application/json");
-	headers.push_back("Connection: close");
 	body = json;
 	return *this;
 };
@@ -112,7 +117,6 @@ Response &Response::html(const string filename)
 	body = readFile(filename);
 	// cout << body << "\n";
 	headers.push_back("Content-Type: text/html");
-	headers.push_back("Connection: close");
 	return *this;
 };
 
@@ -120,7 +124,6 @@ Response &Response::img(const string filename)
 {
 	body = readFile(filename);
 	headers.push_back("Content-Type: image/png");
-	headers.push_back("Connection: close");
 	return *this;
 };
 
@@ -128,7 +131,6 @@ Response &Response::css(const string filename)
 {
 	body = readFile(filename);
 	headers.push_back("Content-Type: text/css");
-	headers.push_back("Connection: close");
 	return *this;
 };
 
@@ -136,7 +138,6 @@ Response &Response::js(const string filename)
 {
 	body = readFile(filename);
 	headers.push_back("Content-Type: application/javascript");
-	headers.push_back("Connection: close");
 	return *this;
 };
 
@@ -154,8 +155,10 @@ Response &Response::expireCookie()
 
 void Response::send()
 {
-	if (!body.empty())
-		headers.push_back("Content-Length: " + std::to_string(body.length()));
+	// if (!body.empty())
+
+	headers.push_back("Content-Length: " + std::to_string(body.length()));
+	headers.push_back("Connection: close");
 	string response = stringifyResponse();
 	// cout << "-------------res-------------\n";
 	// cout << response;

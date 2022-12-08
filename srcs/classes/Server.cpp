@@ -103,6 +103,7 @@ void Server::handleConnection(int client)
 
 	// CLOSE-CLEAR CLIENT FROM SET AND MAP
 	close(client);
+	// clients.at(client).first->clearReq();
 	delete clients.at(client).first;
 	delete clients.at(client).second;
 	clients.erase(client);

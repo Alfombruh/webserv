@@ -9,7 +9,8 @@
 using std::cout;
 using std::string;
 
-class Enviroment {
+class Enviroment
+{
 public:
 	string DOCUMENT_ROOT;
 	string GATEWAY_INTERFACE;
@@ -66,10 +67,12 @@ class Request
 	string body;
 
 	bool parseRequest(string statusHeader, Response &res);
+	bool parseChunkedRequest(string rawRequest, Response &res);
 	bool parseStatusLine(string rawStatusLine, Response &res);
 	void parseUrlVars();
 	bool parseHeaders(string rawHeaders);
 	char *urlDecode(const char *str);
+	bool readChunkedRequest(int clientSd, Response &res, string &firstChunk);
 
 public:
 	Enviroment env;
