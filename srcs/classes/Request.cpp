@@ -1,7 +1,7 @@
 #include "webserv.h"
 #include "Request.hpp"
 
-Request::Request(int clientId) : clientId((size_t)clientId) {}
+Request::Request(int clientId, sockaddr_in client_addr) : clientId((size_t)clientId), client_addr(client_addr){}
 
 Request::~Request() {}
 
@@ -17,12 +17,12 @@ void Request::clearReq()
 bool Request::readRequest(int clientSd, Response &res)
 {
 	ssize_t ret;
-	char buffer[1024];
+	char buffer[400000];
 	string statusHeader;
 	size_t i;
 
 	// STATUS LINE AND HEADERS PARSING
-	if ((ret = read(clientSd, buffer, 1024)) == -1 || ret == 0)
+	if ((ret = read(clientSd, buffer, 400000)) == -1 || ret == 0)
 	{
 		res.status(STATUS_400).send();
 		return false;
@@ -45,16 +45,16 @@ bool Request::readRequest(int clientSd, Response &res)
 		return false;
 
 	// BODY PARSING
-	if (ret != 1024)
+	if (ret != 400000)
 		return true;
 	while (true)
 	{
-		if ((ret = read(clientSd, buffer, 1024)) == -1 || ret == 0)
+		if ((ret = read(clientSd, buffer, 400000)) == -1 || ret == 0)
 			return false;
 		if (ret == 0)
 			break;
 		body.append(buffer, ret);
-		if (ret < 1024)
+		if (ret < 400000)
 			break;
 	}
 	return true;
@@ -75,12 +75,14 @@ bool Request::parseRequest(string statusHeader, Response &res)
 
 const string Request::getHeader(const string header) const
 {
-	if (headers.find(header) != headers.end())
-		return NULL;
+	if (headers.find(header) == headers.end())
+		return "";
 	return headers.at(header);
 };
 
 size_t Request::getClientId() const { return clientId; };
+
+sockaddr_in Request::getClientAddr() const { return client_addr; };
 
 const string &Request::getRoute() const { return route; };
 const string &Request::getAbsoluteRoute() const { return absolutRoute; };
@@ -94,6 +96,7 @@ const StrStrMap &Request::getHeaders() const { return headers; };
 const string &Request::getBody() const { return body; };
 
 const METHOD &Request::getMethod() const { return method; };
+const string &Request::getProtocolVersion() const { return protocolVersion; };
 
 const string Request::getMethodStr() const
 {
@@ -146,6 +149,7 @@ void Request::printReqAtributes()
 	cout << "STATUS LINE:\n";
 	cout << "method:" << method << "$\n";
 	cout << "route:" << route << "$\n";
+	cout << "absolutRoute:" << absolutRoute << "$\n";
 	cout << "protocol version:" << protocolVersion << "$\n";
 	cout << "\nVARS:\n";
 	for (StrStrMap::iterator it = routeVars.begin(); it != routeVars.end(); ++it)
@@ -156,6 +160,15 @@ void Request::printReqAtributes()
 		cout << it->first << ":" << it->second << "$\n";
 	// BODY
 	cout << "\nBODY:\n" << body << "$\n";
+
+	cout << "SERVER_PROTOCOL: " << this->env.SERVER_PROTOCOL << "$\n";
+	cout << "REQUEST_METHOD:" << this->env.REQUEST_METHOD << "$\n";
+	cout << "PATH_INFO: " << this->env.PATH_INFO << "$\n";
+	cout << "PATH_TRANSLATED: " << this->env.PATH_TRANSLATED << "$\n";
+	cout << "REMOTE_ADDR: " << this->env.REMOTE_ADDR << "$\n";
+	cout << "REMOTE_PORT: " << this->env.REMOTE_PORT << "$\n";
+	cout << "REMOTE_ADDR: " << this->env.SERVER_NAME<< "$\n";
+	cout << "REMOTE_PORT: " << this->env.SERVER_PORT << "$\n";
 };
 
 bool Request::parseStatusLine(string rawStatusLine, Response &res)
@@ -230,7 +243,6 @@ bool Request::parseHeaders(string rawHeaders)
 	size_t length = rawHeaders.length();
 	string key;
 	string value;
-
 	while (i < length)
 	{
 		while (i < length && rawHeaders[i] != ':')

@@ -17,6 +17,7 @@ public:
 	// Router(string configPath);
 	~Router(){};
 
+	bool create_env(void (*create_env)(Request &, Response &)) const;
 	bool use(const string route, bool (*func)(Router &));
 	bool get(const string route, void (*get)(Request &, Response &)) const;
 	bool post(const string route, void (*post)(Request &, Response &)) const;

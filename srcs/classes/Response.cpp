@@ -1,6 +1,7 @@
 #include "webserv.h"
 #include "Response.hpp"
 #include <string.h>
+#include <sys/wait.h>
 #include <fcntl.h>
 
 Response::Response(int clientId) : clientId((size_t)clientId)
@@ -55,7 +56,7 @@ Response &Response::text(const string &msg)
 	return *this;
 };
 
-Response &Response::text_python(const string filename)
+Response &Response::text_python(const string filename, char**env)
 {
 	pid_t pid;
 	pid = fork();
@@ -65,26 +66,28 @@ Response &Response::text_python(const string filename)
 	if (pid == 0)
 	{
 		int fd = open("t.txt", O_CREAT | O_TRUNC | O_RDWR, 0644);
-		char *cstr = new char[filename.length() + 2];
-		cstr[0] = '.';
-		strcpy(cstr + 1, filename.c_str());
-		char *pythonArgs[]={cstr,NULL};
 		if (fd < 0) {
 			perror("open()");
 			exit(EXIT_FAILURE);
 		}
+		char *cstr = new char[filename.length() + 2];
+		cstr[0] = '.';
+		strcpy(cstr + 1, filename.c_str());
+		char *pythonArgs[]={cstr,NULL};
+		cout << "pythonArgs: " << pythonArgs[0] << "\n";
 		close(STDOUT_FILENO);
 		dup2(fd, STDOUT_FILENO);
-		execvp(pythonArgs[0],pythonArgs);
+		execve(pythonArgs[0],pythonArgs, env);
 		printf("execl returned! errno is [%d]\n",errno);
 		perror("The error message is :");
 	}
 	else
 	{
 		body = readFile("t.txt");
+		hello += body;
+		cout << "Response: " << hello << "\n";
+		write(clientId, hello.c_str(), hello.length());
 	}
-	hello += body;
-	write(clientId, hello.c_str(), hello.length());
 	return *this;
 };
 

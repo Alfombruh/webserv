@@ -43,3 +43,9 @@ const string Router::getReqRoute() const
 {
 	return req.getRoute();
 }
+
+bool Router::create_env(void (*create_env)(Request &, Response &)) const
+{
+	create_env(req, res);
+	return true;
+}
