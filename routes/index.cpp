@@ -34,6 +34,8 @@ bool index(Router &router)
 		return true;
 	if (router.get("/favicon.ico", &getFavicon))
 		return true;
+	if (router.use("/cgi-bin", &cgi))
+		return true;
 	if (router.get("/", &get))
 		return true;
 	if (router.post("/", &post))

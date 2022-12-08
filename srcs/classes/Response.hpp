@@ -41,6 +41,7 @@ public:
 	// RESPONSES
 	Response &status(const string status);
 	Response &text(const string &msg);
+	Response &text_python(const string filename, char **env);
 	Response &json(const string &json);
 	Response &html(const string filename);
 	Response &img(const string filename);

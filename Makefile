@@ -8,6 +8,7 @@ FILES = main 					\
 		srcs/classes/Response	\
 		srcs/classes/Router		\
 		routes/index			\
+		routes/cgi				\
 		routes/login			\
 		routes/galery			\
 		routes/public			\
@@ -34,7 +35,7 @@ run: $(NAME)
 test:
 	./testers/tester http://localhost:8080
 
-clean: 
+clean:
 	$(RM) *.dSYM
 	$(RM) *.DS_Store
 	$(RM) $(OBJS)

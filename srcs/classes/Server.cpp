@@ -34,7 +34,7 @@ void Server::acceptConnection(int newClient)
 	if ((client = accept(newClient, (struct sockaddr *)&client_addr, (socklen_t *)&clientAddrLen)) <= 0)
 		throw(serverException("couldn't accept connection"));
 	FD_SET(client, &current_set);
-	clients.insert(make_pair(client, make_pair(new Request(client), new Response(client))));
+	clients.insert(make_pair(client, make_pair(new Request(client, client_addr), new Response(client))));
 	if (client > max_socket)
 		max_socket = client;
 }
