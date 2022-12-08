@@ -11,18 +11,19 @@
 7. [Socket](#socket)
 8. [Making a non Blocking server](#nonblockinserver)
 9. [Response && Request](#IO)
-10. [Bibliography](#bibliography)
-11. [License](#license)
+10. [42 Tester](#tester)
+11. [Bibliography](#bibliography)
+12. [License](#license)
 
 ---
 ## To-Do List <a name="todo"></a>
 
-- Start working on the Response/Request objects
-- Create custom exceptions 
-- Undestand the requirements
-- Start Working on the config files and what are they suppose to do
-- READ "the RFC" DO SOME TEST WITH "telnet" AND "NGINX" before starting to work in this
-- look up what .ipp and .tpp file extensions are
+- Implement a configuration file
+- Work on the tester
+- Implement: "Transfer-Enconding: Chunked"
+- Start Cheking every Request's header 
+- Stop erasing client_fd, request and response
+- Return HTTP correct statuses
 
 ---
 ## __File hierarchy__ <a name="filehierarchy"></a>
@@ -34,6 +35,7 @@
 │  ├─ 📁classes
 │  │  └─ *.cpp/&.hpp
 │  └─ *.cpp
+├─ 📁routes
 ├─ 📁public
 │  ├─ 📁html
 │  └─ 📁img
@@ -43,6 +45,9 @@
 │  ├─ 📁images
 │  └─ 📁simpleServer    
 ├─ 📁testers
+├─ 📁image_galery
+├─ 📁SessionManager
+├─ links.txt
 ├─ changelog  
 ├─ Makefile
 └─ README.md
@@ -647,15 +652,26 @@ Thanks to [__this guide__][SELECT] and also [__this other guide__][BLOCKING_SOCK
 To actually start with the section we have to read a little bit about the HTTP Methods on the [RFC7231][RFC7231].
 If we want to Implement HTTP methods to our server we have to first understand what they are, how they work and what are the standards.
 
-The subject says that we have to implement, at least, GET | POST | DELETE. So Ill be trying to figure out how to proccess these and make a response for the clients petition.
+The subject says that we have to implement, at least, GET | POST | DELETE. These are the only ones we are gonna work with.
 
-## The GET Method 
+Implementing the Request and Response is not the hardest part to program, but to implement clearly. In our case we've made a routes directory where we store as much .cpp files as routes we have implemented (ex: /index, /index/public, /profile ...). Each file checkes if the route goes deeper or if it stays there, if so it checks if the METHOD request is allowed in that route and fills up the response object and sends it.
 
-This method requests some data transfer of a selected representation. 
+If you've implemented everything I've talked about so far you should be able to display a full static .html webpage. The easiest way to implement this last part if by just having one route /index and one METHOD, GET.
 
-//have to find what the standards of this are :)
+__Quick Tip:__ 
 
+To implement css, js, images, mp4, mp3... files to your static webpage you just have to reference them correctly on your .html file. In my case I'm using Chrome, while this browser reads the HTML if it finds a reference to a .something file it will send a GET request to the server, so if you have implemented the GET method to the extension file that the browser's just requested you should be able to return it.
 
+---
+## 42 Tester <a name="tester"></a>
+
+- __First Test:__
+  the first test of the server is a simple GET request, at this point this shouldn't be an issue.
+
+- __Second test:__
+  this one one comes in hard, it is a POST request that has the [Transfer-Enconding: chunked][WIKI_CHUNKED] header, which we dont know how to deal with right now.
+
+  Id look at this two sections of the RFC 9112:HTTP/1.1 [Section 6][RFC9112_6] and [Section 7.1][RFC9112_7.1]. You also have this [exmaple on stackoverflow][STACK_CHUNKED]
 
 ---
 ## __BIBLIOGRAPHY__ <a name="bibliography"></a>
@@ -675,9 +691,15 @@ This method requests some data transfer of a selected representation.
 - [an old tutorial (<2010) about sockets][OLDTUTORIAL]
 - [Dealing With and Getting Around Blocking Sockets][BLOCKING_SOCKETS]
 - [Wipedia About Berkeley Sockets][WIKI_SOCKEC]
+- [Wikipedia On HTTP Headers][WIKI_HEADERS]
 
 ## __LICENSE__ <a name="license"></a>
 I Do not belive in those things
+
+<h3><a href="https://github.com/Ionmi">Ionmi Romero</a></h3>
+<h3><a href="https://github.com/anderamo">Ander Amorin</a></h3>
+<h3><a href="https://github.com/Alfombruh">Jokin Fernandez</a></h3>
+<h3><a href="https://github.com/F4su">Jose Gainza</a></h3>
 
 
 [//]: #
@@ -717,3 +739,8 @@ I Do not belive in those things
   [SCOTLANDFOREVER]: <https://www.youtube.com/watch?v=dquxuXeZXgo>
   [RFC7231]: <https://www.rfc-editor.org/rfc/rfc7232>
   [GETMETHOD]: <https://www.rfc-editor.org/rfc/rfc7231#section-9.1>
+  [WIKI_CHUNKED]: <https://en.wikipedia.org/wiki/Chunked_transfer_encoding#:~:text=Chunked%20transfer%20encoding%20allows%20a,size%20is%20not%20yet%20known.>
+  [WIKI_HEADERS]: <https://en.wikipedia.org/wiki/List_of_HTTP_header_fields#transfer-encoding-response-header>
+  [RFC9112_7.1]: <https://www.rfc-editor.org/rfc/rfc9112#section-7.1>
+  [RFC9112_6]: <https://www.rfc-editor.org/rfc/rfc9112#section-6-1>
+  [STACK_CHUNKED]: <https://stackoverflow.com/questions/5142649/how-to-send-http-reply-using-chunked-encoding>

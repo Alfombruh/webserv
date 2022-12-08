@@ -3,9 +3,12 @@
 
 #include <iostream>
 #include <map>
+#include <vector>
 #include "status_codes.h"
 
 typedef std::map<std::string, std::string> StrStrMap;
+typedef std::vector<int> IntVec;
+
 
 #include "../srcs/classes/Request.hpp"
 #include "../srcs/classes/Response.hpp"
@@ -24,6 +27,7 @@ typedef std::map<std::string, std::string> StrStrMap;
 
 using std::string;
 using std::cout;
+
 
 typedef struct s_webserv{
     int server_fd;

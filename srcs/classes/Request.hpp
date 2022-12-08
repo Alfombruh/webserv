@@ -69,6 +69,7 @@ class Request
 	bool parseStatusLine(string rawStatusLine, Response &res);
 	void parseUrlVars();
 	bool parseHeaders(string rawHeaders);
+	char *urlDecode(const char *str);
 
 public:
 	Enviroment env;
@@ -77,6 +78,7 @@ public:
 
 	void clearReq();
 
+	void printReqAtributes();
 	// PARSING
 	bool readRequest(int clientSd, Response &res);
 	// GETTERS - SETTERS
@@ -85,7 +87,7 @@ public:
 	sockaddr_in getClientAddr() const;
 	const string &getRoute() const;
 	const string &getAbsoluteRoute() const;
-	const char *getUrlVar(const string key) const;
+	const string getUrlVar(const string key) const;
 	const StrStrMap &getHeaders() const;
 	const string &getBody() const;
 	const METHOD &getMethod() const;
@@ -93,8 +95,6 @@ public:
 	const string &getProtocolVersion() const;
 	bool isInRoute(const string route) const;
 	void updateRoute(const string route);
-	void printReqAtributes();
-
 };
 
 #endif

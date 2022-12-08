@@ -1,10 +1,18 @@
 #include "webserv.h"
+#include <csignal>
+
+void signalHandler(int signal)
+{
+	exit(signal);
+}
 
 int main(int argc, char **argv)
 {
 	if (argc != 2)
 		return (errorMessage("./webserv configFile.conf"));
-// start:
+
+	// start:
+	std::signal(SIGINT, signalHandler);
 	try
 	{
 		Server server(argv[1]);

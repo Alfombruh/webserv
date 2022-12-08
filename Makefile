@@ -1,6 +1,6 @@
 NAME = webserv
 CC = clang++ 
-CFLAGS = -Werror -Wall -Wextra -g3 -fsanitize=address -std=c++98
+CFLAGS = -Werror -Wall -Wextra -g3 -fsanitize=address -std=c++98 
 FILES = main 					\
 		srcs/errors				\
 		srcs/classes/Server		\
@@ -9,6 +9,7 @@ FILES = main 					\
 		srcs/classes/Router		\
 		routes/index			\
 		routes/cgi				\
+		routes/login			\
 		routes/galery			\
 		routes/public			\
 
@@ -31,7 +32,10 @@ $(NAME): $(OBJS) $(INCLUDES)
 run: $(NAME)
 	./webserv config/default.conf
 
-clean: 
+test:
+	./testers/tester http://localhost:8080
+
+clean:
 	$(RM) *.dSYM
 	$(RM) *.DS_Store
 	$(RM) $(OBJS)

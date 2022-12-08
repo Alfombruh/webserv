@@ -91,6 +91,14 @@ Response &Response::text_python(const string filename, char**env)
 	return *this;
 };
 
+Response &Response::json(const string &json)
+{
+	headers.push_back("Content-Type: application/json");
+	headers.push_back("Connection: close");
+	body = json;
+	return *this;
+};
+
 string Response::readFile(const string filename)
 {
 	std::ifstream file(filename);
@@ -129,6 +137,18 @@ Response &Response::js(const string filename)
 	body = readFile(filename);
 	headers.push_back("Content-Type: application/javascript");
 	headers.push_back("Connection: close");
+	return *this;
+};
+
+Response &Response::cookie(const string &hash)
+{
+	headers.push_back("Set-Cookie: 42webserv_session=" + hash + "; path=/");
+	return *this;
+};
+
+Response &Response::expireCookie()
+{
+	headers.push_back("Set-Cookie: 42webserv_session=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT");
 	return *this;
 };
 
