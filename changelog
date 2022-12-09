@@ -49,3 +49,35 @@
 		new web page (needs to be modified)
 		custom responses when method not allowed nor supported
 
+## [Version 0.1.7] (12-3-2022)
+	Ionmi:
+		image post
+		image delete
+		
+## [Version 0.2.0] (12-6-2022)
+	Ionmi:
+		Access removed 
+		C++11 methods removed  
+		webpage finished, besided CGIs 
+
+## [Version 0.3.0] (12-6-2022)
+	Alf + Ionmi:
+		Multi ports
+
+## [Version 0.3.1] (12-6-2022)
+	Ionmi:
+		correccion en galery.cpp
+
+## [Version 0.3.2] (12-7-2022)
+	Ionmi:
+		sessiones y cookies
+	Readme && testers && testers files && fixed segfault in POST
+
+## [Version 0.3.3] (12-8-2022)
+    Anderamorin5 por el culo te la inco:
+        Cgi first trys and fixed some bugs
+
+## [Version 0.4.0] (12-8-2022)
+    Ionmi + Anderamorin5 por el culo te la inco:
+        chunk parsing
+

@@ -8,7 +8,9 @@ FILES = main 					\
 		srcs/classes/Response	\
 		srcs/classes/Router		\
 		routes/index			\
-		routes/upload			\
+		routes/cgi				\
+		routes/login			\
+		routes/galery			\
 		routes/public			\
 
 SRCS = $(addsuffix .cpp, $(FILES))
@@ -30,7 +32,10 @@ $(NAME): $(OBJS) $(INCLUDES)
 run: $(NAME)
 	./webserv config/default.conf
 
-clean: 
+test:
+	./testers/tester http://localhost:8080
+
+clean:
 	$(RM) *.dSYM
 	$(RM) *.DS_Store
 	$(RM) $(OBJS)

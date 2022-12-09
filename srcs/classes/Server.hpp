@@ -21,22 +21,31 @@ class Router;
 class Server		
 {
 private:
+	IntVec ports;
     //**** sockets ****
-    int server; //main connection socket descriptor
+    // IntVec server; //main connection socket descriptor
     //int client; //client's new socket
     int max_socket; //maximun number of the fd_set
     //**** fd_set's ****
     fd_set  current_set;
     fd_set  ready_set;
     //**** structure that holds the informations about the socket we are using ********
-    int addr_len; //the lennght of the sockaddr_in struct
-    struct sockaddr_in addr; //structure that holds the value of the connection port and ip
+    // IntVec addr_len; //the lennght of the sockaddr_in struct
+    // struct sockaddr_in addr; //structure that holds the value of the connection port and ip
+    // std::vector<struct sockaddr_in> addr; //structure that holds the value of the connection port and ip0
+	//****
+	typedef struct portStruct
+	{
+		int server; //main connection socket descriptor
+		int addr_len; //the lennght of the sockaddr_in struct
+		struct sockaddr_in addr; //structure that holds the value of the connection port
+	} portStruct;
+	std::vector<portStruct> portData;
     //****
     struct timeval timeout;
     //**** private functions ********************************
-    void    acceptConnection(void);
-    void    handleConnection(int newClient);
-    void    handleRouting(Router &router, int client);
+    void    acceptConnection(int newClient);
+    void    handleConnection(int client);
     //****
 	ClientMap clients;
 public:

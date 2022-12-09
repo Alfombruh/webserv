@@ -33,13 +33,19 @@ bool Router::delet(const string route, void (*delet)(Request &, Response &)) con
 bool Router::notFound() const
 {
 	if (getReqRoute() == "/")
-		res.status(STATUS_405).text(req.getMethodStr() + " method is not supported for " + req.getAbsoluteRoute()).send();
+		res.status(STATUS_405).html("./public/html/405.html").send();
 	else
-		res.status(STATUS_404).text(req.getAbsoluteRoute() + " does not exist").send();
+		res.status(STATUS_404).html("./public/html/404.html").send();
 	return false;
 };
 
 const string Router::getReqRoute() const
 {
 	return req.getRoute();
+}
+
+bool Router::create_env(void (*create_env)(Request &, Response &)) const
+{
+	create_env(req, res);
+	return true;
 }

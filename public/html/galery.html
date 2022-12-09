@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<link rel="stylesheet" href="/public/css/style.css">
+
+<body>
+	<header class="header">
+        <div>
+            <a href="/" class="logo"><img id="logoImg" src="/public/images/42-Urduliz-Logo-web.png" alt="Logo"></a>
+        </div>
+        <nav>
+            <input class="menu-btn" type="checkbox" id="menu-btn" />
+            <label class="menu-icon" for="menu-btn"><span class="navicon"></span></label>
+            <ul class="menu">
+                <li><a href="/">Home</a></li>
+                <li><a target="_blank" href="https://www.42urduliz.com">42 Urduliz</a></li>
+            </ul>
+        </nav>
+    </header>
+	<main id="main">
+		<div id="firstCover">
+			<div class="wrapper">
+				<div class="custom-input-file col-md-6 col-sm-6 col-xs-6">
+					<input type="file" name="image-post" id="image-post" accept="image/png, image/jpeg" class="input-file">
+					Subir imagen
+				</div>
+				<p id="post-input-feedback" style="margin-top: 5px; font-size: 12px"></p>             
+			</div>
+		</div>
+		<div id="quotes">
+			<div id="walterQuoteDiv">
+				<h2>"Liiiiteral, pero literal"</h2>
+				<!-- "I am Heisenberg" -->
+			</div>
+			<div id="jesseQuoteDiv">
+				<h2>"No tiene puto sentido"</h2>
+				<!-- "Yeah, B****. Magnets!" -->
+			</div>
+		</div>
+		<div id="secondCover">+
+            <div class="wrapper">
+				<div id="Titles" style="margin-bottom: 25px;">
+                    <h2>Borrar imagen</h2>
+             	</div>
+                <input type="text" id="delete-input" placeholder="example.png">
+                <button onclick="deleteGalery()">Borrar</button>     
+				<p id="delete-input-feedback" style="margin-top: 5px; font-size: 12px"></p>             
+                </div>
+            </div>
+        </div>
+	</main>
+	<footer class="footer">
+		<div class="footerDiv">
+			<h3>Menu</h3>
+			<ul id="webPages">
+				<li><a href="/">Home</a></l1>
+				<li><a href="/images">images</a></li>
+				<li><a target="_blank" href="https://www.42urduliz.com">42 Urduliz</a></li>
+				<li><a href="https://www.flaticon.es/iconos-gratis/instagram" title="iconos">Iconos creados por Freepik
+						- Flaticon</a></li>
+			</ul>
+		</div>
+		<div class="footerDiv">
+			<h3>Social</h3>
+			<ul>
+				<li><a target="_blank" href="https://www.facebook.com/fundaciontef"><img
+							src="/public/images/facebook.png"></a></li>
+				<li><a target="_blank" href="https://www.instagram.com/42urdulizftef/"><img
+							src="/public/images/instagram.png"></a></li>
+				<li><a target="_blank" href="https://twitter.com/42urdulizftef"><img src="/public/images/twitter.png"></a>
+				</li>
+				<li><a target="_blank" href="https://www.youtube.com/user/fundaciontef"><img
+							src="/public/images/youtube.png"></a>
+				</li>
+			</ul>
+		</div>
+	</footer>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<script src="/public/js/app.js"></script>
+</body>
+
+</html>
