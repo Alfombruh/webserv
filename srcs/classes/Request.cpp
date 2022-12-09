@@ -140,7 +140,7 @@ bool Request::parseStatusLine(string rawStatusLine, Response &res)
 	string method;
 
 	// METHOD
-	while (rawStatusLine.at(i) != ' ' && i < rawStatusLine.size())
+	while (i < rawStatusLine.size() && rawStatusLine.at(i) != ' ')
 		method.push_back(rawStatusLine.at(i++));
 	if (method == "GET")
 		this->method = GET;
@@ -155,7 +155,7 @@ bool Request::parseStatusLine(string rawStatusLine, Response &res)
 	}
 	// ROUTE
 	i++;
-	while (rawStatusLine.at(i) != ' ' && i < rawStatusLine.size())
+	while (i < rawStatusLine.size() && rawStatusLine.at(i) != ' ')
 		route.push_back(rawStatusLine.at(i++));
 	parseUrlVars();
 	absolutRoute = route;
