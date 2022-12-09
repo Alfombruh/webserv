@@ -1,5 +1,6 @@
 #include "webserv.h"
 #include "Request.hpp"
+#include "string.h"
 
 Request::Request(int clientId, sockaddr_in client_addr) : clientId((size_t)clientId), client_addr(client_addr) {}
 
@@ -25,7 +26,7 @@ bool Request::readChunkedRequest(int clientSd, Response &res, string &firstChunk
 	while (true)
 	{
 		memset(buffer, 0, 1024);
-		if ((ret = read(clientSd, buffer, 1024)) == -1 || ret == 0)
+		if ((ret = recv(clientSd, buffer, 1024, 0)) == -1 || ret == 0)
 			return false;
 		if (ret == 0)
 			break;
@@ -48,28 +49,27 @@ bool Request::readRequest(int clientSd, Response &res)
 {
 	ssize_t ret;
 	char buffer[1024];
-	memset(buffer, 0, 1024);
 	string statusHeader;
 	size_t i;
-
+	memset(buffer, 0, 1024);
 	// STATUS LINE AND HEADERS PARSING
-	if ((ret = read(clientSd, buffer, 1024)) == -1 || ret == 0)
+	while (true)
 	{
-		res.status(STATUS_400).send();
-		return false;
-	}
-	for (i = 0; i < (size_t)ret; i++)
-	{
-		if (!isprint(buffer[i]) && buffer[i] != '\n')
-			continue;
-		if (statusHeader[statusHeader.size() - 1] == '\n' && buffer[i] == '\n')
-		{
-			statusHeader.substr(0, statusHeader.size() - 1);
-			i++;
+		memset(buffer, 0, 1024);
+		if ((ret = recv(clientSd, buffer, 1024, 0)) == -1 || ret == 0)
 			break;
+		for (i = 0; i < (size_t)ret; i++)
+		{
+			if (!isprint(buffer[i]) && buffer[i] != '\n')
+				continue;
+			if (statusHeader[statusHeader.size() - 1] == '\n' && buffer[i] == '\n')
+				break;
+			statusHeader.push_back(buffer[i]);
 		}
-		statusHeader.push_back(buffer[i]);
+		if (statusHeader[statusHeader.size() - 1] == '\n' && buffer[i] == '\n')
+			break;
 	}
+	cout << "Request\n" << statusHeader << "$\n";
 	if (statusHeader.find("chunked") != string::npos)
 		return readChunkedRequest(clientSd, res, statusHeader);
 	while (i < (size_t)ret)
@@ -83,7 +83,7 @@ bool Request::readRequest(int clientSd, Response &res)
 	while (true)
 	{
 		memset(buffer, 0, 1024);
-		if ((ret = read(clientSd, buffer, 1024)) == -1 || ret == 0)
+		if ((ret = recv(clientSd, buffer, 1024, 0)) == -1 || ret == 0)
 			return false;
 		if (ret == 0)
 			break;
@@ -136,7 +136,7 @@ bool Request::parseStatusLine(string rawStatusLine, Response &res)
 	string method;
 
 	// METHOD
-	while (rawStatusLine.at(i) != ' ' && i < rawStatusLine.size())
+	while (i < rawStatusLine.size() && rawStatusLine.at(i) != ' ')
 		method.push_back(rawStatusLine.at(i++));
 	if (method == "GET")
 		this->method = GET;
@@ -151,7 +151,7 @@ bool Request::parseStatusLine(string rawStatusLine, Response &res)
 	}
 	// ROUTE
 	i++;
-	while (rawStatusLine.at(i) != ' ' && i < rawStatusLine.size())
+	while (i < rawStatusLine.size() && rawStatusLine.at(i) != ' ' )
 		route.push_back(rawStatusLine.at(i++));
 	parseUrlVars();
 	absolutRoute = route;
