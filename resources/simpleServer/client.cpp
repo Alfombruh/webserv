@@ -20,7 +20,7 @@ int main(__unused int argc, char **argv){
         write(2, "error at creating socket\n", sizeof("error at creating socket\n"));
         return (1);
     }
-    memset(&servAddr, '0', sizeof(servAddr));
+    ft_memset(&servAddr, '0', sizeof(servAddr));
     servAddr.sin_family = AF_INET;
     servAddr.sin_port = htons(PORT);
 

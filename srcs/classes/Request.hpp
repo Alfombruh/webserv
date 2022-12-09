@@ -66,13 +66,15 @@ class Request
 	// BODY
 	string body;
 
+	void *ft_memset(void *str, int c, size_t len);
+	size_t stringToSize_t(string str);
 	bool parseRequest(string statusHeader, Response &res);
-	bool parseChunkedRequest(string rawRequest, Response &res);
+	void parseChunkedBody(string rawRequest);
 	bool parseStatusLine(string rawStatusLine, Response &res);
 	void parseUrlVars();
 	bool parseHeaders(string rawHeaders);
 	char *urlDecode(const char *str);
-	bool readChunkedRequest(int clientSd, Response &res, string &firstChunk);
+	bool readChunkedRequest(int clientSd, Response &res);
 
 public:
 	Enviroment env;

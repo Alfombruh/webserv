@@ -26,7 +26,7 @@ int main(int argc, char **argv){
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = INADDR_ANY;
     addr.sin_port = htons( PORT );
-	memset(addr.sin_zero, 0, sizeof(addr.sin_zero));
+	ft_memset(addr.sin_zero, 0, sizeof(addr.sin_zero));
 	if (bind(server_fd, (struct sockaddr *)&addr, sizeof(addr)) < 0){
 		write(2, "error at binding\n", sizeof("error at binding\n"));
 		return (2);
