@@ -33,7 +33,6 @@ static void getFavicon(Request &req, Response &res)
 static void direct1(Request &req, Response &res)
 {
 	(void)req;
-	// cout << "/YoupiBanane \n";
 	res.status(STATUS_301).redirect("/YoupiBanane").send();
 };
 static void youpiDirect2(Request &req, Response &res)

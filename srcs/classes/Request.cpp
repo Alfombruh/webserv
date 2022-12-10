@@ -6,6 +6,24 @@ Request::Request(int clientId, sockaddr_in client_addr) : clientId((size_t)clien
 
 Request::~Request() {}
 
+void *Request::ft_memset(void *str, int c, size_t len)
+{
+	unsigned char *aux;
+
+	aux = (unsigned char *)str;
+	while (len-- > 0)
+		*aux++ = c;
+	return (str);
+}
+
+size_t Request::stringToSize_t(string str)
+{
+	std::stringstream sstream(str);
+	size_t result;
+	sstream >> result;
+	return result;
+}
+
 void Request::clearReq()
 {
 	route.clear();
@@ -15,109 +33,97 @@ void Request::clearReq()
 }
 
 /* raw request tiene caracteres no printeables */
-bool Request::readChunkedRequest(int clientSd, Response &res, string &firstChunk)
+bool Request::readChunkedRequest(int clientSd, Response &res)
 {
-	size_t i;
-	ssize_t ret;
-	char buffer[1024];
-	string request = firstChunk;
+	char c;
 
-	//res.status(STATUS_100).send();
-	while (true)
+	res.status(STATUS_100).send();
+	while (body.find("0\r\n\r\n") == string::npos)
 	{
-		memset(buffer, 0, 1024);
-		if ((ret = recv(clientSd, buffer, 1024, 0)) == -1 || ret == 0)
-			return false;
-		if (ret == 0)
-			break;
-		for (i = 0; i < (size_t)ret; i++)
+		if (recv(clientSd, &c, 1, 0) == -1)
 		{
-			if (request[request.size() - 4] == '0' && request[request.size() - 3] == '\r' &&
-				request[request.size() - 2] == '\n' && request[request.size() - 1] == '\r' &&
-				buffer[i] == '\n')
-				return parseChunkedRequest(request.substr(0, request.size() - 4), res);
-			request.push_back(buffer[i]);
-			if (std::isxdigit(request[request.size() - 2]) == 1 &&
-				request[request.size() - 1] == '\r' && buffer[i] == '\n')
-				res.status(STATUS_100).send();
+			res.status(STATUS_400).send();
+			return false;
 		}
+		body.push_back(c);
 	}
+	parseChunkedBody(body.substr(0, body.size() - 5));
 	return true;
 };
 
 bool Request::readRequest(int clientSd, Response &res)
 {
 	ssize_t ret;
-	char buffer[1024];
+	string request = "";
+	size_t reqHeadersEnd;
+	size_t bodySize;
 	string statusHeader;
-	size_t i;
-	memset(buffer, 0, 1024);
+	bool isChunked;
+	size_t i = 0;
+
+	char c;
 	// STATUS LINE AND HEADERS PARSING
-	while (true)
+	while ((reqHeadersEnd = request.find("\r\n\r\n")) == string::npos)
 	{
-		memset(buffer, 0, 1024);
-		if ((ret = recv(clientSd, buffer, 1024, 0)) == -1 || ret == 0)
-			break;
-		for (i = 0; i < (size_t)ret; i++)
+		if ((ret = recv(clientSd, &c, 1, 0)) == -1 || ret == 0)
 		{
-			if (!isprint(buffer[i]) && buffer[i] != '\n')
-				continue;
-			if (statusHeader[statusHeader.size() - 1] == '\n' && buffer[i] == '\n')
-				break;
-			statusHeader.push_back(buffer[i]);
+			res.status(STATUS_400).send();
+			return false;
 		}
-		if (statusHeader[statusHeader.size() - 1] == '\n' && buffer[i] == '\n')
-			break;
+		request.push_back(c);
 	}
-	cout << "Request\n" << statusHeader << "$\n";
-	if (statusHeader.find("chunked") != string::npos)
-		return readChunkedRequest(clientSd, res, statusHeader);
-	while (i < (size_t)ret)
-		body.push_back(buffer[i++]);
+	while (i < reqHeadersEnd)
+	{
+		if (std::isprint(request[i]) || request[i] == '\n')
+			statusHeader.push_back(request[i]);
+		i++;
+	}
+	body = "";
 	if (parseRequest(statusHeader, res) == FAILED)
 		return false;
-	cout << "BODY\n" << body << "$\n";
-	// BODY PARSING
-	if (ret != 1024)
+	isChunked = getHeader("transfer-encoding").find("chunked") != string::npos ? true : false;
+	bodySize = getHeader("content-length").empty() ? 0 : stringToSize_t(getHeader("content-length"));
+	if (bodySize == 0)
 		return true;
+	if (isChunked)
+		return readChunkedRequest(clientSd, res);
+
+	// BODY PARSING
+	ret = 0;
 	while (true)
 	{
-		memset(buffer, 0, 1024);
-		if ((ret = recv(clientSd, buffer, 1024, 0)) == -1 || ret == 0)
+		if ((ret += recv(clientSd, &c, 1, 0)) == -1)
+		{
+			res.status(STATUS_400).send();
 			return false;
-		if (ret == 0)
-			break;
-		body.append(buffer, ret);
-		if (ret < 1024)
+		}
+		body.push_back(c);
+
+		if ((size_t)ret == bodySize)
 			break;
 	}
 	return true;
 }
 
-bool Request::parseChunkedRequest(string rawRequest, Response &res)
+void Request::parseChunkedBody(string rawBody)
 {
-	size_t i;
-	string statusHeader;
-	for (i = 0; i < rawRequest.size(); i++)
+	size_t i = 0;
+	body.clear();
+	while (i < rawBody.size())
 	{
-		if (!isprint(rawRequest[i]) && rawRequest[i] != '\n')
-			continue;
-		if (statusHeader[statusHeader.size() - 1] == '\n' && rawRequest[i] == '\n')
-		{
-			statusHeader.substr(0, statusHeader.size() - 1);
+		while (i + 1 < rawBody.size() && rawBody[i] != '\r' && rawBody[i + 1] != '\n')
 			i++;
-			break;
-		}
-		statusHeader.push_back(rawRequest[i]);
+		i += 2;
+		while (i + 1 < rawBody.size() && rawBody[i] != '\r' && rawBody[i + 1] != '\n')
+			body.push_back(rawBody[i++]);
+		i += 2;
 	}
-	while (i < rawRequest.size())
-		body.push_back(rawRequest[i++]);
-	return parseRequest(statusHeader, res);
+	if (rawBody.size() != 0)
+		body.push_back(rawBody[rawBody.size() - 1]);
 };
 
 bool Request::parseRequest(string statusHeader, Response &res)
 {
-	// cout << statusHeader << "\n";
 	size_t endStatusLine = statusHeader.find("\n");
 
 	// STATUS LINE
@@ -126,7 +132,6 @@ bool Request::parseRequest(string statusHeader, Response &res)
 	// HEADERS
 	if (parseHeaders(statusHeader.substr(endStatusLine + 1)) == FAILED)
 		return false;
-	// printReqAtributes();
 	return true;
 };
 
@@ -155,7 +160,7 @@ bool Request::parseStatusLine(string rawStatusLine, Response &res)
 	}
 	// ROUTE
 	i++;
-	while (i < rawStatusLine.size() && rawStatusLine.at(i) != ' ' )
+	while (i < rawStatusLine.size() && rawStatusLine.at(i) != ' ')
 		route.push_back(rawStatusLine.at(i++));
 	parseUrlVars();
 	absolutRoute = route;

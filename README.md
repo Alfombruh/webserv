@@ -335,7 +335,7 @@ the code that binds the socket would look something like this:
 ...
 struct sockaddr_in addr;
 int port = 8080;
-memset( &addr, 0, sizeof(addr));
+ft_memset( &addr, 0, sizeof(addr));
 addr.sin_family = AF_INET;
 addr.in_addr.s_addr = htonl(INADDR_ANY); //converts long to a network representation
 addr.sin_port = htons(port); //converts a short to a network representation

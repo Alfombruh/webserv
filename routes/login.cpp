@@ -16,14 +16,14 @@ static void get(Request &req, Response &res)
 		res.status(STATUS_204).expireCookie().send();
 		return;
 	}
-	res.status(STATUS_300).json("{\"name\":\"" + session.name + "\",\"about\":\"" + session.about + "\"}").send();
+	res.status(STATUS_302).json("{\"name\":\"" + session.name + "\",\"about\":\"" + session.about + "\"}").send();
 };
 
 static void post(Request &req, Response &res)
 {
-	if (req.getBody().empty())
+	if (req.getBody().size() != 32)
 	{
-		res.status(STATUS_204).send();
+		res.expireCookie().status(STATUS_204).send();
 		return;
 	}
 	session::session session = {.hash = req.getBody(), .name = req.getUrlVar("name"), .about = req.getUrlVar("about")};

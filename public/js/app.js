@@ -83,7 +83,7 @@ window.addEventListener("load", function () {
       },
     };
     fetch("/login", fetchLogin)
-      .then((res) => (res.status === 300 ? res.json() : location.reload()))
+      .then((res) => (res.status === 302 ? res.json() : location.reload()))
       .then((data) => {
         if (data) {
           sessionDiv.innerHTML =
@@ -116,7 +116,6 @@ function makeid(length) {
 
 //LOG OUT
 const logOut = () => {
-  console.log("logout");
   let fetchLogin = {
     method: "DELETE",
     headers: {
