@@ -22,7 +22,7 @@ bool Request::readChunkedRequest(int clientSd, Response &res, string &firstChunk
 	char buffer[1024];
 	string request = firstChunk;
 
-	res.status(STATUS_100).send();
+	//res.status(STATUS_100).send();
 	while (true)
 	{
 		memset(buffer, 0, 1024);
@@ -76,7 +76,7 @@ bool Request::readRequest(int clientSd, Response &res)
 		body.push_back(buffer[i++]);
 	if (parseRequest(statusHeader, res) == FAILED)
 		return false;
-
+	cout << "BODY\n" << body << "$\n";
 	// BODY PARSING
 	if (ret != 1024)
 		return true;
@@ -144,6 +144,10 @@ bool Request::parseStatusLine(string rawStatusLine, Response &res)
 		this->method = POST;
 	else if (method == "DELETE")
 		this->method = DELETE;
+	else if (method == "PUT") {
+		res.status(STATUS_200).send();
+		return false;
+	}
 	else
 	{
 		res.status(STATUS_405).send();

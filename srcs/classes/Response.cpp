@@ -66,6 +66,7 @@ Response &Response::text_python(const string filename, char **env)
 	pid_t pid;
 	pid = fork();
 	string hello = "HTTP/1.1 200 OK\n";
+	int i = 0;
 	if (pid == -1)
 		return *this;
 	if (pid == 0)
@@ -89,6 +90,7 @@ Response &Response::text_python(const string filename, char **env)
 	}
 	else
 	{
+		kill(pid, SIGINT);
 		body = readFile("t.txt");
 		hello += body;
 		cout << "Response: " << hello << "\n";
