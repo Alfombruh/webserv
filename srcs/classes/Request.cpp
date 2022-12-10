@@ -35,21 +35,31 @@ void Request::clearReq()
 /* raw request tiene caracteres no printeables */
 bool Request::readChunkedRequest(int clientSd, Response &res)
 {
-	char c;
+	char c[100000];
+	size_t ret;
 
 	res.status(STATUS_100).send();
 	while (body.find("0\r\n\r\n") == string::npos)
 	{
-		if (recv(clientSd, &c, 1, 0) == -1)
+		memset(c, 0, 100000);
+		if ((ret = recv(clientSd, c, 100000, 0)) == (size_t)-1 || ret == (size_t)0)
 		{
 			res.status(STATUS_400).send();
 			return false;
 		}
-		body.push_back(c);
+		for (int i = 0; i < ret; ++i) {
+			body.push_back(c[i]);
+		}
+		//cout << c;
 	}
-	parseChunkedBody(body.substr(0, body.size() - 5));
+	cout << "REQUEST BODY\n" << body;
+	parseChunkedBody(body.substr(0, body.size() - 7));
+	cout << "REQUEST BODY\n" << body;
 	return true;
 };
+this is the text, of this file, wooo!
+1d more test, of this file,luck
+
 
 bool Request::readRequest(int clientSd, Response &res)
 {
@@ -72,6 +82,7 @@ bool Request::readRequest(int clientSd, Response &res)
 		}
 		request.push_back(c);
 	}
+	cout << "REQUEST\n" << request;
 	while (i < reqHeadersEnd)
 	{
 		if (std::isprint(request[i]) || request[i] == '\n')
@@ -83,10 +94,10 @@ bool Request::readRequest(int clientSd, Response &res)
 		return false;
 	isChunked = getHeader("transfer-encoding").find("chunked") != string::npos ? true : false;
 	bodySize = getHeader("content-length").empty() ? 0 : stringToSize_t(getHeader("content-length"));
-	if (bodySize == 0)
-		return true;
 	if (isChunked)
 		return readChunkedRequest(clientSd, res);
+	if (bodySize == 0)
+		return true;
 
 	// BODY PARSING
 	ret = 0;

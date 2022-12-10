@@ -40,7 +40,6 @@ static void youpiDirect2(Request &req, Response &res)
 	if (req.getMethod() == GET)
 	{
 		(void)req;
-		cout << "/YoupiBanane" + req.getRoute() + "\n";
 		res.status(STATUS_301).redirect("/YoupiBanane" + req.getRoute()).send();
 	}
 	else
@@ -51,20 +50,18 @@ static void youpiDirect2(Request &req, Response &res)
 			cstrings.push_back(const_cast<char*>(req.env.env[i].c_str()));
 		}
 		cstrings.push_back(NULL);
-		res.status(STATUS_200).text_python("/cgi-bin/ubuntu_cgi_tester", &cstrings[0]);
+		res.setBody(req.getBody());
+		res.status(STATUS_200).text_python("/cgi-bin/ubuntu_cgi_tester", &cstrings[0]).send();
 	}
 };
 static void nopDirect2(Request &req, Response &res)
 {
 	(void)req;
-	cout << "/Youpibanane/nop" + req.getRoute() + "\n";
 	res.status(STATUS_301).redirect("/Youpibanane/nop" + req.getRoute()).send();
 };
 
 static bool useNop(Router &router)
 {
-	
-	cout << "useNop getReqRoute " + router.getReqRoute() + "\n";
 	if (router.getReqRoute() == "/"){
 		if (router.get("/", &get)){
 			return true;
@@ -79,8 +76,6 @@ static bool useNop(Router &router)
 
 static bool useYeah(Router &router)
 {
-	
-	cout << "useYeah getReqRoute " + router.getReqRoute() + "\n";
 	if (router.getReqRoute() == "/")
 		return false;
 	if (router.get("/not_happy.bad_extension", &get))
@@ -105,8 +100,6 @@ static bool yupi(Router &router)
 
 static bool useDirect(Router &router)
 {
-	
-	cout << "use direct getReqRoute " + router.getReqRoute() + "\n";
 	router.create_env(&parse_env);
 	if (router.getReqRoute() == "/"){
 		if (router.get("/", &direct1)){

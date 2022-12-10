@@ -55,46 +55,70 @@ Response &Response::text(const string &msg)
 	return *this;
 };
 
+Response &Response::textHtml(const string &msg)
+{
+	headers.push_back("Content-Type: text/html");
+	body = msg;
+	return *this;
+};
+
 Response &Response::redirect(string path)
 {
 	headers.push_back("Location: " + path);
 	return *this;
 };
 
+void Response::setBody(const string body){ this->body = body;}
+
 Response &Response::text_python(const string filename, char **env)
-{
+{	int fd[2];
+	if (pipe(fd) == -1) {
+		return *this;
+	}
+
 	pid_t pid;
 	pid = fork();
-	string hello = "HTTP/1.1 200 OK\n";
-	int i = 0;
+	headers.push_back("Server: webvserv");
+	headers.push_back("Status: 200 OK");
+	headers.push_back("Content-Type: text/html; charset=utf-8");
 	if (pid == -1)
 		return *this;
 	if (pid == 0)
 	{
-		int fd = open("t.txt", O_CREAT | O_TRUNC | O_RDWR, 0644);
-		if (fd < 0)
-		{
-			perror("open()");
-			exit(EXIT_FAILURE);
-		}
-		char *cstr = new char[filename.length() + 2];
-		cstr[0] = '.';
-		strcpy(cstr + 1, filename.c_str());
-		char *pythonArgs[] = {cstr, NULL};
-		cout << "pythonArgs: " << pythonArgs[0] << "\n";
-		close(STDOUT_FILENO);
-		dup2(fd, STDOUT_FILENO);
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[0]);
+		close(fd[1]);
+		char *pythonArgs[] =  {"echo", "-n", "holaaaaa" ,NULL};
 		execve(pythonArgs[0], pythonArgs, env);
-		printf("execl returned! errno is [%d]\n", errno);
-		perror("The error message is :");
+		exit(0);
 	}
 	else
 	{
-		kill(pid, SIGINT);
-		body = readFile("t.txt");
-		hello += body;
-		cout << "Response: " << hello << "\n";
-		write(clientId, hello.c_str(), hello.length());
+		pid_t pid2;
+		pid2 = fork();
+		if (pid2 == 0)
+		{
+			int fd2 = open("t.txt", O_CREAT | O_TRUNC | O_RDWR, 0777);
+			// Child process 2 (grep)
+			dup2(fd[0], STDIN_FILENO);
+			dup2(fd2, STDOUT_FILENO);
+			close(fd[0]);
+			close(fd[1]);
+			char *cstr = new char[filename.length() + 2];
+			cstr[0] = '.';
+			strcpy(cstr + 1, filename.c_str());
+			char *pythonArgs[] = {cstr, NULL};
+			execve(pythonArgs[0], pythonArgs, env);
+			printf("execl returned! errno is [%d]\n", errno);
+			perror("The error message is :");
+			exit(EXIT_FAILURE);
+		} else {
+			wait(0);
+		}
+		close(fd[0]);
+		close(fd[1]);
+		waitpid(pid2, NULL, 0);
+		//body += readFile("t.txt");
 	}
 	return *this;
 };
@@ -162,6 +186,9 @@ void Response::send()
 	headers.push_back("Content-Length: " + std::to_string(body.length()));
 	headers.push_back("Connection: close");
 	string response = stringifyResponse();
+	cout << "\n";
+	for (std::vector<string>::iterator it = headers.begin(); it != headers.end(); ++it)
+		cout << *it << "\n";
 	// cout << "-------------res-------------\n";
 	// cout << response;
 	// cout << "-----------------------------\n";

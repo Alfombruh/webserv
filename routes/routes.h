@@ -13,6 +13,5 @@ bool login(Router &router);
 bool galery(Router &router);
 bool publicFolder(Router &router);
 bool cgi(Router &router);
-void parse_env(Request &req, Response &res);
 
 #endif
