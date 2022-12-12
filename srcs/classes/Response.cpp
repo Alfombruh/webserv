@@ -3,6 +3,7 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <signal.h>
 
 Response::Response(int clientId) : clientId((size_t)clientId)
 {
@@ -66,7 +67,6 @@ Response &Response::text_python(const string filename, char **env)
 	pid_t pid;
 	pid = fork();
 	string hello = "HTTP/1.1 200 OK\n";
-	int i = 0;
 	if (pid == -1)
 		return *this;
 	if (pid == 0)

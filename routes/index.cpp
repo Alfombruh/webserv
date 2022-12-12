@@ -54,12 +54,13 @@ static void youpiDirect2(Request &req, Response &res)
 		res.status(STATUS_200).text_python("/cgi-bin/ubuntu_cgi_tester", &cstrings[0]);
 	}
 };
-static void nopDirect2(Request &req, Response &res)
-{
-	(void)req;
-	cout << "/Youpibanane/nop" + req.getRoute() + "\n";
-	res.status(STATUS_301).redirect("/Youpibanane/nop" + req.getRoute()).send();
-};
+
+// static void nopDirect2(Request &req, Response &res)
+// {
+// 	(void)req;
+// 	cout << "/Youpibanane/nop" + req.getRoute() + "\n";
+// 	res.status(STATUS_301).redirect("/Youpibanane/nop" + req.getRoute()).send();
+// };
 
 static bool useNop(Router &router)
 {

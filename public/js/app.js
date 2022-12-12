@@ -88,10 +88,10 @@ window.addEventListener("load", function () {
         if (data) {
           sessionDiv.innerHTML =
             "<h1>¡Hola " +
-            data.name +
+            decodeURI(data.name) +
             "!</h1><br>" +
             "<h3>" +
-            data.about +
+            decodeURI(data.about) +
             "</h3>" +
             '<input onClick="logOut()"class="custom-input-file" type="submit" value="Cerrar sesion">';
         } else deleteCookie("42webserv_session");
