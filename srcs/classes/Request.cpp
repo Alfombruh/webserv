@@ -1,6 +1,8 @@
 #include "webserv.h"
 #include "Request.hpp"
 #include "string.h"
+#include <iostream>
+#include <fstream>
 
 Request::Request(int clientId, sockaddr_in client_addr) : clientId((size_t)clientId), client_addr(client_addr) {}
 
@@ -52,13 +54,17 @@ bool Request::readChunkedRequest(int clientSd, Response &res)
 		}
 		//cout << c;
 	}
-	cout << "REQUEST BODY\n" << body;
+	//cout << "REQUEST BODY\n" << body;
+	std::ofstream MyFile("raw.txt");
+	MyFile << body;
+	MyFile.close();
 	parseChunkedBody(body.substr(0, body.size() - 7));
-	cout << "REQUEST BODY\n" << body;
+	std::ofstream MyFile2("parsed.txt");
+	MyFile2 << body;
+	MyFile2.close();
+	//cout << "REQUEST BODY\n" << body;
 	return true;
 };
-this is the text, of this file, wooo!
-1d more test, of this file,luck
 
 
 bool Request::readRequest(int clientSd, Response &res)

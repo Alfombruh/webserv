@@ -27,6 +27,7 @@ class Response
 	string body;
 
 	string readFile(const string filename);
+	string readFileCgi(const string filename);
 
 public:
 	Response(int clientId);
