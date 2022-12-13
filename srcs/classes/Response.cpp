@@ -78,6 +78,9 @@ Response &Response::text_python(const string filename, char **env)
 	headers.push_back("Server: webvserv");
 	headers.push_back("Status: 200 OK");
 	headers.push_back("Content-Type: text/html; charset=utf-8");
+	for (int i = 0; env[i] != NULL; ++i) {
+		cout << env[i] << "\n";
+	}
 	int i = 0;
 	while (body.size() >= i)
 	{
@@ -95,7 +98,6 @@ Response &Response::text_python(const string filename, char **env)
 		{
 			dup2(fd[1], STDOUT_FILENO);
 			close(fd[0]);
-			//close(fd[1]);
 			char *pythonArgs[] =  {(char *)"echo", (char *)"-n",(char *)body_erase.c_str(),NULL};
 			execve("/bin/echo", pythonArgs,env);
 			printf("execl returned! errno is [%d]\n", errno);
@@ -108,8 +110,7 @@ Response &Response::text_python(const string filename, char **env)
 			pid2 = fork();
 			if (pid2 == 0)
 			{
-				int fd2 = open("t.txt", O_CREAT | O_TRUNC | O_RDWR, 0777);
-				// Child process 2 (grep)
+				int fd2 = open(".cgi.txt", O_CREAT | O_TRUNC | O_RDWR, 0777);
 				dup2(fd[0], STDIN_FILENO);
 				dup2(fd2, STDOUT_FILENO);
 				close(fd[0]);
@@ -128,7 +129,7 @@ Response &Response::text_python(const string filename, char **env)
 			close(fd[0]);
 			close(fd[1]);
 			waitpid(pid2, NULL, 0);
-			newbody += readFileCgi("t.txt");
+			newbody += readFileCgi(".cgi.txt");
 		}
 	}
 	body = newbody;
@@ -163,7 +164,6 @@ string Response::readFileCgi(const string filename)
 		std::getline(f, s);
 		tmp += s;
 	}
-	//cout << tmp;
 	f.close();
 	return tmp;
 }

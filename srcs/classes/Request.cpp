@@ -55,13 +55,7 @@ bool Request::readChunkedRequest(int clientSd, Response &res)
 		//cout << c;
 	}
 	//cout << "REQUEST BODY\n" << body;
-	std::ofstream MyFile("raw.txt");
-	MyFile << body;
-	MyFile.close();
 	parseChunkedBody(body.substr(0, body.size() - 7));
-	std::ofstream MyFile2("parsed.txt");
-	MyFile2 << body;
-	MyFile2.close();
 	//cout << "REQUEST BODY\n" << body;
 	return true;
 };
