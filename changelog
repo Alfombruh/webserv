@@ -85,3 +85,7 @@
     Ionmi + Stephen jokin:
         reading requests fixed
 
+## [Version 0.5.0] (12-12-2022)
+    Ionmi:
+		loggin and info url parsing fixed, now it parses the url and changes special character to ascii to allow the session manager to display the info as it is suppossed to be, this is hardcore and amazing (only on the front)
+

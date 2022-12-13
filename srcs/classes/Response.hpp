@@ -21,7 +21,8 @@ class Response
 	string stringStatus;
 
 	// HEADERS
-	std::vector<string> headers;
+	// std::vector<string> headers;
+	StrStrMap headers;
 
 	// BODY
 	string body;
@@ -39,6 +40,8 @@ public:
 
 	// GETTERS - SETTERS
 	size_t getClientId() const;
+	const string getHeader(const string header) const;
+	const StrStrMap &getHeaders() const;
 
 	// RESPONSES
 	Response &status(const string status);

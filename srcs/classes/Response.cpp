@@ -3,10 +3,12 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <fcntl.h>
+#include <signal.h>
 
 Response::Response(int clientId) : clientId((size_t)clientId)
 {
-	headers.push_back("Host: " + (string)HOST);
+	headers.insert(make_pair("host", (string)HOST));
+	// headers.push_back("Host: " + (string)HOST);
 	// HERE WE INITIALIZE ALL STATIC HEADERS HOST, PORT, LOCATION...
 }
 
@@ -21,13 +23,12 @@ string Response::stringifyResponse()
 	// STATUS LINE
 	string response = (protocolVersion + " " + stringStatus + "\n");
 	// HEADERS
-	for (std::vector<string>::iterator it = headers.begin(); it != headers.end(); ++it)
-		response += (*it + "\n");
-	response += "\r\n";
-	//std::cout << response;
+	for (StrStrMap::iterator it = headers.begin(); it != headers.end(); ++it)
+		response += (it->first + ": " + it->second + "\n");
+	response += "\n";
 	// BODY
 	if (!body.empty())
-		response += (body);
+		response += (body + "\n"); //OJO!
 	return response;
 };
 
@@ -42,6 +43,14 @@ void Response::clearResponse()
 
 size_t Response::getClientId() const { return clientId; };
 
+const string Response::getHeader(const string header) const
+{
+	if (headers.find(header) == headers.end())
+		return "";
+	return headers.at(header);
+};
+const StrStrMap &Response::getHeaders() const { return headers; };
+
 // RESPONSES
 Response &Response::status(const string status)
 {
@@ -51,21 +60,21 @@ Response &Response::status(const string status)
 
 Response &Response::text(const string &msg)
 {
-	headers.push_back("Content-Type: text/plain");
+	headers["content-type"] = "text/plain";
 	body = msg;
 	return *this;
 };
 
 Response &Response::textHtml(const string &msg)
 {
-	headers.push_back("Content-Type: text/html");
+	headers["content-type"] = "text/html";
 	body = msg;
 	return *this;
 };
 
 Response &Response::redirect(string path)
 {
-	headers.push_back("Location: " + path);
+	headers["location"] = path;
 	return *this;
 };
 
@@ -75,9 +84,9 @@ Response &Response::text_python(const string filename, char **env)
 {
 
 	string newbody;
-	headers.push_back("Server: webvserv");
-	headers.push_back("Status: 200 OK");
-	headers.push_back("Content-Type: text/html; charset=utf-8");
+	headers["server"] = "webvserv";
+	headers["status"] = "200 OK";
+	headers["content-type"] = "Content-Type: text/html; charset=utf-8";
 	for (int i = 0; env[i] != NULL; ++i) {
 		cout << env[i] << "\n";
 	}
@@ -138,7 +147,7 @@ Response &Response::text_python(const string filename, char **env)
 
 Response &Response::json(const string &json)
 {
-	headers.push_back("Content-Type: application/json");
+	headers["content-type"] = "application/json";
 	body = json;
 	return *this;
 };
@@ -172,40 +181,40 @@ Response &Response::html(const string filename)
 {
 	body = readFile(filename);
 	// cout << body << "\n";
-	headers.push_back("Content-Type: text/html");
+	headers["content-type"] = "text/html";
 	return *this;
 };
 
 Response &Response::img(const string filename)
 {
 	body = readFile(filename);
-	headers.push_back("Content-Type: image/png");
+	headers["content-type"] = "image/png";
 	return *this;
 };
 
 Response &Response::css(const string filename)
 {
 	body = readFile(filename);
-	headers.push_back("Content-Type: text/css");
+	headers["content-type"] = "text/css";
 	return *this;
 };
 
 Response &Response::js(const string filename)
 {
 	body = readFile(filename);
-	headers.push_back("Content-Type: application/javascript");
+	headers["content-type"] = "application/javascript";
 	return *this;
 };
 
 Response &Response::cookie(const string &hash)
 {
-	headers.push_back("Set-Cookie: 42webserv_session=" + hash + "; path=/");
+	headers["set-cookie"] = "42webserv_session=" + hash + "; path=/";
 	return *this;
 };
 
 Response &Response::expireCookie()
 {
-	headers.push_back("Set-Cookie: 42webserv_session=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT");
+	headers["set-cookie"] = "42webserv_session=deleted; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 	return *this;
 };
 
@@ -213,8 +222,8 @@ void Response::send()
 {
 	// if (!body.empty())
 
-	headers.push_back("Connection: close");
-	headers.push_back("Content-Length: " + std::to_string(body.length()));
+	headers["content-length"] = std::to_string(body.length());
+	headers["connection"] = "close";
 	string response = stringifyResponse();
 	// cout << "-------------res-------------\n";
 	// cout << response;

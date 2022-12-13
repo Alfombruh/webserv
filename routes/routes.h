@@ -7,6 +7,7 @@
 #include "../srcs/classes/Response.hpp"
 
 class Router;
+class Request;
 
 bool index(Router &router);
 bool login(Router &router);
