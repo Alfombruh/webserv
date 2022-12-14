@@ -1,7 +1,9 @@
 #include "config.hpp"
 
-Config::Config(std::string &path) : path(path), workers(0), fd(open(path, .c_str(), O_RDONLY))
+Config::Config(std::string &path) : path(path)
 {
+	workers = 0;
+	fd = open(path.c_str(), O_RDONLY);
 	if (fd < 0)
 		throw(configException("couldn't open configuration file : %", 0, path)); //thow an error open
 }
@@ -37,11 +39,11 @@ void Config::tokenize()
 			else if (temp == "}")
 			{
 				if (brackets.empty())
-					throw(configException("extra closing  on line  %", 0, line_count.to_string())); //thow extra bracket error
+					throw(configException("extra closing  on line  %", 0, std::to_string(line_count))); //thow extra bracket error
 				brackets.pop();
 			}	
 			if (isDirectiveVal(temp) && line[line.find_last_not_of(" \t", line.length())] != ';') //isDirectiveVal() wip(havent done it yet)
-				throw(configException("missing ';' line %", 0, line_count.to_string()));																			  //throw missing ; error
+				throw(configException("missing ';' line %", 0, std::to_string(line_count)));//throw missing ; error
 			if (temp.find(';', temp.length() - 1) != std::string::npos)
 			{
 				temp.erase(temp.length() - 1, 1);
@@ -63,29 +65,29 @@ void Config::parse()
 	std::vector<std::string>::iterator	it;
 	
 	tokenize();
-	it = tokens.begin;
-	while (it != tokens.end)
+	it = tokens.begin();
+	while (it != tokens.end())
 	{
 		if (*it == "server")// gonna change this and make a serverconfig file 
 		{
 			ServConf	serv;
 
 			serv.id = i++;
-			serv.server(++it);
-			server.push_back(serv);
+			serv.Server(++it);
+			servers.push_back(serv);
 		}
 		else if (*it == "workers")
 		{
 			workers = std::stoi(*(++it));
 			if (workers > 16 || workers < 0)
-				throw(serverException("workers must be between a 0-16 range")); //range error
-			if (*(++it) == ';')
-				throw(serverException("'workers' missing a ';'")); //missing ';' error
+				throw(Server::serverException("workers must be between a 0-16 range")); //range error
+			if (*(++it) == ";")
+				throw(Server::serverException("'workers' missing a ';'")); //missing ';' error
 		}
 		else
 			throw(configException("main block not valid directive at %", 0, *it)); //wrong directive error
-		if (server.empty())
-			throw(serverException("missing server block")); //no server error
+		if (servers.empty())
+			throw(Server::serverException("missing server block")); //no server error
 		++it;
 	}
 
