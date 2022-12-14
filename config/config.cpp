@@ -21,11 +21,10 @@ void Config::tokenize()
 	std::string::size_type	last;
 	std::stack<bool>		brackets;
 	int						line_count = 1;
-	char					*line_c;
+	std::ifstream			in(path.c_str());
 
-	while (std::getline(fd, line_c))
+	while (std::getline(in, line))
 	{
-		line = line_c;
 		content += line + "\n";
 		last = 0;
 		while ((first = line.find_last_not_of(" \t", last)) != std::string::npos)
@@ -54,9 +53,7 @@ void Config::tokenize()
 				tokens.push_back(temp);
 		}
 		line_count++;
-		free(line_c);
 	}
-	free(line_c);
 }
 
 void Config::parse()

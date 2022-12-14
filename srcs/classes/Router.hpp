@@ -6,6 +6,8 @@
 #include "Response.hpp"
 // #include "Server.hpp"
 
+class Response;
+
 class Router
 {
 	// static std::vector<string> routes;

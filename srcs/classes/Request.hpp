@@ -9,6 +9,8 @@
 using std::cout;
 using std::string;
 
+class Response;
+
 class Enviroment
 {
 public:

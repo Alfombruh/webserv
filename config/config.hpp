@@ -6,6 +6,7 @@
 # include <vector>
 # include <stack>
 # include <fcntl.h>
+#include <sstream>
 
 # include "../srcs/classes/Server.hpp"
 # include "servconf.hpp"
@@ -32,7 +33,7 @@ class Config
 		std::vector<ServConf> &getServers();
 		std::string &getPath();
 		std::string &getFileContent();
-		bool isDirectiveVal(std::string const &str);
+		//bool isDirectiveVal(std::string const &str);
 	
 		class configException : virtual public std::exception
 		{
@@ -57,4 +58,5 @@ class Config
 		};
 };
 
+bool isDirectiveVal(std::string const &str);
 #endif
