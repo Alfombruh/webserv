@@ -8,7 +8,6 @@
 Response::Response(int clientId) : clientId((size_t)clientId)
 {
 	headers.insert(make_pair("host", (string)HOST));
-	// headers.push_back("Host: " + (string)HOST);
 	// HERE WE INITIALIZE ALL STATIC HEADERS HOST, PORT, LOCATION...
 }
 
