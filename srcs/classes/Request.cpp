@@ -49,7 +49,7 @@ bool Request::readChunkedRequest(int clientSd, Response &res)
 			res.status(STATUS_400).send();
 			return false;
 		}
-		for (int i = 0; i < ret; ++i) {
+		for (size_t i = 0; i < ret; ++i) {
 			body.push_back(c[i]);
 		}
 		//cout << c;

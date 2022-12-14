@@ -8,7 +8,6 @@
 Response::Response(int clientId) : clientId((size_t)clientId)
 {
 	headers.insert(make_pair("host", (string)HOST));
-	// headers.push_back("Host: " + (string)HOST);
 	// HERE WE INITIALIZE ALL STATIC HEADERS HOST, PORT, LOCATION...
 }
 
@@ -90,7 +89,7 @@ Response &Response::text_python(const string filename, char **env)
 	for (int i = 0; env[i] != NULL; ++i) {
 		cout << env[i] << "\n";
 	}
-	int i = 0;
+	size_t i = 0;
 	while (body.size() >= i)
 	{
 		int fd[2];

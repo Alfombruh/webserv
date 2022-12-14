@@ -1,6 +1,6 @@
 NAME = webserv
 CC = clang++ 
-CFLAGS = -g3 -fsanitize=address -Werror -Wall -Wextra -std=c++98 
+CFLAGS = -Werror -Wall -Wextra -std=c++98 -g3 -fsanitize=address
 FILES = main 					\
 		config/servconf			\
 		config/config			\
