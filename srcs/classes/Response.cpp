@@ -89,7 +89,7 @@ Response &Response::text_python(const string filename, char **env)
 	for (int i = 0; env[i] != NULL; ++i) {
 		cout << env[i] << "\n";
 	}
-	int i = 0;
+	size_t i = 0;
 	while (body.size() >= i)
 	{
 		int fd[2];
