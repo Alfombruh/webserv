@@ -102,6 +102,9 @@ public:
 	void updateRoute(const string route);
 };
 
+void parse_env(Request &req, Response &res);
+
+
 #endif
 
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages

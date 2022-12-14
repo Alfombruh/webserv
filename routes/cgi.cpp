@@ -45,7 +45,14 @@ void parse_env(Request &req, Response &res) //https://datatracker.ietf.org/doc/h
 	req.env.SERVER_PORT = token;
 	req.env.SERVER_PROTOCOL = (string)req.getProtocolVersion();
 	//SERVER_SOFTWARE
+
+	req.env.env.push_back("CONTENT_TYPE=" + req.getHeader("content-type"));
+	req.env.env.push_back("CONTENT_LENGTH=100000000" + req.getHeader("content-length"));
 	req.env.env.push_back("PATH_INFO=" + req.env.PATH_INFO);
+	req.env.env.push_back("QUERY_STRING=123=abc");
+	req.env.env.push_back("GATEWAY_INTERFACE=CGI/1.1");
+	req.env.env.push_back("REQUEST_URI=" + req.env.PATH_INFO);
+	req.env.env.push_back("SCRIPT_NAME=" + req.env.PATH_INFO);
 	req.env.env.push_back("PATH_TRANSLATED=" + req.env.PATH_TRANSLATED);
 	req.env.env.push_back("REMOTE_ADDR=" + req.env.REMOTE_ADDR);
 	req.env.env.push_back("REMOTE_PORT=" + req.env.REMOTE_PORT);
@@ -53,6 +60,9 @@ void parse_env(Request &req, Response &res) //https://datatracker.ietf.org/doc/h
 	req.env.env.push_back("SERVER_NAME=" + req.env.SERVER_NAME);
 	req.env.env.push_back("SERVER_PORT=" + req.env.SERVER_PORT);
 	req.env.env.push_back("SERVER_PROTOCOL=" + req.env.SERVER_PROTOCOL);
+	if (req.getHeader("x-secret-header-for-test") != "") //HARDCODED LINE
+		req.env.env.push_back("HTTP_X_SECRET_HEADER_FOR_TEST=" + req.getHeader("x-secret-header-for-test"));
+
 
 	//req.printReqAtributes();
 };

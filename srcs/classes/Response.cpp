@@ -27,7 +27,7 @@ string Response::stringifyResponse()
 	response += "\n";
 	// BODY
 	if (!body.empty())
-		response += (body + "\n");
+		response += (body + "\n"); //OJO!
 	return response;
 };
 
@@ -64,46 +64,83 @@ Response &Response::text(const string &msg)
 	return *this;
 };
 
+Response &Response::textHtml(const string &msg)
+{
+	headers["content-type"] = "text/html";
+	body = msg;
+	return *this;
+};
+
 Response &Response::redirect(string path)
 {
 	headers["location"] = path;
 	return *this;
 };
 
+void Response::setBody(const string body){ this->body = body;}
+
 Response &Response::text_python(const string filename, char **env)
 {
-	pid_t pid;
-	pid = fork();
-	string hello = "HTTP/1.1 200 OK\n";
-	if (pid == -1)
-		return *this;
-	if (pid == 0)
+
+	string newbody;
+	headers["server"] = "webvserv";
+	headers["status"] = "200 OK";
+	headers["content-type"] = "Content-Type: text/html; charset=utf-8";
+	for (int i = 0; env[i] != NULL; ++i) {
+		cout << env[i] << "\n";
+	}
+	int i = 0;
+	while (body.size() >= i)
 	{
-		int fd = open("t.txt", O_CREAT | O_TRUNC | O_RDWR, 0644);
-		if (fd < 0)
-		{
-			perror("open()");
-			exit(EXIT_FAILURE);
+		int fd[2];
+		if (pipe(fd) == -1) {
+			return *this;
 		}
-		char *cstr = new char[filename.length() + 2];
-		cstr[0] = '.';
-		strcpy(cstr + 1, filename.c_str());
-		char *pythonArgs[] = {cstr, NULL};
-		cout << "pythonArgs: " << pythonArgs[0] << "\n";
-		close(STDOUT_FILENO);
-		dup2(fd, STDOUT_FILENO);
-		execve(pythonArgs[0], pythonArgs, env);
-		printf("execl returned! errno is [%d]\n", errno);
-		perror("The error message is :");
+		string body_erase = body.substr(i, 100000);
+		i += 100000;
+		pid_t pid;
+		pid = fork();
+		if (pid == -1)
+			return *this;
+		if (pid == 0)
+		{
+			dup2(fd[1], STDOUT_FILENO);
+			close(fd[0]);
+			char *pythonArgs[] =  {(char *)"echo", (char *)"-n",(char *)body_erase.c_str(),NULL};
+			execve("/bin/echo", pythonArgs,env);
+			printf("execl returned! errno is [%d]\n", errno);
+			perror("The error message is :");
+			exit(0);
+		}
+		else
+		{
+			pid_t pid2;
+			pid2 = fork();
+			if (pid2 == 0)
+			{
+				int fd2 = open(".cgi.txt", O_CREAT | O_TRUNC | O_RDWR, 0777);
+				dup2(fd[0], STDIN_FILENO);
+				dup2(fd2, STDOUT_FILENO);
+				close(fd[0]);
+				close(fd[1]);
+				char *cstr = new char[filename.length() + 2];
+				cstr[0] = '.';
+				strcpy(cstr + 1, filename.c_str());
+				char *pythonArgs[] = {cstr, NULL};
+				execve(pythonArgs[0], pythonArgs, env);
+				printf("execl returned! errno is [%d]\n", errno);
+				perror("The error message is :");
+				exit(EXIT_FAILURE);
+			} else {
+				wait(0);
+			}
+			close(fd[0]);
+			close(fd[1]);
+			waitpid(pid2, NULL, 0);
+			newbody += readFileCgi(".cgi.txt");
+		}
 	}
-	else
-	{
-		kill(pid, SIGINT);
-		body = readFile("t.txt");
-		hello += body;
-		cout << "Response: " << hello << "\n";
-		write(clientId, hello.c_str(), hello.length());
-	}
+	body = newbody;
 	return *this;
 };
 
@@ -119,6 +156,23 @@ string Response::readFile(const string filename)
 	std::ifstream file(filename);
 	string tmp((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 	file.close();
+	return tmp;
+}
+
+string Response::readFileCgi(const string filename)
+{
+	std::ifstream f(filename);
+	std::string s;
+	std::getline(f, s);
+	std::getline(f, s);
+	std::getline(f, s);
+	string tmp;
+	while (!f.eof())
+	{
+		std::getline(f, s);
+		tmp += s;
+	}
+	f.close();
 	return tmp;
 }
 
