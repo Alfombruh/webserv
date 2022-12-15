@@ -5,11 +5,11 @@
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Router.hpp"
-#include "../../config/config.hpp"
 #include <fstream>
 #include <exception>
 #include <netinet/in.h>
 #include "../../routes/routes.h"
+#include "../config/config.hpp"
 
 using std::make_pair;
 
@@ -21,8 +21,8 @@ class Router;
 
 class Server		
 {
-private:
 	IntVec ports;
+private:
     //**** sockets ****
     // IntVec server; //main connection socket descriptor
     //int client; //client's new socket
@@ -35,6 +35,7 @@ private:
     // struct sockaddr_in addr; //structure that holds the value of the connection port and ip
     // std::vector<struct sockaddr_in> addr; //structure that holds the value of the connection port and ip0
 	//****
+	// Config config;
 	typedef struct portStruct
 	{
 		int server; //main connection socket descriptor

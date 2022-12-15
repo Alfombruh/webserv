@@ -14,8 +14,7 @@ Server::Server(string path)
 	{
 		ports.push_back(i);
 	}
-	(void)path;
-	// config.parse(path);
+	// config.setPath(path); 
 }
 Server::~Server()
 {

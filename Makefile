@@ -2,8 +2,8 @@ NAME = webserv
 CC = clang++ 
 CFLAGS = -Werror -Wall -Wextra -std=c++98 -g3 -fsanitize=address
 FILES = main 					\
-		config/servconf			\
-		config/config			\
+		srcs/config/servconf	\
+		srcs/config/config		\
 		srcs/errors				\
 		srcs/classes/Server		\
 		srcs/classes/Request	\

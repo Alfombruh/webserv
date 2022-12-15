@@ -10,6 +10,7 @@ typedef std::map<std::string, std::string> StrStrMap;
 typedef std::vector<int> IntVec;
 
 
+#include "../srcs/config/config.hpp"
 #include "../srcs/classes/Request.hpp"
 #include "../srcs/classes/Response.hpp"
 #include "../srcs/classes/Server.hpp"
