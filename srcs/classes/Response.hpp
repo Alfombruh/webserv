@@ -2,15 +2,15 @@
 #define RESPONSE_HPP
 
 #include "webserv.h"
-#include "unistd.h"
+#include <unistd.h>
 #include <vector>
 #include <fstream>
 #include <streambuf>
 #include <string>
 #include <sstream>
 
-using std::cout;
-using std::string;
+// using std::cout;
+// using std::string;
 
 class Response
 {

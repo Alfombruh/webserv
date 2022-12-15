@@ -1,19 +1,19 @@
 NAME = webserv
 CC = clang++ 
-CFLAGS = -Werror -Wall -Wextra -std=c++98 -g3 -fsanitize=address
-FILES = main 					\
-		srcs/config/servconf	\
-		srcs/config/config		\
-		srcs/errors				\
-		srcs/classes/Server		\
-		srcs/classes/Request	\
-		srcs/classes/Response	\
-		srcs/classes/Router		\
-		routes/index			\
-		routes/cgi				\
-		routes/login			\
-		routes/galery			\
-		routes/public			\
+CFLAGS =#-Werror -Wall -Wextra -std=c++98 -g3 -fsanitize=address
+FILES = main 						\
+		srcs/config/configParser	\
+		srcs/errors					\
+		srcs/classes/config			\
+		srcs/classes/Server			\
+		srcs/classes/Request		\
+		srcs/classes/Response		\
+		srcs/classes/Router			\
+		routes/index				\
+		routes/cgi					\
+		routes/login				\
+		routes/galery				\
+		routes/public				\
 
 SRCS = $(addsuffix .cpp, $(FILES))
 OBJS = $(addsuffix .o, $(FILES))
@@ -32,7 +32,7 @@ $(NAME): $(OBJS) $(INCLUDES)
 	$(CC) $(CFLAGS) -I $(INCLUDES) $(OBJS) -o $@
 
 run: $(NAME)
-	./webserv config/default.conf
+	./webserv config/test.conf
 
 test:
 	./testers/tester http://localhost:8080

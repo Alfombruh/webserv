@@ -8,29 +8,54 @@
 
 typedef std::map<std::string, std::string> StrStrMap;
 typedef std::vector<int> IntVec;
+typedef std::vector<std::string> StrVec;
 
+using std::cout;
+using std::string;
 
-#include "../srcs/config/config.hpp"
+enum METHOD
+{
+    GET,
+    POST,
+    DELETE
+};
+
+typedef struct
+{
+    string location;
+    std::vector<METHOD> alowedMethods;
+    string root;
+    string destination;
+    StrStrMap cgiInfo;
+
+} Location;
+
+typedef struct
+{
+    bool redirect;
+    string status;
+    string route;
+} Redirection;
+
+#include "../srcs/config/configParser.hpp"
+#include "../srcs/classes/config.hpp"
 #include "../srcs/classes/Request.hpp"
 #include "../srcs/classes/Response.hpp"
 #include "../srcs/classes/Server.hpp"
 #include "../srcs/classes/Router.hpp"
 
 #define MAX_CONNECTIONS 1000
-#define TIMEOUT         60
-#define BUFFER_SIZE     1024
-#define BACKLOG         10
-#define PORT            8080
-#define HOST          	"Aisha"
-#define FAILED          false
-#define REQ_PARSED		true
-#define MAX_BODY		100000
+#define TIMEOUT 60
+#define BUFFER_SIZE 1024
+#define BACKLOG 10
+#define PORT 8080
+#define HOST "Aisha"
+#define FAILED false
+#define REQ_PARSED true
+#define MAX_BODY 100000
 
-using std::string;
-using std::cout;
-
-
-typedef struct s_webserv{
+typedef struct s_webserv
+{
     int server_fd;
     int new_socket;
     int addr_len;

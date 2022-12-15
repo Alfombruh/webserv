@@ -43,13 +43,6 @@ public:
 	std::vector<std::string> env;
 };
 
-enum METHOD
-{
-	GET,
-	POST,
-	DELETE
-};
-
 class Request
 {
 	size_t clientId;

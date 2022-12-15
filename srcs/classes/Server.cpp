@@ -8,13 +8,12 @@
 #include <sys/select.h>
 #include <netinet/in.h>
 
-Server::Server(string path)
+Server::Server(const Config &config): configuration(config)
 {
 	for (size_t i = 8080; i < 8084; i++)
 	{
 		ports.push_back(i);
 	}
-	// config.setPath(path); 
 }
 Server::~Server()
 {
