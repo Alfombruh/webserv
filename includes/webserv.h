@@ -4,6 +4,7 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <sstream>
 #include "status_codes.h"
 
 typedef std::map<std::string, std::string> StrStrMap;
@@ -15,27 +16,35 @@ using std::string;
 
 enum METHOD
 {
-    GET,
-    POST,
-    DELETE
+	GET,
+	POST,
+	DELETE
 };
 
 typedef struct
 {
-    string location;
-    std::vector<METHOD> alowedMethods;
-    string root;
-    string destination;
-    StrStrMap cgiInfo;
+	string location;
+	std::vector<METHOD> alowedMethods;
+	string root;
+	string destination;
+	std::pair<string, string> cgiInfo;
 
 } Location;
 
 typedef struct
 {
-    bool redirect;
-    string status;
-    string route;
+	bool redirect;
+	string status;
+	string route;
 } Redirection;
+
+inline size_t stringToSize_t(string str)
+{
+	std::stringstream sstream(str);
+	size_t result;
+	sstream >> result;
+	return result;
+}
 
 #include "../srcs/config/configParser.hpp"
 #include "../srcs/classes/config.hpp"
@@ -56,11 +65,11 @@ typedef struct
 
 typedef struct s_webserv
 {
-    int server_fd;
-    int new_socket;
-    int addr_len;
-    int reader;
-    struct sockaddr_in addr;
+	int server_fd;
+	int new_socket;
+	int addr_len;
+	int reader;
+	struct sockaddr_in addr;
 } t_webserv;
 
 int init_server(t_webserv &webserv);

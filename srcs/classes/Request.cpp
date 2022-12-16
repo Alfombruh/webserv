@@ -18,14 +18,6 @@ void *Request::ft_memset(void *str, int c, size_t len)
 	return (str);
 }
 
-size_t Request::stringToSize_t(string str)
-{
-	std::stringstream sstream(str);
-	size_t result;
-	sstream >> result;
-	return result;
-}
-
 void Request::clearReq()
 {
 	route.clear();
@@ -160,7 +152,7 @@ bool Request::parseStatusLine(string rawStatusLine, Response &res)
 		this->method = POST;
 	else if (method == "DELETE")
 		this->method = DELETE;
-	else if (method == "PUT") {
+	else if (method == "PUT") { //harcoded
 		res.status(STATUS_200).send();
 		return false;
 	}

@@ -62,7 +62,6 @@ class Request
 	string body;
 
 	void *ft_memset(void *str, int c, size_t len);
-	size_t stringToSize_t(string str);
 	bool parseRequest(string statusHeader, Response &res);
 	void parseChunkedBody(string rawRequest);
 	bool parseStatusLine(string rawStatusLine, Response &res);
