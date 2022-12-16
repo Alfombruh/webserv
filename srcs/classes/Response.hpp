@@ -2,6 +2,7 @@
 #define RESPONSE_HPP
 
 #include "webserv.h"
+#include "config.hpp"
 #include <unistd.h>
 #include <vector>
 #include <fstream>
@@ -11,10 +12,11 @@
 
 // using std::cout;
 // using std::string;
+class Config;
 
 class Response
 {
-	size_t clientId;
+	const size_t clientId;
 
 	// STATUS LINE
 	static string protocolVersion;
@@ -30,8 +32,10 @@ class Response
 	string readFile(const string filename);
 	string readFileCgi(const string filename);
 
+    const Config &configuration;
+
 public:
-	Response(int clientId);
+	Response(int clientId, const Config &configuration);
 	~Response();
 
 	// bool parseResponse(string rawRes);

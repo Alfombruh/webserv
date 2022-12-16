@@ -2,20 +2,23 @@
 #define ROUTER_HPP
 
 // #include "webserv.h"
+#include "config.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
 // #include "Server.hpp"
 
 class Response;
+class Config;
 
 class Router
 {
+    const Config &configuration;
 	// static std::vector<string> routes;
 	Request &req;
 	Response &res;
 
 public:
-	Router(Request &req, Response &res);
+	Router(Request &req, Response &res, const Config &configuration);
 	// Router(string configPath);
 	~Router(){};
 

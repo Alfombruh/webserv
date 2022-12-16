@@ -5,11 +5,11 @@
 #include <fcntl.h>
 #include <signal.h>
 
-Response::Response(int clientId) : clientId((size_t)clientId)
+Response::Response(int clientId, const Config &configuration) : clientId((size_t)clientId), configuration(configuration)
 {
-	headers.insert(make_pair("host", (string)HOST));
+	headers.insert(make_pair("host", configuration.getServerName()));
 	// HERE WE INITIALIZE ALL STATIC HEADERS HOST, PORT, LOCATION...
-}
+};
 
 string Response::protocolVersion = "HTTP/1.1";
 

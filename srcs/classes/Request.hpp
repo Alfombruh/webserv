@@ -2,6 +2,7 @@
 #define REQUEST_HPP
 
 #include "webserv.h"
+#include "config.hpp"
 #include "Response.hpp"
 #include <string>
 #include <netinet/in.h>
@@ -10,6 +11,7 @@ using std::cout;
 using std::string;
 
 class Response;
+class Config;
 
 class Enviroment
 {
@@ -45,7 +47,7 @@ public:
 
 class Request
 {
-	size_t clientId;
+	const size_t clientId;
 	sockaddr_in client_addr;
 
 	// STATUS LINE
@@ -61,18 +63,19 @@ class Request
 	// BODY
 	string body;
 
+    const Config &configuration;
+
 	void *ft_memset(void *str, int c, size_t len);
 	bool parseRequest(string statusHeader, Response &res);
 	void parseChunkedBody(string rawRequest);
 	bool parseStatusLine(string rawStatusLine, Response &res);
 	void parseUrlVars();
 	bool parseHeaders(string rawHeaders);
-	char *urlDecode(const char *str);
 	bool readChunkedRequest(int clientSd, Response &res);
 
 public:
 	Enviroment env;
-	Request(int clientId, sockaddr_in client_addr);
+	Request(int clientId, sockaddr_in client_addr, const Config &configuration);
 	~Request();
 
 	void clearReq();

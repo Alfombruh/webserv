@@ -22,7 +22,6 @@ class Router;
 
 class Server		
 {
-	IntVec ports;
 private:
     //**** sockets ****
     // IntVec server; //main connection socket descriptor
