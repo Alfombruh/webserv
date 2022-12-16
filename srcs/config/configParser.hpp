@@ -29,6 +29,7 @@ public:
 	// GETTERS
 	Config &parser(size_t num);
 	size_t getServerAmmount() const;
+    const std::vector<Config> &getConfigurations(void) const;
 	const Config &getConfigAt(const size_t index) const;
 	class configParseException : public std::exception
 	{

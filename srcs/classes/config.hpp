@@ -25,6 +25,46 @@ public:
 	Config(){};
 	~Config(){};
 
+    const void printConfig(void)
+    {
+        for (IntVec::iterator it = Ports.begin(); it != Ports.end(); it++)
+            cout << "Ports are: " << *it << "\n";
+
+        cout << "Server Name: " << serverName << "\n";
+
+        cout << "Redirections part {\n" << "redi.status: " << redirection.status << "\n" << "redi.route: " << redirection.route << "\n" << "redi.status: " << redirection.redirect << "\n}\n";
+
+        cout << "The allowed methods are: ";
+        for (std::vector<METHOD>::iterator it = alowedMethods.begin(); it != alowedMethods.end(); it++)
+            cout << *it << " ";
+        cout << "\n";
+
+        cout << "Root is: " << root << "\n";
+
+        cout << "The Limit of bodySize is: " << maxBody << "\n";
+
+        cout << "Destination is: " << destination << "\n";
+
+        cout << "Error Pages are:\n";
+        for (StrStrMap::iterator it = errorPages.begin(); it != errorPages.end(); it++)
+            cout << it->first << " " << it->second << "\n";
+        
+        cout << "Redirects are: " << redirect.first << " && " << redirect.second << "\n";
+
+        for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
+        {
+            cout << "Location is: " << it->location << "\n";
+            cout << "\tMethods are:";
+            for (std::vector<METHOD>::iterator ite = it->alowedMethods.begin(); ite !=  it->alowedMethods.end(); ite++)
+                cout << *ite << " ";
+            cout << "\n";
+            cout << "Root is: " << it->root << "\n";
+            cout << "Destination is: " << it->destination << "\n";
+            cout << "CGI info: " << it->cgiInfo.first << " && " << it->cgiInfo.second << "\n";
+        }
+        
+    };
+
 	const IntVec &ports() const { return Ports; }
 	void setPort(const int port) { Ports.push_back(port); };
 

@@ -171,5 +171,10 @@ const Config &ConfigParser::getConfigAt(const size_t index) const
 	return configurations.at(index);
 };
 
+const std::vector<Config> &ConfigParser::getConfigurations(void) const
+{
+    return configurations;
+};
+
 ConfigParser::configParseException::configParseException(const char *msg) : msg((char *)msg){};
 const char *ConfigParser::configParseException::what() const throw() { return (msg); };
