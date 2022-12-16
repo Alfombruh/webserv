@@ -10,6 +10,7 @@
 typedef std::map<std::string, std::string> StrStrMap;
 typedef std::vector<int> IntVec;
 typedef std::vector<std::string> StrVec;
+typedef std::pair<std::string, std::string> StrPair;
 
 using std::cout;
 using std::string;
@@ -27,7 +28,7 @@ typedef struct
 	std::vector<METHOD> alowedMethods;
 	string root;
 	string destination;
-	std::pair<string, string> cgiInfo;
+	StrPair cgiInfo;
 
 } Location;
 

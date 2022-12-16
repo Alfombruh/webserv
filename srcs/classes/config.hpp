@@ -5,7 +5,6 @@
 
 using std::cout;
 using std::string;
-typedef std::pair<string, string> StrPair;
 
 class Config
 {

@@ -12,8 +12,6 @@ ConfigParser::ConfigParser(const string configPath) : totalServers(0)
 	{
 		if (rawConfig[i] == '#')
 			i = rawConfig.find('\n', i) + 1;
-		if (rawConfig[i] == '\n')
-			i++;
 		if (i + 8 < rawConfig.size() && rawConfig.substr(i, 8) == "server {")
 		{
 			if (bracket != 0)
@@ -40,9 +38,9 @@ ConfigParser::ConfigParser(const string configPath) : totalServers(0)
 			if (bracket < 0)
 				throw configParseException("at this point kill yourself. In your next life make sure you close your brackets correctly");
 		}
-		if (rawConfig[i] == '\t')
+		if (bracket > 1 && rawConfig[i] == '\n')
 		{
-			if (i + 1 < rawConfig.size() && rawConfig[i + 1] == '\t')
+			if (i + 1 < rawConfig.size() && rawConfig[i + 1] == '\n')
 				rawServers[totalServers - 1].push_back(rawConfig[i++]);
 			i++;
 			continue;
@@ -51,6 +49,7 @@ ConfigParser::ConfigParser(const string configPath) : totalServers(0)
 	}
 	if (bracket != 0)
 		throw configParseException("at this point kill yourself. In your next life make sure you close your brackets correctly");
+
 	parseServers();
 }
 
@@ -60,7 +59,14 @@ void ConfigParser::parseServers()
 {
 	for (StrVec::iterator it = rawServers.begin(); it != rawServers.end(); it++)
 	{
-		// cout << "$$$$$$$\n" << *it << "$$$$$$$\n";
+		string tmp;
+		for (size_t i = 0; i < it->size(); i++)
+		{
+			if ((i > 0 && it->at(i) == '\n' && it->at(i - 1) == '\n') || it->at(i) == '\t')
+				continue;
+			tmp.push_back(it->at(i));
+		}
+		*it = tmp;
 		Config config;
 		size_t i = 0;
 		size_t copySize;
