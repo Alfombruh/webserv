@@ -32,7 +32,7 @@ class Response
 	string readFile(const string filename);
 	string readFileCgi(const string filename);
 
-    const Config &configuration;
+    __unused const Config &configuration;
 
 public:
 	Response(int clientId, const Config &configuration);

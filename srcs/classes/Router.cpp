@@ -1,7 +1,7 @@
 #include "Router.hpp"
 
 Router::Router(Request &req, Response &res, const Config &configuration)
-    : req(req), res(res), configuration(configuration){};
+    : configuration(configuration), req(req), res(res){};
 
 bool Router::use(const string route, bool (*callback)(Router &))
 {

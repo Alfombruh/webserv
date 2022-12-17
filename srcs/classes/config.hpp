@@ -16,6 +16,7 @@ private:
 	string root;
 	ssize_t maxBody;
 	string destination;
+	StrStrMap cgis;
 	StrStrMap errorPages;
 	std::vector<Location> locations;
 
@@ -38,7 +39,7 @@ public:
 		}
 	};
 
-	const void printConfig(void)
+	void printConfig(void)
 	{
 		for (IntVec::iterator it = Ports.begin(); it != Ports.end(); it++)
 			cout << "listen " << *it << "\n";
@@ -64,6 +65,13 @@ public:
 
 		if (!destination.empty())
 			cout << "\ndestination " << destination << "\n";
+
+		if (!cgis.empty())
+		{
+			cout << "\n";
+			for (StrStrMap::iterator it = cgis.begin(); it != cgis.end(); it++)
+				cout << "error_page " << it->first << " " << it->second << "\n";
+		}
 
 		if (!errorPages.empty())
 		{
@@ -110,11 +118,14 @@ public:
 	const string &getRoot() const { return root; }
 	void setRoot(const string &root) { this->root = root; }
 
-	const size_t getMaxBody() const { return maxBody; }
+	ssize_t getMaxBody() const { return maxBody; }
 	void setMaxBody(const size_t &maxBody) { this->maxBody = maxBody; }
 
 	const string &getDestination() const { return destination; }
 	void setDestination(const string &destination) { this->destination = destination; }
+
+	const StrStrMap &getCgis() const { return cgis; }
+	void setCgi(const string extension, const string binary) { errorPages[extension] = binary; }
 
 	const StrStrMap &getErrorPages() const { return errorPages; }
 	void setErrorPage(const string status, const string pageRoute) { errorPages[status] = pageRoute; }

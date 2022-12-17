@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 	{
 		ConfigParser parser(argv[1]);
 		Config configuration = parser.getConfiguration();
-		configuration.printConfig();
+		// configuration.printConfig();
 
 		Server server(configuration);
 		server.setup();

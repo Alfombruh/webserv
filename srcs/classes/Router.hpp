@@ -12,7 +12,7 @@ class Config;
 
 class Router
 {
-    const Config &configuration;
+    __unused const Config &configuration;
 	// static std::vector<string> routes;
 	Request &req;
 	Response &res;

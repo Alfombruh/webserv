@@ -50,7 +50,7 @@ static void delet(Request &req, Response &res)
 	std::ifstream found(("image_galery/" + filename).c_str());
 	if (found.good())
 	{
-		remove(("image_galery/" + filename).c_str());
+		std::remove(("image_galery/" + filename).c_str());
 		res.status(STATUS_200).text("filename: " + filename + " deleted").send();
 		return;
 	}

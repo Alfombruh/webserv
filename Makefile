@@ -1,6 +1,6 @@
 NAME = webserv
 CC = clang++ 
-CFLAGS =#-Werror -Wall -Wextra -std=c++98 -g3 -fsanitize=address
+CFLAGS =-Werror -Wall -Wextra -std=c++98 -g3 -fsanitize=address
 FILES = main 						\
 		srcs/config/configParser	\
 		srcs/errors					\
@@ -32,7 +32,7 @@ $(NAME): $(OBJS) $(INCLUDES)
 	$(CC) $(CFLAGS) -I $(INCLUDES) $(OBJS) -o $@
 
 run: $(NAME)
-	./webserv config/test.conf
+	./webserv config/default.conf
 
 test:
 	./testers/tester http://localhost:8080
