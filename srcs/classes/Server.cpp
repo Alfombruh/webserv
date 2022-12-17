@@ -92,13 +92,13 @@ void Server::handleConnection(int client)
 	if (clients.at(client).first->readRequest(client, *clients.at(client).second) == REQ_PARSED)
 	{
 		StrPair redirect = configuration.getRedirect();
-		if (redirect.first.empty() == false)
-			clients.at(client).second->status(redirect.first).redirect(redirect.second).send();
-		else
+		if (redirect.first.empty())
 		{
 			Router router(*clients.at(client).first, *clients.at(client).second, configuration);
 			router.use("/", &index);
 		}
+		else
+			clients.at(client).second->status(redirect.first).redirect(redirect.second).send();
 	}
 	// CLOSE-CLEAR CLIENT FROM SET AND MAP
 	close(client);
