@@ -1,25 +1,25 @@
 #ifndef CONFIGPARSER_HPP
 #define CONFIGPARSER_HPP
 
+#define KYS "at this point kill yourself. In your next life make sure you close your brackets correctly"
+
+#include "../classes/config.hpp"
 #include <iostream>
 #include <exception>
-#include "../classes/config.hpp"
 
 using std::cout;
 using std::string;
 
-class Config;
-
 class ConfigParser
 {
 private:
-	std::vector<Config> configurations;
-	StrVec rawServers;
-	size_t totalServers;
-	void parseServers();
+	Config configuration;
+	string rawServer;
+	void parseServer();
 	string parseVar(const string line, const string key);
-	void parseLocation(const string line, Config &config);
-	void parseLine(const string line, Config &config);
+	void parseLocation(const string line);
+	void parseLine(const string line);
+	string trimSpaces(string rawConfig) const;
 	std::vector<METHOD> parseMethods(const string line);
 
 public:
@@ -27,16 +27,13 @@ public:
 	~ConfigParser();
 
 	// GETTERS
-	Config &parser(size_t num);
-	size_t getServerAmmount() const;
-    const std::vector<Config> &getConfigurations(void) const;
-	const Config &getConfigAt(const size_t index) const;
-	class configParseException : public std::exception
+	const Config &getConfiguration(void) const;
+	class ConfigParseException : public std::exception
 	{
 		char *msg;
 
 	public:
-		configParseException(const char *msg);
+		ConfigParseException(const char *msg);
 		virtual const char *what() const throw();
 	};
 };

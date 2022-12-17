@@ -11,58 +11,89 @@ class Config
 private:
 	IntVec Ports;
 	string serverName;
-	Redirection redirection;
+	StrPair redirect;
 	std::vector<METHOD> alowedMethods;
 	string root;
-	size_t maxBody;
+	ssize_t maxBody;
 	string destination;
 	StrStrMap errorPages;
-	StrPair redirect;
 	std::vector<Location> locations;
 
 public:
-	Config(){};
+	Config() : maxBody(-1){};
 	~Config(){};
 
-    const void printConfig(void)
-    {
-        for (IntVec::iterator it = Ports.begin(); it != Ports.end(); it++)
-            cout << "Ports are:\t" << *it << "\n";
+	const string getMethodStr(METHOD method)
+	{
+		switch (method)
+		{
+		case 0:
+			return "GET";
+		case 1:
+			return "POST";
+		case 2:
+			return "DELETE";
+		default:
+			return "";
+		}
+	};
 
-        cout << "Server Name:\t" << serverName << "\n";
+	const void printConfig(void)
+	{
+		for (IntVec::iterator it = Ports.begin(); it != Ports.end(); it++)
+			cout << "listen " << *it << "\n";
 
-        cout << "Redirections part {\n" << "redi.status: " << redirection.status << "\n" << "redi.route: " << redirection.route << "\n" << "redi.status: " << redirection.redirect << "\n\t\t}\n";
+		if (!serverName.empty())
+			cout << "\nserver_name " << serverName << "\n";
 
-        cout << "The allowed methods are:\t";
-        for (std::vector<METHOD>::iterator it = alowedMethods.begin(); it != alowedMethods.end(); it++)
-            cout << *it << " ";
-        cout << "\n";
+		if (!redirect.first.empty())
+			cout << "\nreturn " << redirect.first << " " << redirect.second << "\n";
 
-        cout << "Root is:\t" << root << "\n";
+		if (!alowedMethods.empty())
+		{
+			cout << "\nallow_methods ";
+			for (std::vector<METHOD>::iterator it = alowedMethods.begin(); it != alowedMethods.end(); it++)
+				cout << getMethodStr(*it) << " ";
+			cout << "\n";
+		}
+		if (!root.empty())
+			cout << "\nroot " << root << "\n";
 
-        cout << "The Limit of bodySize is:\t" << maxBody << "\n";
+		if (maxBody != -1)
+			cout << "\nclient_body_limit" << maxBody << "\n";
 
-        cout << "Destination is:\t" << destination << "\n";
+		if (!destination.empty())
+			cout << "\ndestination " << destination << "\n";
 
-        cout << "Error Pages are:\n";
-        for (StrStrMap::iterator it = errorPages.begin(); it != errorPages.end(); it++)
-            cout << "\t\t" << it->first << " && " << it->second << "\n";
-        
-        cout << "Redirects are:\t" << redirect.first << " && " << redirect.second << "\n";
+		if (!errorPages.empty())
+		{
+			cout << "\n";
+			for (StrStrMap::iterator it = errorPages.begin(); it != errorPages.end(); it++)
+				cout << "error_page " << it->first << " " << it->second << "\n";
+		}
 
-        for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
-        {
-            cout << "Location is:\t" << it->location << "\n";
-            cout << "The allowed methods are:\t";
-            for (std::vector<METHOD>::iterator ite = it->alowedMethods.begin(); ite !=  it->alowedMethods.end(); ite++)
-                cout << *ite << " ";
-            cout << "\n";
-            cout << "Root is:\t" << it->root << "\n";
-            cout << "Destination is:\t" << it->destination << "\n";
-            cout << "CGI info:\t" << it->cgiInfo.first << " && " << it->cgiInfo.second << "\n";
-        }
-        
-    };
+		if (!locations.empty())
+		{
+			for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
+			{
+				cout << "\nlocation " << it->location << " {\n";
+				if (!it->alowedMethods.empty())
+				{
+					cout << "\tallow_methods ";
+					for (std::vector<METHOD>::iterator ite = it->alowedMethods.begin(); ite != it->alowedMethods.end(); ite++)
+						cout << *ite << " ";
+					cout << "\n";
+				}
+				if (!it->root.empty())
+					cout << "\troot " << it->root << "\n";
+				if (!it->destination.empty())
+					cout << "\tdestination " << it->destination << "\n";
+				if (!it->cgiInfo.first.empty())
+					cout << "\tcgi_info " << it->cgiInfo.first << " " << it->cgiInfo.second << "\n";
+				cout << "}\n";
+			}
+		}
+	};
 
 	const IntVec &getPorts() const { return Ports; }
 	void setPort(const int port) { Ports.push_back(port); };
@@ -70,8 +101,8 @@ public:
 	const string &getServerName() const { return serverName; }
 	void setServerName(const string &serverName) { this->serverName = serverName; }
 
-	const Redirection &getRedirection() const { return redirection; }
-	void setRedirection(const Redirection redirection) { this->redirection = redirection; }
+	const StrPair &getRedirect() const { return redirect; }
+	void setRedirect(const StrPair redirect) { this->redirect = redirect; }
 
 	const std::vector<METHOD> &getAlowedMethods() const { return alowedMethods; }
 	void setAlowedMethods(const std::vector<METHOD> alowedMethods) { this->alowedMethods = alowedMethods; }
@@ -87,9 +118,6 @@ public:
 
 	const StrStrMap &getErrorPages() const { return errorPages; }
 	void setErrorPage(const string status, const string pageRoute) { errorPages[status] = pageRoute; }
-
-	const StrPair &getRedirect() const { return redirect; }
-	void setRedirect(const StrPair redirect) { this->redirect = redirect; }
 
 	const std::vector<Location> &getLocations() const { return locations; }
 	void setLocations(const Location location) { locations.push_back(location); }

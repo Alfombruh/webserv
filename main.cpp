@@ -1,5 +1,7 @@
 #include "webserv.h"
 #include <csignal>
+#include "srcs/config/configParser.hpp"
+#include "srcs/classes/config.hpp"
 
 void signalHandler(int signal)
 {
@@ -10,19 +12,16 @@ int main(int argc, char **argv)
 {
 	if (argc != 2)
 		return (errorMessage("./webserv configFile.conf"));
-    std::signal(SIGINT, signalHandler);
+	std::signal(SIGINT, signalHandler);
 	try
-	{   
+	{
 		ConfigParser parser(argv[1]);
-        std::vector<Config> configurations = parser.getConfigurations();
-        for (std::vector<Config>::iterator it = configurations.begin(); it != configurations.end(); it++)
-            it->printConfig();
-		for (size_t i = 0; i < parser.getServerAmmount(); i++)
-		{
-			Server server(parser.getConfigAt(i));
-			server.setup();
-			server.run();
-		}
+		Config configuration = parser.getConfiguration();
+		configuration.printConfig();
+
+		Server server(configuration);
+		server.setup();
+		server.run();
 	}
 	catch (const std::exception &e)
 	{

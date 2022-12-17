@@ -47,8 +47,6 @@ inline size_t stringToSize_t(string str)
 	return result;
 }
 
-#include "../srcs/config/configParser.hpp"
-#include "../srcs/classes/config.hpp"
 #include "../srcs/classes/Request.hpp"
 #include "../srcs/classes/Response.hpp"
 #include "../srcs/classes/Server.hpp"

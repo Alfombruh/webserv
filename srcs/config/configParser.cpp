@@ -1,28 +1,17 @@
 #include "configParser.hpp"
 #include <fstream>
 
-ConfigParser::ConfigParser(const string configPath) : totalServers(0)
+ConfigParser::ConfigParser(const string configPath)
 {
 	std::ifstream configFile(configPath);
 	string rawConfig((std::istreambuf_iterator<char>(configFile)), std::istreambuf_iterator<char>());
+	rawConfig = trimSpaces(rawConfig);
 	size_t i = 0;
 	int bracket = 0;
-
 	while (i < rawConfig.size())
 	{
 		if (rawConfig[i] == '#')
 			i = rawConfig.find('\n', i) + 1;
-		if (i + 8 < rawConfig.size() && rawConfig.substr(i, 8) == "server {")
-		{
-			if (bracket != 0)
-				throw configParseException("you fucking retarded piece of shit next time you better write the server part in the configFile");
-			i += 9;
-			totalServers++;
-			rawServers.push_back("");
-			bracket++;
-		}
-		if (totalServers == 0)
-			throw configParseException("you fucking retarded piece of shit next time you better write the server part in the configFile");
 		if (i >= rawConfig.size())
 			break;
 		if (i < rawConfig.size() && rawConfig[i] == '{')
@@ -32,51 +21,75 @@ ConfigParser::ConfigParser(const string configPath) : totalServers(0)
 			bracket--;
 			if (bracket == 0)
 			{
-				i++;
+				rawServer.push_back(rawConfig[i++]);
 				continue;
 			}
 			if (bracket < 0)
-				throw configParseException("at this point kill yourself. In your next life make sure you close your brackets correctly");
+				throw ConfigParseException(KYS);
 		}
-		if (bracket > 1 && rawConfig[i] == '\n')
+		if (bracket > 0 && rawConfig[i] == '\n')
 		{
 			if (i + 1 < rawConfig.size() && rawConfig[i + 1] == '\n')
-				rawServers[totalServers - 1].push_back(rawConfig[i++]);
+				rawServer.push_back(rawConfig[i++]);
 			i++;
 			continue;
 		}
-		rawServers[totalServers - 1].push_back(rawConfig[i++]);
+		rawServer.push_back(rawConfig[i++]);
 	}
 	if (bracket != 0)
-		throw configParseException("at this point kill yourself. In your next life make sure you close your brackets correctly");
-
-	parseServers();
+		throw ConfigParseException(KYS);
+	parseServer();
 }
 
 ConfigParser::~ConfigParser(){};
 
-void ConfigParser::parseServers()
+string ConfigParser::trimSpaces(string rawConfig) const
 {
-	for (StrVec::iterator it = rawServers.begin(); it != rawServers.end(); it++)
+	string trimmed;
+	size_t i = 0;
+
+	while (i < rawConfig.size() && rawConfig[i] == ' ')
+		i++;
+	while (i < rawConfig.size())
 	{
-		string tmp;
-		for (size_t i = 0; i < it->size(); i++)
+		while (i + 1 < rawConfig.size() && rawConfig[i] == ' ' && rawConfig[i + 1] == ' ')
+			i++;
+		trimmed.push_back(rawConfig[i++]);
+	}
+	rawConfig = trimmed;
+	trimmed.clear();
+	i = 0;
+	while (i < rawConfig.size())
+	{
+		if (i + 1 < rawConfig.size() && rawConfig[i] == '\n' && rawConfig[i + 1] == ' ')
 		{
-			if ((i > 0 && it->at(i) == '\n' && it->at(i - 1) == '\n') || it->at(i) == '\t')
-				continue;
-			tmp.push_back(it->at(i));
+			trimmed.push_back(rawConfig[i]);
+			i += 2;
+			continue;
 		}
-		*it = tmp;
-		Config config;
-		size_t i = 0;
-		size_t copySize;
-		while (i < it->size())
-		{
-			copySize = it->find("\n", i) == string::npos ? it->size() : it->find("\n", i) - i;
-			parseLine(it->substr(i, copySize), config);
-			i += (copySize + 1);
-		}
-		configurations.push_back(config);
+		trimmed.push_back(rawConfig[i++]);
+	}
+	return trimmed;
+};
+
+void ConfigParser::parseServer()
+{
+	string tmp;
+	for (size_t i = 0; i < rawServer.size(); i++)
+	{
+		if ((i > 0 && rawServer.at(i) == '\n' && rawServer.at(i - 1) == '\n') || rawServer.at(i) == '\t')
+			continue;
+		tmp.push_back(rawServer.at(i));
+	}
+	rawServer = tmp;
+	size_t i = 0;
+	size_t copySize;
+	cout << rawServer << "\n";
+	while (i < rawServer.size())
+	{
+		copySize = rawServer.find("\n", i) == string::npos ? rawServer.size() : rawServer.find("\n", i) - i;
+		parseLine(rawServer.substr(i, copySize));
+		i += (copySize + 1);
 	}
 };
 
@@ -85,6 +98,14 @@ std::vector<METHOD> ConfigParser::parseMethods(const string line)
 	std::vector<METHOD> allowedMethods;
 	string method;
 	size_t i = 0;
+
+	if (line.empty())
+	{
+		allowedMethods.push_back(GET);
+		allowedMethods.push_back(POST);
+		allowedMethods.push_back(DELETE);
+		return allowedMethods;
+	}
 	while (i <= line.size())
 	{
 		if (line[i] != ' ' && i < line.size())
@@ -99,7 +120,7 @@ std::vector<METHOD> ConfigParser::parseMethods(const string line)
 		else if (method == "DELETE")
 			allowedMethods.push_back(DELETE);
 		else
-			throw configParseException("Method not suported");
+			throw ConfigParseException("Method not suported");
 		i++;
 		method.clear();
 	}
@@ -119,7 +140,7 @@ string ConfigParser::parseVar(const string line, const string key)
 	return tmp.substr(0, tmp.find(";"));
 }
 
-void ConfigParser::parseLocation(const string line, Config &config)
+void ConfigParser::parseLocation(const string line)
 {
 	Location location;
 	string cgiInfo;
@@ -133,54 +154,47 @@ void ConfigParser::parseLocation(const string line, Config &config)
 		location.cgiInfo.first = cgiInfo.substr(0, cgiInfo.find(" "));
 		location.cgiInfo.second = cgiInfo.substr(cgiInfo.find(" ") + 1, cgiInfo.find(";"));
 	}
-	config.setLocations(location);
+	configuration.setLocations(location);
 };
 
-void ConfigParser::parseLine(const string line, Config &config)
+void ConfigParser::parseLine(const string line)
 {
 	if (9 < line.size() && line.substr(0, 9) == "location ")
 	{
-		parseLocation(line.substr(9), config);
+		parseLocation(line.substr(9));
 		return;
 	}
-
+	if (line.find("{") != string::npos || line.find("}") != string::npos)
+		throw ConfigParseException("Only location brackets allowed");
 	string key = line.substr(0, line.find(" "));
 	string tmpValue;
 
 	if (key == "listen")
-		config.setPort(stringToSize_t(parseVar(line, "listen")));
+		configuration.setPort(stringToSize_t(parseVar(line, "listen")));
 	else if (key == "server_name")
-		config.setServerName(parseVar(line, "server_name"));
+		configuration.setServerName(parseVar(line, "server_name"));
 	else if (key == "allow_methods")
-		config.setAlowedMethods(parseMethods(parseVar(line, "allow_methods")));
+		configuration.setAlowedMethods(parseMethods(parseVar(line, "allow_methods")));
 	else if (key == "destination")
-		config.setAlowedMethods(parseMethods(parseVar(line, "destination")));
+		configuration.setDestination(parseVar(line, "destination"));
 	else if (key == "client_body_limit")
-		config.setMaxBody(stringToSize_t(parseVar(line, "client_body_limit")));
+		configuration.setMaxBody(stringToSize_t(parseVar(line, "client_body_limit")));
 	else if (key == "root")
-		config.setRoot(parseVar(line, "root"));
+		configuration.setRoot(parseVar(line, "root"));
 	else if (!(tmpValue = parseVar(line, "error_page")).empty())
-		config.setErrorPage(tmpValue.substr(0, tmpValue.find(" ")),
-							tmpValue.substr(tmpValue.find(" ") + 1, tmpValue.find(";")));
+		configuration.setErrorPage(tmpValue.substr(0, tmpValue.find(" ")),
+								   tmpValue.substr(tmpValue.find(" ") + 1, tmpValue.find(";")));
 	else if (!(tmpValue = parseVar(line, "return")).empty())
-		config.setRedirect(std::make_pair(tmpValue.substr(0, tmpValue.find(" ")),
-										  tmpValue.substr(tmpValue.find(" ") + 1, tmpValue.find(";"))));
+		configuration.setRedirect(std::make_pair(tmpValue.substr(0, tmpValue.find(" ")),
+												 tmpValue.substr(tmpValue.find(" ") + 1, tmpValue.find(";"))));
 };
 
 // GETTERS
-size_t ConfigParser::getServerAmmount() const
+
+const Config &ConfigParser::getConfiguration(void) const
 {
-	return configurations.size();
-};
-const Config &ConfigParser::getConfigAt(const size_t index) const
-{
-	return configurations.at(index);
+	return configuration;
 };
 
-const std::vector<Config> &ConfigParser::getConfigurations(void) const
-{
-    return configurations;
-};
-
-ConfigParser::configParseException::configParseException(const char *msg) : msg((char *)msg){};
-const char *ConfigParser::configParseException::what() const throw() { return (msg); };
+ConfigParser::ConfigParseException::ConfigParseException(const char *msg) : msg((char *)msg){};
+const char *ConfigParser::ConfigParseException::what() const throw() { return (msg); };
