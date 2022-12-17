@@ -7,7 +7,7 @@
 
 Response::Response(int clientId, const Config &configuration) : clientId((size_t)clientId), configuration(configuration)
 {
-	headers.insert(make_pair("host", configuration.getServerName()));
+	headers.insert(make_pair("Host", configuration.getServerName()));
 	// HERE WE INITIALIZE ALL STATIC HEADERS HOST, PORT, LOCATION...
 };
 
@@ -59,21 +59,21 @@ Response &Response::status(const string status)
 
 Response &Response::text(const string &msg)
 {
-	headers["content-type"] = "text/plain";
+	headers["Content-type"] = "text/plain";
 	body = msg;
 	return *this;
 };
 
 Response &Response::textHtml(const string &msg)
 {
-	headers["content-type"] = "text/html";
+	headers["Content-type"] = "text/html";
 	body = msg;
 	return *this;
 };
 
 Response &Response::redirect(string path)
 {
-	headers["location"] = path;
+	headers["Location"] = path;
 	return *this;
 };
 
@@ -83,9 +83,6 @@ Response &Response::textPython(const string filename, char **env)
 {
 
 	string newbody;
-	headers["server"] = "webvserv";
-	headers["status"] = "200 OK";
-	headers["content-type"] = "Content-Type: text/html; charset=utf-8";
 	for (int i = 0; env[i] != NULL; ++i) {
 		cout << env[i] << "\n";
 	}
@@ -138,6 +135,7 @@ Response &Response::textPython(const string filename, char **env)
 			close(fd[1]);
 			waitpid(pid2, NULL, 0);
 			newbody += readFileCgi(".cgi.txt");
+			std::remove(".cgi.txt");
 		}
 	}
 	body = newbody;
@@ -146,7 +144,7 @@ Response &Response::textPython(const string filename, char **env)
 
 Response &Response::json(const string &json)
 {
-	headers["content-type"] = "application/json";
+	headers["Content-type"] = "application/json";
 	body = json;
 	return *this;
 };
@@ -163,20 +161,38 @@ string Response::readFileCgi(const string filename)
 {
 	std::ifstream f(filename);
 	std::string s;
-	std::getline(f, s);
-	std::getline(f, s);
-	std::getline(f, s);
+	std::string key;
+	std::string value;
+	bool isheader = true;
 	string tmp;
 	while (!f.eof())
 	{
 		std::getline(f, s);
-		tmp += s;
+		if (s == "\r" || s.empty() || s == "\n") {
+			isheader = false;
+			continue;
+		}
+		if (isheader)
+		{
+			size_t length = s.length();
+			size_t i = 0;
+			while (i < length && s[i] != ':')
+				key.push_back(s[i++]);
+			i += 2;
+			while (i < length && s[i] != '\n')
+				value.push_back(s[i++]);
+			headers.insert(make_pair(key, value));
+			key.clear();
+			value.clear();
+		}
+		else
+			tmp += s;
 	}
 	f.close();
 	return tmp;
 }
 
-Response &Response::htmlCgi(const string filename)
+Response &Response::lsDir(const string filename)
 {
 	int fd[2];
 	if (pipe(fd) == -1) {
@@ -203,7 +219,7 @@ Response &Response::htmlCgi(const string filename)
 		body = readFile("ls_cgi");
 		std::remove("ls_cgi");
 	}
-	headers["content-type"] = "text/html";
+	headers["Content-Type"] = "text/html";
 	return *this;
 };
 
@@ -211,28 +227,28 @@ Response &Response::html(const string filename)
 {
 	body = readFile(filename);
 	// cout << body << "\n";
-	headers["content-type"] = "text/html";
+	headers["Content-Type"] = "text/html";
 	return *this;
 };
 
 Response &Response::img(const string filename)
 {
 	body = readFile(filename);
-	headers["content-type"] = "image/png";
+	headers["Content-Type"] = "image/png";
 	return *this;
 };
 
 Response &Response::css(const string filename)
 {
 	body = readFile(filename);
-	headers["content-type"] = "text/css";
+	headers["Content-Type"] = "text/css";
 	return *this;
 };
 
 Response &Response::js(const string filename)
 {
 	body = readFile(filename);
-	headers["content-type"] = "application/javascript";
+	headers["Content-Type"] = "application/javascript";
 	return *this;
 };
 
@@ -252,8 +268,8 @@ void Response::send()
 {
 	// if (!body.empty())
 
-	headers["content-length"] = std::to_string(body.length());
-	headers["connection"] = "close";
+	headers["Content-length"] = std::to_string(body.length());
+	headers["Connection"] = "close";
 	string response = stringifyResponse();
 	cout << "-------------res-------------\n";
 	cout << response;
