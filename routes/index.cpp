@@ -51,7 +51,7 @@ static void youpiDirect2(Request &req, Response &res)
 		}
 		cstrings.push_back(NULL);
 		res.setBody(req.getBody());
-		res.status(STATUS_200).text_python("/cgi-bin/ubuntu_cgi_tester", &cstrings[0]).send();
+		res.status(STATUS_200).textPython("/cgi-bin/ubuntu_cgi_tester", &cstrings[0]).send();
 	}
 };
 
@@ -95,7 +95,6 @@ static bool yupi(Router &router)
 
 static bool useDirect(Router &router)
 {
-	router.create_env(&parse_env);
 	if (router.getReqRoute() == "/"){
 		if (router.get("/", &direct1)){
 			return true;
@@ -115,6 +114,7 @@ static bool useDirect(Router &router)
 
 bool index(Router &router)
 {
+	router.create_env(&parseEnv);
 	if (router.use("/public", &publicFolder))
 		return true;
 	if (router.use("/galery", &galery))

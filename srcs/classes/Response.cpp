@@ -79,7 +79,7 @@ Response &Response::redirect(string path)
 
 void Response::setBody(const string body){ this->body = body;}
 
-Response &Response::text_python(const string filename, char **env)
+Response &Response::textPython(const string filename, char **env)
 {
 
 	string newbody;
@@ -176,6 +176,37 @@ string Response::readFileCgi(const string filename)
 	return tmp;
 }
 
+Response &Response::htmlCgi(const string filename)
+{
+	int fd[2];
+	if (pipe(fd) == -1) {
+		return *this;
+	}
+	pid_t pid;
+	pid = fork();
+	if (pid == -1) {
+		return *this;
+	}
+	if (pid == 0)
+	{
+		fd[1] = open("ls_cgi", O_CREAT | O_TRUNC | O_RDWR, 0777);
+		dup2(fd[1], STDOUT_FILENO);
+		close(fd[1]);
+		char *pythonArgs[] =  {(char *)"./cgi-bin/ls_c_cgi", (char *)filename.c_str(), NULL};
+		execve(pythonArgs[0], pythonArgs,NULL);
+		std::remove("ls_cgi");
+		exit(0);
+	}
+	else
+	{
+		wait(0);
+		body = readFile("ls_cgi");
+		std::remove("ls_cgi");
+	}
+	headers["content-type"] = "text/html";
+	return *this;
+};
+
 Response &Response::html(const string filename)
 {
 	body = readFile(filename);
@@ -224,9 +255,9 @@ void Response::send()
 	headers["content-length"] = std::to_string(body.length());
 	headers["connection"] = "close";
 	string response = stringifyResponse();
-	// cout << "-------------res-------------\n";
-	// cout << response;
-	// cout << "-----------------------------\n";
+	cout << "-------------res-------------\n";
+	cout << response;
+	cout << "-----------------------------\n";
 	write(clientId, response.c_str(), response.length());
 	clearResponse();
 };

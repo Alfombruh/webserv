@@ -52,9 +52,10 @@ public:
 	Response &text(const string &msg);
 	Response &textHtml(const string &msg);
 	Response &redirect(string path);
-	Response &text_python(const string filename, char **env);
+	Response &textPython(const string filename, char **env);
 	Response &json(const string &json);
 	Response &html(const string filename);
+	Response &htmlCgi(const string filename);
 	Response &img(const string filename);
 	void setBody(const string body);
 	Response &css(const string filename);

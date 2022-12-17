@@ -195,6 +195,7 @@ void Request::parseUrlVars()
         return;
     string str = route;
     route.clear();
+	env.env.push_back("QUERY_STRING=" + str);
     for (size_t i = 0; i < varPos; i++)
         route.push_back(str.at(i));
     varPos++;
@@ -215,12 +216,50 @@ void Request::parseUrlVars()
     }
 }
 
+string Request::encodeEnv(string keyToEncode, string value)
+{
+	if (keyToEncode.empty() || value.empty())
+		return "";
+
+	string env_string;
+	size_t length = keyToEncode.length();
+	size_t i = -1;
+	if (keyToEncode == "content-type" || keyToEncode.compare(0, 2,"x-") == 0
+		|| keyToEncode == "content-length" || keyToEncode == "user-agent")
+	{
+		if (keyToEncode.compare(0, 2,"x-") == 0) {
+			env_string = "HTTP_";
+		}
+		while (++i < length)
+		{
+			if (keyToEncode[i] != '-')
+				env_string.push_back((char)toupper(keyToEncode[i]));
+			else
+				env_string.push_back('_');
+		}
+	}
+	else
+	{
+		if (keyToEncode == "referer")
+			env_string = "PATH_TRANSLATED";
+		else if (keyToEncode.compare(0, 2,"x-") == 0) {
+			env_string = "HTTP_";
+		}
+		else
+			return "";
+	}
+	env_string.push_back('=');
+	env_string += value;
+	return env_string;
+}
+
 bool Request::parseHeaders(string rawHeaders)
 {
     size_t i = 0;
     size_t length = rawHeaders.length();
     string key;
     string value;
+	string encode;
     while (i < length)
     {
         while (i < length && rawHeaders[i] != ':')
@@ -229,6 +268,9 @@ bool Request::parseHeaders(string rawHeaders)
         while (i < length && rawHeaders[i] != '\n')
             value.push_back(rawHeaders[i++]);
         i++;
+		encode = encodeEnv(key, value);
+		if (!encode.empty())
+			env.env.push_back(encode);
         headers.insert(make_pair(key, value));
         key.clear();
         value.clear();
@@ -309,6 +351,7 @@ void Request::updateRoute(const string route)
 void Request::printReqAtributes()
 {
     // STATUS LINE
+	/*
     cout << "STATUS LINE:\n";
     cout << "method:" << getMethodStr() << "$\n";
     cout << "route:" << route << "$\n";
@@ -318,12 +361,14 @@ void Request::printReqAtributes()
     for (StrStrMap::iterator it = routeVars.begin(); it != routeVars.end(); ++it)
         cout << it->first << ":" << it->second << "$\n";
     // HEADERS
+	*/
     cout << "\nHEADERS:\n";
     for (StrStrMap::iterator it = headers.begin(); it != headers.end(); ++it)
         cout << it->first << ":" << it->second << "$\n";
+
     // BODY
-    cout << "\nBODY:\n"
-         << body << "$\n";
+    // cout << "\nBODY:\n"
+    //    << body << "$\n";
 
     // cout << "SERVER_PROTOCOL:" << this->env.SERVER_PROTOCOL << "$\n";
     // cout << "REQUEST_METHOD:" << this->env.REQUEST_METHOD << "$\n";
