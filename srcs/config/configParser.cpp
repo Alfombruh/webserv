@@ -4,6 +4,8 @@
 ConfigParser::ConfigParser(const string configPath)
 {
 	std::ifstream configFile(configPath);
+	if (!configFile.is_open())
+		throw ConfigParseException("configuration file not found");
 	string rawConfig((std::istreambuf_iterator<char>(configFile)), std::istreambuf_iterator<char>());
 	rawConfig = trimSpaces(rawConfig);
 	size_t i = 0;
@@ -48,7 +50,7 @@ string ConfigParser::trimSpaces(string rawConfig) const
 	string trimmed;
 	size_t i = 0;
 
-	while (i < rawConfig.size() && rawConfig[i] == ' ')
+	while (i < rawConfig.size() && (rawConfig[i] == ' ' || rawConfig[i] == '\n'))
 		i++;
 	while (i < rawConfig.size())
 	{
@@ -84,7 +86,6 @@ void ConfigParser::parseServer()
 	rawServer = tmp;
 	size_t i = 0;
 	size_t copySize;
-	cout << rawServer << "\n";
 	while (i < rawServer.size())
 	{
 		copySize = rawServer.find("\n", i) == string::npos ? rawServer.size() : rawServer.find("\n", i) - i;
@@ -181,6 +182,9 @@ void ConfigParser::parseLine(const string line)
 		configuration.setMaxBody(stringToSize_t(parseVar(line, "client_body_limit")));
 	else if (key == "root")
 		configuration.setRoot(parseVar(line, "root"));
+	else if (!(tmpValue = parseVar(line, "cgi")).empty())
+		configuration.setCgi(tmpValue.substr(0, tmpValue.find(" ")),
+							 tmpValue.substr(tmpValue.find(" ") + 1, tmpValue.find(";")));
 	else if (!(tmpValue = parseVar(line, "error_page")).empty())
 		configuration.setErrorPage(tmpValue.substr(0, tmpValue.find(" ")),
 								   tmpValue.substr(tmpValue.find(" ") + 1, tmpValue.find(";")));

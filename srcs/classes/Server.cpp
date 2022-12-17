@@ -40,6 +40,8 @@ int Server::setup(void)
 	timeout.tv_usec = 0;
 	FD_ZERO(&current_set);
 	IntVec ports = configuration.getPorts();
+	if (ports.empty())
+		throw serverException("No ports setted");
 	for (IntVec::iterator it = ports.begin(); it != ports.end(); it++)
 	{
 		portStruct temp;
@@ -58,7 +60,7 @@ int Server::setup(void)
 		FD_SET(temp.server, &current_set);
 		portData.push_back(temp);
 	}
-	return (0);
+	return 1;
 }
 
 int Server::run()

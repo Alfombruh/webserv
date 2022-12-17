@@ -90,7 +90,7 @@ bool Request::readRequest(int clientSd, Response &res)
         return readChunkedRequest(clientSd, res);
     if (bodySize == 0)
         return true;
-    if(bodySize > configuration.getMaxBody())
+    if(bodySize > (size_t)configuration.getMaxBody())
     {
         res.status(STATUS_413).send();
         return false;
