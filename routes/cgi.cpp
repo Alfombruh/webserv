@@ -9,10 +9,12 @@ static void getPython(Request &req, Response &res)
 {
 	std::vector<char*> cstrings;
 	cstrings.reserve(req.env.env.size());
-	for(size_t i = 0; i < req.env.env.size(); ++i)
+	for(size_t i = 0; i < req.env.env.size(); ++i) {
 		cstrings.push_back(const_cast<char*>(req.env.env[i].c_str()));
+	}
 	cstrings.push_back(NULL);
-	res.status(STATUS_300).textPython(req.getAbsoluteRoute(), &cstrings[0]);
+	res.setBody(req.getBody());
+	res.status(STATUS_300).textPython(req.env.PATH_INFO, &cstrings[0]).send();
 };
 
 void parseEnv(Request &req, Response &res) //https://datatracker.ietf.org/doc/html/rfc3875#section-4.1.5

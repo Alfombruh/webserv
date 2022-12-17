@@ -32,7 +32,7 @@ class Response
 	string readFile(const string filename);
 	string readFileCgi(const string filename);
 
-    __unused const Config &configuration;
+	const Config &configuration;
 
 public:
 	Response(int clientId, const Config &configuration);
@@ -55,7 +55,7 @@ public:
 	Response &textPython(const string filename, char **env);
 	Response &json(const string &json);
 	Response &html(const string filename);
-	Response &htmlCgi(const string filename);
+	Response &lsDir(const string filename);
 	Response &img(const string filename);
 	void setBody(const string body);
 	Response &css(const string filename);
