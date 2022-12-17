@@ -71,6 +71,7 @@ class Request
 	bool parseStatusLine(string rawStatusLine, Response &res);
 	void parseUrlVars();
 	bool parseHeaders(string rawHeaders);
+	string encodeEnv(string keyToEncode, string value);
 	bool readChunkedRequest(int clientSd, Response &res);
 
 public:
@@ -99,7 +100,7 @@ public:
 	void updateRoute(const string route);
 };
 
-void parse_env(Request &req, Response &res);
+void parseEnv(Request &req, Response &res);
 
 
 #endif

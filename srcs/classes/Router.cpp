@@ -1,4 +1,4 @@
-#include "Router.hpp"
+#include"Router.hpp"
 
 Router::Router(Request &req, Response &res, const Config &configuration)
     : req(req), res(res), configuration(configuration){};
@@ -33,9 +33,6 @@ bool Router::delet(const string route, void (*delet)(Request &, Response &)) con
 };
 bool Router::notFound() const
 {
-    if (getReqRoute() == "/")
-        res.status(STATUS_405).html("./public/html/405.html").send();
-    else
         res.status(STATUS_404).html("./public/html/404.html").send();
     return false;
 };
