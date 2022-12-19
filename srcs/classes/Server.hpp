@@ -9,11 +9,9 @@
 #include <exception>
 #include <netinet/in.h>
 #include "../../routes/routes.h"
-#include "config.hpp"
 
 using std::make_pair;
 
-class Config;
 class Request;
 class Response;
 typedef std::map<int, std::pair<Request *, Response *> > ClientMap;
@@ -47,12 +45,12 @@ private:
     //**** private functions ********************************
     void    acceptConnection(int newClient);
     void    handleConnection(int client);
+    void    closeConnection(int client);
     //****
 	ClientMap clients;
     //****
-    const Config &configuration;
 public:
-    Server(const Config &config);
+    Server();
     ~Server();
     int setup(void);
     int run(void);

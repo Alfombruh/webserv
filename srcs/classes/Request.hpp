@@ -63,8 +63,6 @@ class Request
 	// BODY
 	string body;
 
-    const Config &configuration;
-
 	void *ft_memset(void *str, int c, size_t len);
 	bool parseRequest(string statusHeader, Response &res);
 	void parseChunkedBody(string rawRequest);
@@ -76,7 +74,7 @@ class Request
 
 public:
 	Enviroment env;
-	Request(int clientId, sockaddr_in client_addr, const Config &configuration);
+	Request(int clientId, sockaddr_in client_addr);
 	~Request();
 
 	void clearReq();
@@ -98,6 +96,7 @@ public:
 	const string &getProtocolVersion() const;
 	bool isInRoute(const string route) const;
 	void updateRoute(const string route);
+	void setRoute(const string route);
 };
 
 void parseEnv(Request &req, Response &res);

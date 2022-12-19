@@ -12,7 +12,7 @@
 int main(__unused int argc, char **argv){
     int sock = 0;
     struct sockaddr_in servAddr;
-    char msg[] = "POST /galery?filename=test.png HTTP/1.1\nContent-Type: image/jpg\nTransfer-Encoding: gzip\n\n7\r\nMozilla\r\n11\r\nDeveloper Network\r\n\0\r\n\r\n";
+    char msg[] = "POST /gallery?filename=test.png HTTP/1.1\nContent-Type: image/jpg\nTransfer-Encoding: gzip\n\n7\r\nMozilla\r\n11\r\nDeveloper Network\r\n\0\r\n\r\n";
     char buffer[BUFFER_SIZE];
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0){
         write(2, "error at creating socket\n", sizeof("error at creating socket\n"));

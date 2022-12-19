@@ -8,7 +8,7 @@
 #include <sys/select.h>
 #include <netinet/in.h>
 
-Server::Server(const Config &config) : configuration(config) {}
+Server::Server() {}
 Server::~Server()
 {
 	for (ClientMap::iterator it = clients.begin(); it != clients.end(); it++)
@@ -26,8 +26,7 @@ void Server::acceptConnection(int newClient)
 	if ((client = accept(newClient, (struct sockaddr *)&client_addr, (socklen_t *)&clientAddrLen)) <= 0)
 		throw(serverException("couldn't accept connection"));
 	FD_SET(client, &current_set);
-	clients.insert(make_pair(client, make_pair(new Request(client, client_addr, configuration),
-											   new Response(client, configuration))));
+	clients.insert(make_pair(client, make_pair(new Request(client, client_addr), new Response(client))));
 	if (client > max_socket)
 		max_socket = client;
 }
@@ -89,26 +88,61 @@ int Server::run()
 	}
 }
 
-void Server::handleConnection(int client)
+// CLOSE-CLEAR CLIENT FROM SET AND MAP
+void Server::closeConnection(int client)
 {
-	if (clients.at(client).first->readRequest(client, *clients.at(client).second) == REQ_PARSED)
-	{
-		StrPair redirect = configuration.getRedirect();
-		if (redirect.first.empty())
-		{
-			Router router(*clients.at(client).first, *clients.at(client).second, configuration);
-			router.use("/", &index);
-		}
-		else
-			clients.at(client).second->status(redirect.first).redirect(redirect.second).send();
-	}
-	// CLOSE-CLEAR CLIENT FROM SET AND MAP
 	close(client);
 	// clients.at(client).first->clearReq();
 	delete clients.at(client).first;
 	delete clients.at(client).second;
 	clients.erase(client);
 	FD_CLR(client, &current_set);
+}
+void Server::handleConnection(int client)
+{
+	// BAD REQUEST
+	if (clients.at(client).first->readRequest(client, *clients.at(client).second) != REQ_PARSED)
+	{
+		closeConnection(client);
+		return;
+	}
+
+	// RETURN UN CONGIGURATION FILE
+	StrPair redirect = configuration.getRedirect();
+	if (redirect.first.empty() == false)
+	{
+		clients.at(client).second->status(redirect.first).redirect(redirect.second).send();
+		closeConnection(client);
+		return;
+	}
+
+	// HANDLE REQUEST
+	Router router(*clients.at(client).first, *clients.at(client).second);
+	std::vector<Location> locations = configuration.getLocations();
+	if (router.useLocations(locations, &location) == false)
+		router.use("/", &index);
+	closeConnection(client);
+	// std::vector<METHOD> alowedMethods = configuration.getAlowedMethods();
+	// if (alowedMethods.empty())
+	// {
+	// 	return;
+	// }
+	// for (std::vector<METHOD>::iterator it = alowedMethods.begin(); it != alowedMethods.end(); it++)
+	// {
+	// 	if (*it == clients.at(client).first->getMethod())
+	// 	{
+	// 		Router router(*clients.at(client).first, *clients.at(client).second);
+	// 		router.use("/", &index);
+	// 		closeConnection(client);
+	// 		return;
+	// 	}
+	// }
+	// const StrStrMap &errorPages = configuration.getErrorPages();
+	// if (errorPages.find("405") != errorPages.end())
+	// 	clients.at(client).second->status(STATUS_405).html(errorPages.at("405")).send();
+	// else
+	// 	clients.at(client).second->status(STATUS_405).text("405 Method not alowed").send();
+	// closeConnection(client);
 }
 
 Server::serverException::serverException(const char *msg) : msg((char *)msg){};

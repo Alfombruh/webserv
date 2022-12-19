@@ -45,7 +45,7 @@
 │  ├─ 📁images
 │  └─ 📁simpleServer    
 ├─ 📁testers
-├─ 📁image_galery
+├─ 📁image_gallery
 ├─ 📁SessionManager
 ├─ links.txt
 ├─ changelog  

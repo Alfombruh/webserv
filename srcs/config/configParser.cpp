@@ -148,7 +148,9 @@ void ConfigParser::parseLocation(const string line)
 
 	location.location = line.substr(0, line.find(" "));
 	location.alowedMethods = parseMethods(parseVar(line, "allow_methods"));
+	location.index = parseVar(line, "index");
 	location.root = parseVar(line, "root");
+	location.api = parseVar(line, "api");
 	location.destination = parseVar(line, "destination");
 	if (!(cgiInfo = parseVar(line, "cgi_info")).empty())
 	{
@@ -182,6 +184,8 @@ void ConfigParser::parseLine(const string line)
 		configuration.setMaxBody(stringToSize_t(parseVar(line, "client_body_limit")));
 	else if (key == "root")
 		configuration.setRoot(parseVar(line, "root"));
+	else if (key == "index")
+		configuration.setIndex(parseVar(line, "index"));
 	else if (!(tmpValue = parseVar(line, "cgi")).empty())
 		configuration.setCgi(tmpValue.substr(0, tmpValue.find(" ")),
 							 tmpValue.substr(tmpValue.find(" ") + 1, tmpValue.find(";")));

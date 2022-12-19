@@ -5,7 +5,7 @@
 #include <fcntl.h>
 #include <signal.h>
 
-Response::Response(int clientId, const Config &configuration) : clientId((size_t)clientId), configuration(configuration)
+Response::Response(int clientId) : clientId((size_t)clientId)
 {
 	headers.insert(make_pair("Host", configuration.getServerName()));
 	// HERE WE INITIALIZE ALL STATIC HEADERS HOST, PORT, LOCATION...
@@ -67,7 +67,7 @@ Response &Response::text(const string &msg)
 Response &Response::textHtml(const string &msg)
 {
 	headers["Content-type"] = "text/html";
-	body = msg;
+	body = "<html><body>" + msg + "</body></html>";
 	return *this;
 };
 
@@ -271,9 +271,9 @@ void Response::send()
 	headers["Content-length"] = std::to_string(body.length());
 	headers["Connection"] = "close";
 	string response = stringifyResponse();
-	cout << "-------------res-------------\n";
-	cout << response;
-	cout << "-----------------------------\n";
+	// cout << "-------------res-------------\n";
+	// cout << response;
+	// cout << "-----------------------------\n";
 	write(clientId, response.c_str(), response.length());
 	clearResponse();
 };

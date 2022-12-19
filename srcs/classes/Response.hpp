@@ -32,10 +32,8 @@ class Response
 	string readFile(const string filename);
 	string readFileCgi(const string filename);
 
-	const Config &configuration;
-
 public:
-	Response(int clientId, const Config &configuration);
+	Response(int clientId);
 	~Response();
 
 	// bool parseResponse(string rawRes);

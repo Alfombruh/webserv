@@ -25,7 +25,7 @@ namespace session
 
 	void createSession(const session &session)
 	{
-		ofstream sessionFile(("SessionManager/sess_" + session.hash).c_str(), std::ofstream::out | std::ofstream::trunc);
+		ofstream sessionFile(("./api/SessionManager/sess_" + session.hash).c_str(), std::ofstream::out | std::ofstream::trunc);
 		sessionFile << session.name << "\n"
 					<< session.about << "\n";
 		sessionFile.close();
@@ -33,14 +33,14 @@ namespace session
 
 	void removeSession(const string &hash)
 	{
-		std::remove(("SessionManager/sess_" + hash).c_str());
+		std::remove(("./api/SessionManager/sess_" + hash).c_str());
 	};
 
 	const session getSession(const string &hash)
 	{
 		string line;
 		session session = {.hash = hash};
-		ifstream sessionFile(("SessionManager/sess_" + hash).c_str());
+		ifstream sessionFile(("./api/SessionManager/sess_" + hash).c_str());
 
 		std::getline(sessionFile, line);
 		session.name = line;

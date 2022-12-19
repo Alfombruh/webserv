@@ -1,5 +1,5 @@
 window.addEventListener("load", function () {
-  //POST GALERY
+  //POST gallery
   function convertDataURIToBinary(dataURI) {
     var BASE64_MARKER = ";base64,";
     var base64Index = dataURI.indexOf(BASE64_MARKER) + BASE64_MARKER.length;
@@ -28,7 +28,7 @@ window.addEventListener("load", function () {
 
       reader.onloadend = function () {
         var binaryImg = convertDataURIToBinary(reader.result);
-        let fetchPostGalery = {
+        let fetchPostgallery = {
           method: "POST",
           headers: {
             "Content-Type": "image/png",
@@ -37,7 +37,7 @@ window.addEventListener("load", function () {
           },
           body: binaryImg,
         };
-        fetch("/galery?filename=" + files[0].name, fetchPostGalery)
+        fetch("/gallery?filename=" + files[0].name, fetchPostgallery)
           .then((res) => {
             feedback.innerHTML =
               res.status === 201
@@ -162,8 +162,8 @@ const logIn = () => {
     .catch((error) => error);
 };
 
-//DELETE GALERY
-function deleteGalery() {
+//DELETE gallery
+function deletegallery() {
   const input = document.querySelector("#delete-input").value;
   const feedback = document.querySelector("#delete-input-feedback");
   if (!input.endsWith(".jpg") && !input.endsWith(".png")) {
@@ -171,7 +171,7 @@ function deleteGalery() {
       "el nomre del archivo no es valido: example.png | example.jpg";
     return;
   }
-  let fetchDeleteGalery = {
+  let fetchDeletegallery = {
     method: "DELETE",
     headers: {
       "Content-Type": "text/plain",
@@ -180,8 +180,8 @@ function deleteGalery() {
     },
   };
 
-  const url = "/galery?filename=" + input;
-  fetch(url, fetchDeleteGalery)
+  const url = "/gallery?filename=" + input;
+  fetch(url, fetchDeletegallery)
     .then((res) => {
       feedback.innerHTML =
         res.status === 200

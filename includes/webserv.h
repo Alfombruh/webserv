@@ -7,6 +7,7 @@
 #include <sstream>
 #include "status_codes.h"
 
+
 typedef std::map<std::string, std::string> StrStrMap;
 typedef std::vector<int> IntVec;
 typedef std::vector<std::string> StrVec;
@@ -26,7 +27,9 @@ typedef struct
 {
 	string location;
 	std::vector<METHOD> alowedMethods;
+	string index;
 	string root;
+	string api;
 	string destination;
 	StrPair cgiInfo;
 
@@ -51,6 +54,8 @@ inline size_t stringToSize_t(string str)
 #include "../srcs/classes/Response.hpp"
 #include "../srcs/classes/Server.hpp"
 #include "../srcs/classes/Router.hpp"
+#include "../srcs/classes/config.hpp"
+extern Config configuration;
 
 #define MAX_CONNECTIONS 1000
 #define TIMEOUT 60
