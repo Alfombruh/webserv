@@ -28,14 +28,6 @@ bool Router::apiUse(const string route, bool (*callback)(Router &))
 	if (req.isInRoute(route) == false)
 		return false;
 	req.updateRoute(route);
-	ssize_t bodySize = req.getHeader("content-length").empty() ? -1 : stringToSize_t(req.getHeader("content-length"));
-	if (bodySize == -1)
-		bodySize = req.getBody().size();
-	if (configuration.getMaxBody() != -1 && bodySize > configuration.getMaxBody())
-	{
-		res.status(STATUS_413).send();
-		return true;
-	}
 	return callback(*this);
 };
 

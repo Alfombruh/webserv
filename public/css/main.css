@@ -1,7 +1,7 @@
 .main {
 	margin-top: 85px;
 	background-color: black;
-	background-image: url(/public/images/labanda.jpg);
+	background-image: url(/images/labanda.jpg);
 	/* Para dejar la imagen de fondo centrada, horizontal y verticamlmente */
 	background-position: center 200px;
 	/* Para que la imagen de fondo no se repita */
@@ -17,7 +17,7 @@
 #main {
 	margin-top: 85px;
 	background-color: black;
-	background-image: url(/public/images/labanda.jpg);
+	background-image: url(/images/labanda.jpg);
 	/* Para dejar la imagen de fondo centrada, horizontal y verticamlmente */
 	background-position: center 200px;
 	/* Para que la imagen de fondo no se repita */
