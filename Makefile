@@ -14,7 +14,7 @@ FILES = main 							\
 		routes/cgi						\
 		routes/tester					\
 		routes/gallery					\
-		routes/public					\
+		routes/endpoints				\
 		api/routes/api_index			\
 		api/routes/login				\
 

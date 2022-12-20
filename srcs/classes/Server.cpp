@@ -119,8 +119,17 @@ void Server::handleConnection(int client)
 	// HANDLE REQUEST
 	Router router(*clients.at(client).first, *clients.at(client).second);
 	std::vector<Location> locations = configuration.getLocations();
-	if (router.useLocations(locations, &location) == false)
-		router.use("/", &index);
+	if (router.useLocations(locations, &location))
+	{
+		closeConnection(client);
+		return;
+	}
+	if (router.use("/", &index))
+	{
+		closeConnection(client);
+		return;
+	}
+	router.notFound();
 	closeConnection(client);
 	// std::vector<METHOD> alowedMethods = configuration.getAlowedMethods();
 	// if (alowedMethods.empty())

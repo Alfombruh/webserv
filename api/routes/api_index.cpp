@@ -2,7 +2,7 @@
 
 bool apiIndex(Router &router)
 {
-	if (router.use("/login", &login))
+	if (router.apiUse("/login", &login))
 		return true;
 	return router.notFound();
 };

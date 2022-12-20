@@ -92,3 +92,7 @@
 ## [Version 0.6.0] (12-20-2022)
     Ionmi:
 		Max body, api y locations(solo gets) gestionao
+
+## [Version 0.6.1] (12-20-2022)
+    Ionmi:
+		estilo nginx hecho a falta de cgis

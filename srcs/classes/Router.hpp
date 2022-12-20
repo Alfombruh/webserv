@@ -25,13 +25,24 @@ public:
 	bool methodAllowed(std::vector<METHOD> methods) const;
 	string routeFile(const std::string &route) const;
 	bool useLocations(std::vector<Location> &locations, bool (*func)(Router &, Location &));
-	bool accepExtension(const string extension) const;
+	bool apiUse(const string route, bool (*callback)(Router &));
 	bool use(const string route, bool (*func)(Router &));
+
+	bool accepExtension(const string extension) const;
+	bool fileExists(const string &filePath) const;
+
 	bool get(const string route, void (*get)(Request &, Response &)) const;
 	bool get(void (*get)(Request &, Response &, string)) const;
 	bool get(const Location &, void (*get)(Request &, Response &, string)) const;
+
 	bool post(const string route, void (*post)(Request &, Response &)) const;
+	bool post(void (*post)(Request &, Response &, string)) const;
+	bool post(const Location &, void (*post)(Request &, Response &, string)) const;
+
 	bool delet(const string route, void (*delet)(Request &, Response &)) const;
+	bool delet(void (*delet)(Request &, Response &, string)) const;
+	bool delet(const Location &, void (*delet)(Request &, Response &, string)) const;
+
 	bool notFound() const;
 	const string getReqRoute() const;
 };
