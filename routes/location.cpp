@@ -41,7 +41,6 @@ static void get(Request &req, Response &res, const string filePath)
 {
 	(void)req;
 	string extension = filePath.substr(filePath.rfind('.'));
-	cout << extension << "\n";
 	if (extension == ".html")
 		res.status(STATUS_200).html(filePath).send();
 	else if (extension == ".css")
@@ -59,8 +58,8 @@ bool location(Router &router, Location &location)
 		return apiIndex(router);
 	if (router.get(location, &get))
 		return true;
-	if (router.post(location, &get))
-		return true;
+	// if (router.post(location, &get))
+	// 	return true;
 	cout << "route:" << router.getReqRoute() << "$\n";
 	if (router.use("/images", &images))
 		return true;

@@ -30,6 +30,7 @@ typedef struct
 	string index;
 	string root;
 	string api;
+	ssize_t maxBody;
 	string destination;
 	StrPair cgiInfo;
 
@@ -42,10 +43,12 @@ typedef struct
 	string route;
 } Redirection;
 
-inline size_t stringToSize_t(string str)
+inline ssize_t stringToSize_t(string str)
 {
+	if(str.empty())
+		return -1;
 	std::stringstream sstream(str);
-	size_t result;
+	ssize_t result;
 	sstream >> result;
 	return result;
 }

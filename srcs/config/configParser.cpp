@@ -143,13 +143,14 @@ string ConfigParser::parseVar(const string line, const string key)
 
 void ConfigParser::parseLocation(const string line)
 {
-	Location location;
+	Location location = {.maxBody = -1};
 	string cgiInfo;
 
 	location.location = line.substr(0, line.find(" "));
 	location.alowedMethods = parseMethods(parseVar(line, "allow_methods"));
 	location.index = parseVar(line, "index");
 	location.root = parseVar(line, "root");
+	location.maxBody = stringToSize_t(parseVar(line, "client_body_limit"));
 	location.api = parseVar(line, "api");
 	location.destination = parseVar(line, "destination");
 	if (!(cgiInfo = parseVar(line, "cgi_info")).empty())

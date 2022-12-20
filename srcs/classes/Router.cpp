@@ -28,6 +28,14 @@ bool Router::use(const string route, bool (*callback)(Router &))
 	if (req.isInRoute(route) == false || methodAllowed(configuration.getAlowedMethods()) == false)
 		return false;
 	req.updateRoute(route);
+	ssize_t bodySize = req.getHeader("content-length").empty() ? -1 : stringToSize_t(req.getHeader("content-length"));
+	if (bodySize == -1)
+		bodySize = req.getBody().size();
+	if (configuration.getMaxBody() != -1 && bodySize > configuration.getMaxBody())
+	{
+		res.status(STATUS_413).send();
+		return true;
+	}
 	return callback(*this);
 };
 
@@ -39,6 +47,15 @@ bool Router::useLocations(std::vector<Location> &locations, bool (*callback)(Rou
 	{
 		if (req.isInRoute(it->location) == true && methodAllowed(it->alowedMethods))
 		{
+			ssize_t maxBody = it->maxBody != -1 ? it->maxBody : configuration.getMaxBody();
+			ssize_t bodySize = req.getHeader("content-length").empty() ? -1 : stringToSize_t(req.getHeader("content-length"));
+			if (bodySize == -1)
+				bodySize = req.getBody().size();
+			if (maxBody != -1 && bodySize > maxBody)
+			{
+				res.status(STATUS_413).send();
+				return true;
+			}
 			it->api.empty() ? req.updateRoute(it->location) : req.setRoute(it->api);
 			return callback(*this, *it);
 		}
@@ -82,12 +99,12 @@ bool Router::get(void (*get)(Request &, Response &, string)) const
 	if (filename.empty() == false &&
 		accepExtension(filename.substr(filename.rfind('.'))) == false)
 		return false;
-	cout << "location filename: " << filename << "$\n";
+	// cout << "filename: " << filename << "$\n";
 	if (filename.empty() == false)
-		filePath = configuration.getRoot() + (req.getRoute() == "/" ? "" : req.getRoute()) + filename;
+		filePath = configuration.getRoot() + (req.getRoute() == "/" ? "" : req.getRoute());
 
-	cout << "root:" << configuration.getRoot() << " route:" << req.getRoute() << "$\n";
-	cout << "filePath: " << filePath << "$\n";
+	// cout << "root:" << configuration.getRoot() << " route:" << req.getRoute() << "$\n";
+	// cout << "filePath: " << filePath << "$\n";
 
 	std::ifstream found(filePath.c_str());
 	if (found.good() == false)
@@ -108,19 +125,19 @@ bool Router::get(const Location &location, void (*get)(Request &, Response &, st
 	if (filename.empty() == false &&
 		accepExtension(filename.substr(filename.rfind('.'))) == false)
 		return false;
-	cout << "location filename: " << filename << "$\n";
+	// cout << "location filename: " << filename << "$\n";
 	if (filename.empty() == false)
 	{
-		filePath = location.destination.empty() ? location.root + filename
-												: location.destination + filename;
+		filePath = location.destination.empty() ? location.root + (req.getRoute() == "/" ? "" : req.getRoute())
+												: location.destination + (req.getRoute() == "/" ? "" : req.getRoute());
 	}
-
-	cout << "location root:" << location.root << " route:" << req.getRoute() << "$\n";
-	cout << "location filePath: " << filePath << "$\n";
+	// cout << "location root:" << location.root << " route:" << req.getRoute() << "$\n";
+	// cout << "location filePath: " << filePath << "$\n";
 	std::ifstream found(filePath.c_str());
 	if (found.good() == false)
 		return false;
 
+	// cout << "location filePath: " << filePath << "$\n";
 	get(req, res, filePath);
 	return true;
 };
