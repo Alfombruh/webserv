@@ -13,7 +13,7 @@ ConfigParser::ConfigParser(const string configPath)
 	while (i < rawConfig.size())
 	{
 		if (rawConfig[i] == '#')
-			i = rawConfig.find('\n', i) + 1;
+			i = rawConfig.find('\n', i) == string::npos ? rawConfig.size() : rawConfig.find('\n', i)  + 1;
 		if (i >= rawConfig.size())
 			break;
 		if (i < rawConfig.size() && rawConfig[i] == '{')
@@ -40,10 +40,27 @@ ConfigParser::ConfigParser(const string configPath)
 	}
 	if (bracket != 0)
 		throw ConfigParseException(KYS);
+	if (checkSemiColon(rawServer) == FAILED)
+		throw ConfigParseException("Cheack out semicolons");
 	parseServer();
 }
 
 ConfigParser::~ConfigParser(){};
+
+bool ConfigParser::checkSemiColon(string rawConfig) const
+{
+	size_t i = 0;
+
+	while (++i < rawConfig.size())
+	{
+		if (rawConfig[i] != '\n')
+			continue;
+		if (rawConfig[i - 1] != '\n' && rawConfig[i - 1] != ';' &&
+			rawConfig[i - 1] != '{' && rawConfig[i - 1] != '}' && rawConfig[i - 1] != '\t')
+			return false;
+	}
+	return true;
+};
 
 string ConfigParser::trimSpaces(string rawConfig) const
 {
@@ -83,6 +100,7 @@ void ConfigParser::parseServer()
 			continue;
 		tmp.push_back(rawServer.at(i));
 	}
+
 	rawServer = tmp;
 	size_t i = 0;
 	size_t copySize;

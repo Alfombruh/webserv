@@ -19,6 +19,7 @@ private:
 	string parseVar(const string line, const string key);
 	void parseLocation(const string line);
 	void parseLine(const string line);
+	bool checkSemiColon(string rawConfig) const;
 	string trimSpaces(string rawConfig) const;
 	std::vector<METHOD> parseMethods(const string line);
 

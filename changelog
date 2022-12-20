@@ -100,3 +100,7 @@
 ## [Version 0.6.2] (12-20-2022)
     Ionmi:
 		web modificada para nuevas rutas y correccion de bugs
+
+## [Version 0.6.3] (12-20-2022)
+    Ionmi:
+		comprobacion de ";" en config y correccion de bug
