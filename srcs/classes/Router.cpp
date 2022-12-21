@@ -126,16 +126,15 @@ bool Router::get(void (*get)(Request &, Response &, string)) const
 	// cout << "filename: " << filename << "$\n";
 	if (filename.empty() == false)
 		filePath = configuration.getRoot() + (req.getRoute() == "/" ? "" : req.getRoute());
-	else if(configuration.getIndex().empty())
-	{
-		res.status(STATUS_204).lsDir(filePath.substr(2)).send();
-		return true;
-	}
-
 	// cout << "root:" << configuration.getRoot() << " route:" << req.getRoute() << "$\n";
 	// cout << "filePath: " << filePath << "$\n";
 	if (!fileExists(filePath))
 		return false;
+	if(configuration.getIndex().empty())
+	{
+		res.status(STATUS_200).lsDir(filePath.substr(2)).send();
+		return true;
+	}
 	get(req, res, filePath);
 	return true;
 };
@@ -159,15 +158,15 @@ bool Router::get(const Location &location, void (*get)(Request &, Response &, st
 		filePath = location.destination.empty() ? root + (req.getRoute() == "/" ? "" : req.getRoute())
 												: location.destination + (req.getRoute() == "/" ? "" : req.getRoute());
 	}
-	else if(configuration.getIndex().empty())
-	{
-		res.status(STATUS_204).lsDir(filePath.substr(2)).send();
-		return true;
-	}
 	// cout << "location root:" << root << " route:" << req.getRoute() << "$\n";
 	// cout << "location filePath: " << filePath << "$\n";
 	if (!fileExists(filePath))
 		return false;
+	if(configuration.getIndex().empty())
+	{
+		res.status(STATUS_200).lsDir(filePath.substr(2)).send();
+		return true;
+	}
 	// cout << "location filePath: " << filePath << "$\n";
 	get(req, res, filePath);
 	return true;

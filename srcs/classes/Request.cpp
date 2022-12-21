@@ -190,10 +190,9 @@ void Request::parseUrlVars()
 		return;
 	string str = route;
 	route.clear();
-	env.env.push_back("QUERY_STRING=" + str);
+	env.env.push_back("QUERY_STRING=" + (str.substr(varPos + 1, route.size())));
     for (size_t i = 0; i < varPos; i++)
         route.push_back(str.at(i));
-	env.env.push_back("QUERY_STRING=" + (str.substr(varPos + 1, route.size())));
     varPos++;
     string tmp;
     while (varPos < str.size())
