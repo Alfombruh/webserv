@@ -1,7 +1,7 @@
 #include "Router.hpp"
 
 Router::Router(Request &req, Response &res)
-	: req(req), res(res){};
+	: req(req), res(res) { parseEnv(); };
 
 bool Router::methodAllowed(std::vector<METHOD> alowedMethods) const
 {
@@ -89,6 +89,10 @@ bool Router::accepExtension(const string extension) const
 		if (extension == ".js")
 			return true;
 	}
+	if (extension == ".py")
+		return true;
+	if (extension == ".sh")
+		return true;
 	if (extension == ".png")
 		return true;
 	if (extension == ".jpg")
@@ -130,7 +134,7 @@ bool Router::get(void (*get)(Request &, Response &, string)) const
 	// cout << "filePath: " << filePath << "$\n";
 	if (!fileExists(filePath))
 		return false;
-	if(configuration.getIndex().empty())
+	if (configuration.getIndex().empty())
 	{
 		res.status(STATUS_200).lsDir(filePath.substr(2)).send();
 		return true;
@@ -162,12 +166,11 @@ bool Router::get(const Location &location, void (*get)(Request &, Response &, st
 	// cout << "location filePath: " << filePath << "$\n";
 	if (!fileExists(filePath))
 		return false;
-	if(configuration.getIndex().empty())
+	if (configuration.getIndex().empty())
 	{
 		res.status(STATUS_200).lsDir(filePath.substr(2)).send();
 		return true;
 	}
-	// cout << "location filePath: " << filePath << "$\n";
 	get(req, res, filePath);
 	return true;
 };
@@ -283,8 +286,44 @@ const string Router::getReqRoute() const
 	return req.getRoute();
 }
 
-bool Router::create_env(void (*create_env)(Request &, Response &)) const
+void Router::parseEnv() // https://datatracker.ietf.org/doc/html/rfc3875#section-4.1.5
 {
-	create_env(req, res);
-	return true;
-}
+	req.env.PATH_INFO = req.getAbsoluteRoute();
+	req.env.REMOTE_ADDR = inet_ntoa(req.getClientAddr().sin_addr);
+	std::stringstream ss;
+	ss << htons(req.getClientAddr().sin_port);
+	req.env.REMOTE_PORT = ss.str();
+	req.env.REQUEST_METHOD = req.getMethodStr();
+	std::string s = req.getHeader("host");
+	std::string delimiter = ":";
+	std::string token;
+	size_t pos = 0;
+	pos = s.find(delimiter);
+	token = s.substr(0, pos);
+	s.erase(0, pos + delimiter.length());
+	req.env.SERVER_NAME = token;
+	pos = s.find(delimiter);
+	token = s.substr(0, pos);
+	req.env.SERVER_PORT = token;
+	req.env.SERVER_PROTOCOL = (string)req.getProtocolVersion();
+	if (req.getHeader("referer") == "")
+	{
+		req.env.PATH_TRANSLATED = "http://" + req.getHeader("host") + req.getAbsoluteRoute();
+		req.env.env.push_back("PATH_TRANSLATED=" + req.env.PATH_TRANSLATED);
+	}
+	req.env.env.push_back("PATH_INFO=" + req.env.PATH_INFO);
+	req.env.env.push_back("GATEWAY_INTERFACE=CGI/1.1");
+	req.env.env.push_back("REQUEST_URI=" + req.env.PATH_INFO);
+	req.env.env.push_back("SCRIPT_NAME=" + req.env.PATH_INFO);
+	req.env.env.push_back("REMOTE_ADDR=" + req.env.REMOTE_ADDR);
+	req.env.env.push_back("REMOTE_PORT=" + req.env.REMOTE_PORT);
+	req.env.env.push_back("REQUEST_METHOD=" + req.env.REQUEST_METHOD);
+	req.env.env.push_back("SERVER_NAME=" + req.env.SERVER_NAME);
+	req.env.env.push_back("SERVER_PORT=" + req.env.SERVER_PORT);
+	req.env.env.push_back("SERVER_PROTOCOL=" + req.env.SERVER_PROTOCOL);
+	// for(size_t i = 0; i < req.env.env.size(); ++i) {
+	// 	cout << req.env.env[i] << "\n";
+	// }
+	// cout << "\n";
+	// req.printReqAtributes();
+};

@@ -5,6 +5,9 @@
 #include "config.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
+#include <arpa/inet.h>
+
+
 // #include "Server.hpp"
 
 class Response;
@@ -21,7 +24,6 @@ public:
 	// Router(string configPath);
 	~Router(){};
 
-	bool create_env(void (*create_env)(Request &, Response &)) const;
 	bool methodAllowed(std::vector<METHOD> methods) const;
 	string routeFile(const std::string &route) const;
 	bool useLocations(std::vector<Location> &locations, bool (*func)(Router &, Location &));
@@ -45,6 +47,8 @@ public:
 
 	bool notFound() const;
 	const string getReqRoute() const;
+
+	void parseEnv();
 };
 
 #endif

@@ -11,9 +11,7 @@ FILES = main 							\
 		srcs/classes/Router				\
 		routes/index					\
 		routes/location					\
-		routes/cgi						\
 		routes/tester					\
-		routes/gallery					\
 		routes/endpoints				\
 		api/routes/api_index			\
 		api/routes/login				\

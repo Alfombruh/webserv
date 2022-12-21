@@ -83,10 +83,6 @@ Response &Response::textPython(const string filename, char **env)
 {
 
 	string newbody;
-	for (int i = 0; env[i] != NULL; ++i)
-	{
-		cout << env[i] << "\n";
-	}
 	size_t i = 0;
 	while (body.size() >= i)
 	{
@@ -107,8 +103,6 @@ Response &Response::textPython(const string filename, char **env)
 			close(fd[0]);
 			char *pythonArgs[] = {(char *)"echo", (char *)"-n", (char *)body_erase.c_str(), NULL};
 			execve("/bin/echo", pythonArgs, env);
-			printf("execl returned! errno is [%d]\n", errno);
-			perror("The error message is :");
 			exit(0);
 		}
 		else
@@ -127,8 +121,6 @@ Response &Response::textPython(const string filename, char **env)
 				strcpy(cstr + 1, filename.c_str());
 				char *pythonArgs[] = {cstr, NULL};
 				execve(pythonArgs[0], pythonArgs, env);
-				printf("execl returned! errno is [%d]\n", errno);
-				perror("The error message is :");
 				exit(EXIT_FAILURE);
 			}
 			else

@@ -4,7 +4,7 @@
 bool location(Router &router, Location &location)
 {
 	if (location.api.empty() == false)
-		return apiIndex(router);	
+		return apiIndex(router);
 	if (router.get(location, &get))
 		return true;
 	if (router.post(location, &post))
@@ -12,5 +12,5 @@ bool location(Router &router, Location &location)
 	if (router.delet(location, &delet))
 		return true;
 	router.notFound();
-	return true; 
+	return true;
 };
