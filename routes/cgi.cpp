@@ -52,10 +52,10 @@ void parseEnv(Request &req, Response &res) //https://datatracker.ietf.org/doc/ht
 	req.env.env.push_back("SERVER_NAME=" + req.env.SERVER_NAME);
 	req.env.env.push_back("SERVER_PORT=" + req.env.SERVER_PORT);
 	req.env.env.push_back("SERVER_PROTOCOL=" + req.env.SERVER_PROTOCOL);
-	for(size_t i = 0; i < req.env.env.size(); ++i) {
-		cout << req.env.env[i] << "\n";
-	}
-	cout << "\n";
+	// for(size_t i = 0; i < req.env.env.size(); ++i) {
+	// 	cout << req.env.env[i] << "\n";
+	// }
+	// cout << "\n";
 	//req.printReqAtributes();
 };
 

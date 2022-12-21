@@ -32,10 +32,8 @@ class Response
 	string readFile(const string filename);
 	string readFileCgi(const string filename);
 
-	const Config &configuration;
-
 public:
-	Response(int clientId, const Config &configuration);
+	Response(int clientId);
 	~Response();
 
 	// bool parseResponse(string rawRes);
@@ -51,6 +49,7 @@ public:
 	Response &status(const string status);
 	Response &text(const string &msg);
 	Response &textHtml(const string &msg);
+	Response &errorPage(const string code, const string status);
 	Response &redirect(string path);
 	Response &textPython(const string filename, char **env);
 	Response &json(const string &json);

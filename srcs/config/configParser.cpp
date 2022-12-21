@@ -13,7 +13,7 @@ ConfigParser::ConfigParser(const string configPath)
 	while (i < rawConfig.size())
 	{
 		if (rawConfig[i] == '#')
-			i = rawConfig.find('\n', i) + 1;
+			i = rawConfig.find('\n', i) == string::npos ? rawConfig.size() : rawConfig.find('\n', i)  + 1;
 		if (i >= rawConfig.size())
 			break;
 		if (i < rawConfig.size() && rawConfig[i] == '{')
@@ -40,10 +40,27 @@ ConfigParser::ConfigParser(const string configPath)
 	}
 	if (bracket != 0)
 		throw ConfigParseException(KYS);
+	if (checkSemiColon(rawServer) == FAILED)
+		throw ConfigParseException("Cheack out semicolons");
 	parseServer();
 }
 
 ConfigParser::~ConfigParser(){};
+
+bool ConfigParser::checkSemiColon(string rawConfig) const
+{
+	size_t i = 0;
+
+	while (++i < rawConfig.size())
+	{
+		if (rawConfig[i] != '\n')
+			continue;
+		if (rawConfig[i - 1] != '\n' && rawConfig[i - 1] != ';' &&
+			rawConfig[i - 1] != '{' && rawConfig[i - 1] != '}' && rawConfig[i - 1] != '\t')
+			return false;
+	}
+	return true;
+};
 
 string ConfigParser::trimSpaces(string rawConfig) const
 {
@@ -83,6 +100,7 @@ void ConfigParser::parseServer()
 			continue;
 		tmp.push_back(rawServer.at(i));
 	}
+
 	rawServer = tmp;
 	size_t i = 0;
 	size_t copySize;
@@ -143,12 +161,15 @@ string ConfigParser::parseVar(const string line, const string key)
 
 void ConfigParser::parseLocation(const string line)
 {
-	Location location;
+	Location location = {.maxBody = -1};
 	string cgiInfo;
 
 	location.location = line.substr(0, line.find(" "));
 	location.alowedMethods = parseMethods(parseVar(line, "allow_methods"));
+	location.index = parseVar(line, "index");
 	location.root = parseVar(line, "root");
+	location.maxBody = stringToSize_t(parseVar(line, "client_body_limit"));
+	location.api = parseVar(line, "api");
 	location.destination = parseVar(line, "destination");
 	if (!(cgiInfo = parseVar(line, "cgi_info")).empty())
 	{
@@ -182,6 +203,8 @@ void ConfigParser::parseLine(const string line)
 		configuration.setMaxBody(stringToSize_t(parseVar(line, "client_body_limit")));
 	else if (key == "root")
 		configuration.setRoot(parseVar(line, "root"));
+	else if (key == "index")
+		configuration.setIndex(parseVar(line, "index"));
 	else if (!(tmpValue = parseVar(line, "cgi")).empty())
 		configuration.setCgi(tmpValue.substr(0, tmpValue.find(" ")),
 							 tmpValue.substr(tmpValue.find(" ") + 1, tmpValue.find(";")));

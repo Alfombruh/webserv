@@ -11,6 +11,7 @@ class Config
 private:
 	IntVec Ports;
 	string serverName;
+	string index;
 	StrPair redirect;
 	std::vector<METHOD> alowedMethods;
 	string root;
@@ -108,6 +109,9 @@ public:
 
 	const string &getServerName() const { return serverName; }
 	void setServerName(const string &serverName) { this->serverName = serverName; }
+	
+	const string &getIndex() const { return index; }
+	void setIndex(const string &index) { this->index = index; }
 
 	const StrPair &getRedirect() const { return redirect; }
 	void setRedirect(const StrPair redirect) { this->redirect = redirect; }

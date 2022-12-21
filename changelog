@@ -66,7 +66,7 @@
 
 ## [Version 0.3.1] (12-6-2022)
 	Ionmi:
-		correccion en galery.cpp
+		correccion en gallery.cpp
 
 ## [Version 0.3.2] (12-7-2022)
 	Ionmi:
@@ -89,3 +89,18 @@
     Ionmi:
 		loggin and info url parsing fixed, now it parses the url and changes special character to ascii to allow the session manager to display the info as it is suppossed to be, this is hardcore and amazing (only on the front)
 
+## [Version 0.6.0] (12-20-2022)
+    Ionmi:
+		Max body, api y locations(solo gets) gestionao
+
+## [Version 0.6.1] (12-20-2022)
+    Ionmi:
+		estilo nginx hecho a falta de cgis
+
+## [Version 0.6.2] (12-20-2022)
+    Ionmi:
+		web modificada para nuevas rutas y correccion de bugs
+
+## [Version 0.6.3] (12-20-2022)
+    Ionmi:
+		comprobacion de ";" en config y correccion de bug

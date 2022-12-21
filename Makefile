@@ -1,19 +1,22 @@
 NAME = webserv
 CC = clang++ 
 CFLAGS =-Werror -Wall -Wextra -std=c++98 -g3 -fsanitize=address
-FILES = main 						\
-		srcs/config/configParser	\
-		srcs/errors					\
-		srcs/classes/config			\
-		srcs/classes/Server			\
-		srcs/classes/Request		\
-		srcs/classes/Response		\
-		srcs/classes/Router			\
-		routes/index				\
-		routes/cgi					\
-		routes/login				\
-		routes/galery				\
-		routes/public				\
+FILES = main 							\
+		srcs/config/configParser		\
+		srcs/errors						\
+		srcs/classes/config				\
+		srcs/classes/Server				\
+		srcs/classes/Request			\
+		srcs/classes/Response			\
+		srcs/classes/Router				\
+		routes/index					\
+		routes/location					\
+		routes/cgi						\
+		routes/tester					\
+		routes/gallery					\
+		routes/endpoints				\
+		api/routes/api_index			\
+		api/routes/login				\
 
 SRCS = $(addsuffix .cpp, $(FILES))
 OBJS = $(addsuffix .o, $(FILES))

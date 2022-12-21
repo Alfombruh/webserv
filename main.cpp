@@ -8,6 +8,8 @@ void signalHandler(int signal)
 	exit(signal);
 }
 
+Config configuration;
+
 int main(int argc, char **argv)
 {
 	if (argc != 2)
@@ -16,10 +18,10 @@ int main(int argc, char **argv)
 	try
 	{
 		ConfigParser parser(argv[1]);
-		Config configuration = parser.getConfiguration();
+		configuration = parser.getConfiguration();
 		// configuration.printConfig();
 
-		Server server(configuration);
+		Server server;
 		server.setup();
 		server.run();
 	}
