@@ -37,7 +37,7 @@ bool Router::use(const string route, bool (*callback)(Router &))
 		return false;
 	if (methodAllowed(configuration.getAlowedMethods()) == false)
 	{
-		res.status(STATUS_405).send();
+		res.errorPage("405", STATUS_405).send();
 		return true;
 	}
 	req.updateRoute(route);
@@ -46,7 +46,7 @@ bool Router::use(const string route, bool (*callback)(Router &))
 		bodySize = req.getBody().size();
 	if (configuration.getMaxBody() != -1 && bodySize > configuration.getMaxBody())
 	{
-		res.status(STATUS_413).send();
+		res.errorPage("413", STATUS_413).send();
 		return true;
 	}
 	return callback(*this);
@@ -62,7 +62,7 @@ bool Router::useLocations(std::vector<Location> &locations, bool (*callback)(Rou
 			continue;
 		if (methodAllowed(it->alowedMethods) == false)
 		{
-			res.status(STATUS_405).send();
+			res.errorPage("405", STATUS_405).send();
 			return true;
 		}
 		ssize_t maxBody = it->maxBody != -1 ? it->maxBody : configuration.getMaxBody();
@@ -71,7 +71,7 @@ bool Router::useLocations(std::vector<Location> &locations, bool (*callback)(Rou
 			bodySize = req.getBody().size();
 		if (maxBody != -1 && bodySize > maxBody)
 		{
-			res.status(STATUS_413).send();
+			res.errorPage("413", STATUS_413).send();
 			return true;
 		}
 		it->api.empty() ? req.updateRoute(it->location) : req.setRoute(it->api);
@@ -265,13 +265,7 @@ bool Router::delet(const Location &location, void (*delet)(Request &, Response &
 
 bool Router::notFound() const
 {
-	const StrStrMap &errorPages = configuration.getErrorPages();
-	if (errorPages.find("404") != errorPages.end())
-	{
-		res.status(STATUS_404).html(errorPages.at("404")).send();
-		return false;
-	}
-	res.status(STATUS_404).text("<H1>404 Page not found</H1>").send();
+	res.errorPage("404", STATUS_404).send();
 	return false;
 };
 

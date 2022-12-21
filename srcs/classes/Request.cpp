@@ -152,20 +152,14 @@ bool Request::parseStatusLine(string rawStatusLine, Response &res)
 		this->method = POST;
 	else if (method == "DELETE")
 		this->method = DELETE;
-	else if (method == "PUT")
-	{ // harcoded
-		res.status(STATUS_200).send();
-		return false;
-	}
+	// else if (method == "PUT")
+	// { // harcoded
+	// 	res.status(STATUS_200).send();
+	// 	return false;
+	// }
 	else
 	{
-		const StrStrMap &errorPages = configuration.getErrorPages();
-		if (errorPages.find("405") != errorPages.end())
-		{
-			res.status(STATUS_405).html(errorPages.at("405")).send();
-			return false;
-		}
-		res.status(STATUS_405).textHtml("<H1>405 Method not alowed</H1>").send();
+		res.errorPage("405", STATUS_405).send();
 		return false;
 	}
 	// ROUTE
@@ -180,7 +174,7 @@ bool Request::parseStatusLine(string rawStatusLine, Response &res)
 		protocolVersion.push_back(rawStatusLine.at(i++));
 	if (protocolVersion != "HTTP/1.1")
 	{
-		res.status(STATUS_505).send();
+		res.errorPage("505", STATUS_505).send();
 		return false;
 	}
 	return true;

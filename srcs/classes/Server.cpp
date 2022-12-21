@@ -131,27 +131,6 @@ void Server::handleConnection(int client)
 	}
 	router.notFound();
 	closeConnection(client);
-	// std::vector<METHOD> alowedMethods = configuration.getAlowedMethods();
-	// if (alowedMethods.empty())
-	// {
-	// 	return;
-	// }
-	// for (std::vector<METHOD>::iterator it = alowedMethods.begin(); it != alowedMethods.end(); it++)
-	// {
-	// 	if (*it == clients.at(client).first->getMethod())
-	// 	{
-	// 		Router router(*clients.at(client).first, *clients.at(client).second);
-	// 		router.use("/", &index);
-	// 		closeConnection(client);
-	// 		return;
-	// 	}
-	// }
-	// const StrStrMap &errorPages = configuration.getErrorPages();
-	// if (errorPages.find("405") != errorPages.end())
-	// 	clients.at(client).second->status(STATUS_405).html(errorPages.at("405")).send();
-	// else
-	// 	clients.at(client).second->status(STATUS_405).text("405 Method not alowed").send();
-	// closeConnection(client);
 }
 
 Server::serverException::serverException(const char *msg) : msg((char *)msg){};
