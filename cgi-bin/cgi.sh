@@ -26,7 +26,7 @@ echo "</html>"
 fi
 if [ "$REQUEST_METHOD" == "POST" ]
 then
-
+echo "uwuwuwuuw"
 fi
 if [ "$REQUEST_METHOD" == "DELETE" ]; then
   if [ "$QUERY_STRING" -ne "" ]
