@@ -38,6 +38,10 @@ void parseEnv(Request &req, Response &res) //https://datatracker.ietf.org/doc/ht
 	token = s.substr(0, pos);
 	req.env.SERVER_PORT = token;
 	req.env.SERVER_PROTOCOL = (string)req.getProtocolVersion();
+	if (req.getHeader("referer") == ""){
+		req.env.PATH_TRANSLATED = "http://" + req.getHeader("host") + req.getAbsoluteRoute();
+		req.env.env.push_back("PATH_TRANSLATED=" + req.env.PATH_TRANSLATED);
+	}
 	req.env.env.push_back("PATH_INFO=" + req.env.PATH_INFO);
 	req.env.env.push_back("GATEWAY_INTERFACE=CGI/1.1");
 	req.env.env.push_back("REQUEST_URI=" + req.env.PATH_INFO);

@@ -198,6 +198,7 @@ void Request::parseUrlVars()
 	env.env.push_back("QUERY_STRING=" + str);
     for (size_t i = 0; i < varPos; i++)
         route.push_back(str.at(i));
+	env.env.push_back("QUERY_STRING=" + (str.substr(varPos + 1, route.size())));
     varPos++;
     string tmp;
     while (varPos < str.size())
@@ -377,6 +378,6 @@ void Request::printReqAtributes()
     // cout << "REMOTE_ADDR:" << this->env.REMOTE_ADDR << "$\n";
     // cout << "REMOTE_PORT:" << this->env.REMOTE_PORT << "$\n";
     // cout << "REMOTE_ADDR:" << this->env.SERVER_NAME << "$\n";
-    // cout << "REMOTE_PORT:" << this->env.SERVER_PORT << "$\n";
+    // cout << "REMOTE_VIRPORT:" << this->env.SERVER_PORT << "$\n";
 };
 

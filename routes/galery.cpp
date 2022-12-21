@@ -30,7 +30,7 @@ static void post(Request &req, Response &res)
 	std::ifstream found(("image_galery/" + filename).c_str());
 	if (found.good())
 	{
-		res.status(STATUS_409).text("filename: " + filename + " allready exists").send();
+		res.status(STATUS_409).text("filename: " + filename + " already exists").send();
 		return;
 	}
 	std::ofstream file("image_galery/" + filename, std::ofstream::binary | std::ofstream::out);
