@@ -1,7 +1,7 @@
 #ifndef CONFIGPARSER_HPP
 #define CONFIGPARSER_HPP
 
-#define KYS "at this point kill yourself. In your next life make sure you close your brackets correctly"
+#define KYS "at this point kiss yourself. In your next life make sure you close your brackets correctly"
 
 #include "../classes/config.hpp"
 #include <iostream>
