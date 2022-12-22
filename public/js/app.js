@@ -37,7 +37,7 @@ window.addEventListener("load", function () {
           },
           body: binaryImg,
         };
-        fetch("/gallery?filename=" + files[0].name, fetchPostgallery)
+        fetch("/gallery-images/" + files[0].name, fetchPostgallery)
           .then((res) => {
             feedback.innerHTML =
               res.status === 201
@@ -180,7 +180,7 @@ function deletegallery() {
     },
   };
 
-  const url = "/gallery?filename=" + input;
+  const url = "/gallery-images/" + input;
   fetch(url, fetchDeletegallery)
     .then((res) => {
       feedback.innerHTML =

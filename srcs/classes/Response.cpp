@@ -27,7 +27,7 @@ string Response::stringifyResponse()
 	response += "\n";
 	// BODY
 	if (!body.empty())
-		response += (body + "\n"); //OJO!
+		response += (body + "\n"); // OJO!
 	return response;
 };
 
@@ -77,20 +77,18 @@ Response &Response::redirect(string path)
 	return *this;
 };
 
-void Response::setBody(const string body){ this->body = body;}
+void Response::setBody(const string body) { this->body = body; }
 
 Response &Response::textPython(const string filename, char **env)
 {
 
 	string newbody;
-	for (int i = 0; env[i] != NULL; ++i) {
-		cout << env[i] << "\n";
-	}
 	size_t i = 0;
 	while (body.size() >= i)
 	{
 		int fd[2];
-		if (pipe(fd) == -1) {
+		if (pipe(fd) == -1)
+		{
 			return *this;
 		}
 		string body_erase = body.substr(i, 100000);
@@ -103,10 +101,8 @@ Response &Response::textPython(const string filename, char **env)
 		{
 			dup2(fd[1], STDOUT_FILENO);
 			close(fd[0]);
-			char *pythonArgs[] =  {(char *)"echo", (char *)"-n",(char *)body_erase.c_str(),NULL};
-			execve("/bin/echo", pythonArgs,env);
-			printf("execl returned! errno is [%d]\n", errno);
-			perror("The error message is :");
+			char *pythonArgs[] = {(char *)"echo", (char *)"-n", (char *)body_erase.c_str(), NULL};
+			execve("/bin/echo", pythonArgs, env);
 			exit(0);
 		}
 		else
@@ -123,12 +119,12 @@ Response &Response::textPython(const string filename, char **env)
 				char *cstr = new char[filename.length() + 2];
 				cstr[0] = '.';
 				strcpy(cstr + 1, filename.c_str());
-				char *pythonArgs[] = {cstr, NULL};
+				char *pythonArgs[] = {cstr, (char *)body_erase.c_str() ,NULL};
 				execve(pythonArgs[0], pythonArgs, env);
-				printf("execl returned! errno is [%d]\n", errno);
-				perror("The error message is :");
 				exit(EXIT_FAILURE);
-			} else {
+			}
+			else
+			{
 				wait(0);
 			}
 			close(fd[0]);
@@ -168,7 +164,8 @@ string Response::readFileCgi(const string filename)
 	while (!f.eof())
 	{
 		std::getline(f, s);
-		if (s == "\r" || s.empty() || s == "\n") {
+		if (s == "\r" || s.empty() || s == "\n")
+		{
 			isheader = false;
 			continue;
 		}
@@ -192,15 +189,17 @@ string Response::readFileCgi(const string filename)
 	return tmp;
 }
 
-Response &Response::lsDir(const string filename)
+Response &Response::	lsDir(const string filename)
 {
 	int fd[2];
-	if (pipe(fd) == -1) {
+	if (pipe(fd) == -1)
+	{
 		return *this;
 	}
 	pid_t pid;
 	pid = fork();
-	if (pid == -1) {
+	if (pid == -1)
+	{
 		return *this;
 	}
 	if (pid == 0)
@@ -208,8 +207,8 @@ Response &Response::lsDir(const string filename)
 		fd[1] = open("ls_cgi", O_CREAT | O_TRUNC | O_RDWR, 0777);
 		dup2(fd[1], STDOUT_FILENO);
 		close(fd[1]);
-		char *pythonArgs[] =  {(char *)"./cgi-bin/ls_c_cgi", (char *)filename.c_str(), NULL};
-		execve(pythonArgs[0], pythonArgs,NULL);
+		char *pythonArgs[] = {(char *)"./cgi-bin/ls_c_cgi", (char *)filename.c_str(), NULL};
+		execve(pythonArgs[0], pythonArgs, NULL);
 		std::remove("ls_cgi");
 		exit(0);
 	}
@@ -228,6 +227,22 @@ Response &Response::html(const string filename)
 	body = readFile(filename);
 	// cout << body << "\n";
 	headers["Content-Type"] = "text/html";
+	return *this;
+};
+
+Response &Response::errorPage(const string code, const string status)
+{
+	const StrStrMap &errorPages = configuration.getErrorPages();
+	if (errorPages.find(code) != errorPages.end())
+	{
+		std::ifstream found(errorPages.at(code));
+		if (found.good())
+		{
+			this->status(status).html(errorPages.at(code));
+			return *this;
+		}
+	}
+	this->status(status).textHtml("<h1>" + status + "</h1>");
 	return *this;
 };
 
@@ -266,14 +281,9 @@ Response &Response::expireCookie()
 
 void Response::send()
 {
-	// if (!body.empty())
-
 	headers["Content-length"] = std::to_string(body.length());
 	headers["Connection"] = "close";
 	string response = stringifyResponse();
-	// cout << "-------------res-------------\n";
-	// cout << response;
-	// cout << "-----------------------------\n";
 	write(clientId, response.c_str(), response.length());
 	clearResponse();
 };

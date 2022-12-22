@@ -32,6 +32,7 @@ typedef struct
 	string api;
 	ssize_t maxBody;
 	string destination;
+	string cgi_destination;
 	StrPair cgiInfo;
 
 } Location;

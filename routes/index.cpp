@@ -9,7 +9,6 @@ static void getFavicon(Request &req, Response &res)
 
 bool index(Router &router)
 {
-	router.create_env(&parseEnv);
 	if (router.get("/favicon.ico", &getFavicon))
 		return true;
 	if (router.get(&get))

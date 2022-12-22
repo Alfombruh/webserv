@@ -46,11 +46,8 @@ bool Request::readChunkedRequest(int clientSd, Response &res)
 		{
 			body.push_back(c[i]);
 		}
-		// cout << c;
 	}
-	// cout << "REQUEST BODY\n" << body;
 	parseChunkedBody(body.substr(0, body.size() - 7));
-	// cout << "REQUEST BODY\n" << body;
 	return true;
 };
 
@@ -152,20 +149,14 @@ bool Request::parseStatusLine(string rawStatusLine, Response &res)
 		this->method = POST;
 	else if (method == "DELETE")
 		this->method = DELETE;
-	else if (method == "PUT")
-	{ // harcoded
-		res.status(STATUS_200).send();
-		return false;
-	}
+	// else if (method == "PUT")
+	// { // harcoded
+	// 	res.status(STATUS_200).send();
+	// 	return false;
+	// }
 	else
 	{
-		const StrStrMap &errorPages = configuration.getErrorPages();
-		if (errorPages.find("405") != errorPages.end())
-		{
-			res.status(STATUS_405).html(errorPages.at("405")).send();
-			return false;
-		}
-		res.status(STATUS_405).textHtml("<H1>405 Method not alowed</H1>").send();
+		res.errorPage("405", STATUS_405).send();
 		return false;
 	}
 	// ROUTE
@@ -180,7 +171,7 @@ bool Request::parseStatusLine(string rawStatusLine, Response &res)
 		protocolVersion.push_back(rawStatusLine.at(i++));
 	if (protocolVersion != "HTTP/1.1")
 	{
-		res.status(STATUS_505).send();
+		res.errorPage("505", STATUS_505).send();
 		return false;
 	}
 	return true;
@@ -196,25 +187,25 @@ void Request::parseUrlVars()
 		return;
 	string str = route;
 	route.clear();
-	env.env.push_back("QUERY_STRING=" + str);
-	for (size_t i = 0; i < varPos; i++)
-		route.push_back(str.at(i));
-	varPos++;
-	string tmp;
-	while (varPos < str.size())
-	{
-		while (varPos < str.size() && str.at(varPos) != '=')
-			tmp.push_back(str.at(varPos++));
-		if (varPos == str.size())
-			return;
-		varPos++;
-		routeVars[tmp];
-		routeVars[tmp].clear();
-		while (varPos < str.size() && str.at(varPos) != '&')
-			routeVars[tmp].push_back(str.at(varPos) == '+' ? ' ' : str.at(varPos++));
-		varPos++;
-		tmp.clear();
-	}
+	env.env.push_back("QUERY_STRING=" + (str.substr(varPos + 1, route.size())));
+    for (size_t i = 0; i < varPos; i++)
+        route.push_back(str.at(i));
+    varPos++;
+    string tmp;
+    while (varPos < str.size())
+    {
+        while (varPos < str.size() && str.at(varPos) != '=')
+            tmp.push_back(str.at(varPos++));
+        if (varPos == str.size())
+            return;
+        varPos++;
+        routeVars[tmp];
+        routeVars[tmp].clear();
+        while (varPos < str.size() && str.at(varPos) != '&')
+            routeVars[tmp].push_back(str.at(varPos) == '+' ? ' ' : str.at(varPos++));
+        varPos++;
+        tmp.clear();
+    }
 }
 
 string Request::encodeEnv(string keyToEncode, string value)
@@ -357,7 +348,7 @@ void Request::setRoute(const string route)
 // PRIVATE
 void Request::printReqAtributes()
 {
-	// STATUS LINE
+    // STATUS LINE
 	/*
 	cout << "STATUS LINE:\n";
 	cout << "method:" << getMethodStr() << "$\n";
@@ -386,3 +377,4 @@ void Request::printReqAtributes()
 	// cout << "REMOTE_ADDR:" << this->env.SERVER_NAME << "$\n";
 	// cout << "REMOTE_PORT:" << this->env.SERVER_PORT << "$\n";
 };
+
