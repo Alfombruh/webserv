@@ -3,7 +3,6 @@
 
 ConfigParser::ConfigParser(const string configPath)
 {
-<<<<<<< HEAD
     std::ifstream configFile(configPath);
     if (!configFile.is_open())
         throw ConfigParseException("configuration file not found");
@@ -43,48 +42,6 @@ ConfigParser::ConfigParser(const string configPath)
         throw ConfigParseException(KYS);
     parseServer();
     errorChecking();
-=======
-	std::ifstream configFile(configPath);
-	if (!configFile.is_open())
-		throw ConfigParseException("configuration file not found");
-	string rawConfig((std::istreambuf_iterator<char>(configFile)), std::istreambuf_iterator<char>());
-	rawConfig = trimSpaces(rawConfig);
-	size_t i = 0;
-	int bracket = 0;
-	while (i < rawConfig.size())
-	{
-		if (rawConfig[i] == '#')
-			i = rawConfig.find('\n', i) == string::npos ? rawConfig.size() : rawConfig.find('\n', i) + 1;
-		if (i >= rawConfig.size())
-			break;
-		if (i < rawConfig.size() && rawConfig[i] == '{')
-			bracket++;
-		if (i < rawConfig.size() && rawConfig[i] == '}')
-		{
-			bracket--;
-			if (bracket == 0)
-			{
-				rawServer.push_back(rawConfig[i++]);
-				continue;
-			}
-			if (bracket < 0)
-				throw ConfigParseException(KYS);
-		}
-		if (bracket > 0 && rawConfig[i] == '\n')
-		{
-			if (i + 1 < rawConfig.size() && rawConfig[i + 1] == '\n')
-				rawServer.push_back(rawConfig[i++]);
-			i++;
-			continue;
-		}
-		rawServer.push_back(rawConfig[i++]);
-	}
-	if (bracket != 0)
-		throw ConfigParseException(KYS);
-	if (checkSemiColon(rawServer) == FAILED)
-		throw ConfigParseException("Cheack out semicolons");
-	parseServer();
->>>>>>> 48a6255eded5796fb92c2cf07c982d6b6d03366b
 }
 
 ConfigParser::~ConfigParser(){};
@@ -135,7 +92,6 @@ string ConfigParser::trimSpaces(string rawConfig) const
 
 void ConfigParser::parseServer()
 {
-<<<<<<< HEAD
     string tmp;
     for (size_t i = 0; i < rawServer.size(); i++)
     {
@@ -152,25 +108,6 @@ void ConfigParser::parseServer()
         parseLine(rawServer.substr(i, copySize));
         i += (copySize + 1);
     }
-=======
-	string tmp;
-	for (size_t i = 0; i < rawServer.size(); i++)
-	{
-		if ((i > 0 && rawServer.at(i) == '\n' && rawServer.at(i - 1) == '\n') || rawServer.at(i) == '\t')
-			continue;
-		tmp.push_back(rawServer.at(i));
-	}
-
-	rawServer = tmp;
-	size_t i = 0;
-	size_t copySize;
-	while (i < rawServer.size())
-	{
-		copySize = rawServer.find("\n", i) == string::npos ? rawServer.size() : rawServer.find("\n", i) - i;
-		parseLine(rawServer.substr(i, copySize));
-		i += (copySize + 1);
-	}
->>>>>>> 48a6255eded5796fb92c2cf07c982d6b6d03366b
 };
 
 std::vector<METHOD> ConfigParser::parseMethods(const string line)
@@ -212,14 +149,6 @@ string ConfigParser::parseVar(const string line, const string key)
     string tmp;
     size_t pos;
 
-<<<<<<< HEAD
-    if ((pos = line.find(key)) == string::npos)
-        return "";
-
-    pos += (key.size() + 1);
-    tmp = line.substr(pos);
-    return tmp.substr(0, tmp.find(";"));
-=======
 	if ((pos = line.find(key)) == string::npos)
 		return "";
 	if (pos - 1 > 0 && pos - 1 < line.size() && line[pos - 1] != ';')
@@ -229,29 +158,10 @@ string ConfigParser::parseVar(const string line, const string key)
 	tmp = line.substr(pos);
 
 	return tmp.substr(0, tmp.find(";"));
->>>>>>> 48a6255eded5796fb92c2cf07c982d6b6d03366b
 }
 
 void ConfigParser::parseLocation(const string line)
 {
-<<<<<<< HEAD
-    Location location = {.maxBody = -1};
-    string cgiInfo;
-
-    location.location = line.substr(0, line.find(" "));
-    location.alowedMethods = parseMethods(parseVar(line, "allow_methods"));
-    location.index = parseVar(line, "index");
-    location.root = parseVar(line, "root");
-    location.maxBody = stringToSize_t(parseVar(line, "client_body_limit"));
-    location.api = parseVar(line, "api");
-    location.destination = parseVar(line, "destination");
-    if (!(cgiInfo = parseVar(line, "cgi_info")).empty())
-    {
-        location.cgiInfo.first = cgiInfo.substr(0, cgiInfo.find(" "));
-        location.cgiInfo.second = cgiInfo.substr(cgiInfo.find(" ") + 1, cgiInfo.find(";"));
-    }
-    configuration.setLocations(location);
-=======
 	Location location = {.maxBody = -1};
 	string tmp;
 
@@ -271,7 +181,6 @@ void ConfigParser::parseLocation(const string line)
 		location.destination = location.cgi_destination;
 
 	configuration.setLocations(location);
->>>>>>> 48a6255eded5796fb92c2cf07c982d6b6d03366b
 };
 
 void ConfigParser::parseLine(const string line)
