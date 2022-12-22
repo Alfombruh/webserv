@@ -13,7 +13,6 @@ using std::string;
 class ConfigParser
 {
 private:
-<<<<<<< HEAD
 	Config              configuration;
 	string              rawServer;
 	void                parseServer();
@@ -24,16 +23,6 @@ private:
     bool                missingElements(void);
     void                locationElements(void);
 	string              trimSpaces(string rawConfig) const;
-=======
-	Config configuration;
-	string rawServer;
-	void parseServer();
-	string parseVar(const string line, const string key);
-	void parseLocation(const string line);
-	void parseLine(const string line);
-	bool checkSemiColon(string rawConfig) const;
-	string trimSpaces(string rawConfig) const;
->>>>>>> 48a6255eded5796fb92c2cf07c982d6b6d03366b
 	std::vector<METHOD> parseMethods(const string line);
 
 public:
