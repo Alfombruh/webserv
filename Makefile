@@ -41,8 +41,8 @@ test:
 	./testers/tester http://localhost:8080
 
 clean:
-	$(RM) *.dSYM
-	$(RM) *.DS_Store
+	$(RM) -rf *.dSYM
+	$(RM) -rf *.DS_Store
 	$(RM) $(OBJS)
 
 fclean: clean

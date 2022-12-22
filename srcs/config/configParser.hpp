@@ -13,13 +13,16 @@ using std::string;
 class ConfigParser
 {
 private:
-	Config configuration;
-	string rawServer;
-	void parseServer();
-	string parseVar(const string line, const string key);
-	void parseLocation(const string line);
-	void parseLine(const string line);
-	string trimSpaces(string rawConfig) const;
+	Config              configuration;
+	string              rawServer;
+	void                parseServer();
+	string              parseVar(const string line, const string key);
+	void                parseLocation(const string line);
+	void                parseLine(const string line);
+    void                errorChecking(void);
+    bool                missingElements(void);
+    void                locationElements(void);
+	string              trimSpaces(string rawConfig) const;
 	std::vector<METHOD> parseMethods(const string line);
 
 public:
