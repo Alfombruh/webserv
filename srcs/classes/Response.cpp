@@ -93,31 +93,46 @@ Response &Response::textPython(const string filename, char **env)
 		}
 		string body_erase = body.substr(i, 100000);
 		i += 100000;
-		pid_t pid2;
-		pid2 = fork();
-		if (pid2 == 0)
+		pid_t pid;
+		pid = fork();
+		if (pid == -1)
+			return *this;
+		if (pid == 0)
 		{
-			int fd2 = open(".cgi.txt", O_CREAT | O_TRUNC | O_RDWR, 0777);
-			dup2(fd[0], STDIN_FILENO);
-			dup2(fd2, STDOUT_FILENO);
+			dup2(fd[1], STDOUT_FILENO);
 			close(fd[0]);
-			close(fd[1]);
-			char *cstr = new char[filename.length() + 2];
-			cstr[0] = '.';
-			strcpy(cstr + 1, filename.c_str());
-			char *pythonArgs[] = {cstr, (char *)body_erase.c_str() ,NULL};
-			execve(pythonArgs[0], pythonArgs, env);
-			exit(EXIT_FAILURE);
+			char *pythonArgs[] = {(char *)"echo", (char *)"-n", (char *)body_erase.c_str(), NULL};
+			execve("/bin/echo", pythonArgs, env);
+			exit(0);
 		}
 		else
 		{
-			wait(0);
+			pid_t pid2;
+			pid2 = fork();
+			if (pid2 == 0)
+			{
+				int fd2 = open(".cgi.txt", O_CREAT | O_TRUNC | O_RDWR, 0777);
+				dup2(fd[0], STDIN_FILENO);
+				dup2(fd2, STDOUT_FILENO);
+				close(fd[0]);
+				close(fd[1]);
+				char *cstr = new char[filename.length() + 2];
+				cstr[0] = '.';
+				strcpy(cstr + 1, filename.c_str());
+				char *pythonArgs[] = {cstr, (char *)body_erase.c_str() ,NULL};
+				execve(pythonArgs[0], pythonArgs, env);
+				exit(EXIT_FAILURE);
+			}
+			else
+			{
+				wait(0);
+			}
+			close(fd[0]);
+			close(fd[1]);
+			waitpid(pid2, NULL, 0);
+			newbody += readFileCgi(".cgi.txt");
+			std::remove(".cgi.txt");
 		}
-		close(fd[0]);
-		close(fd[1]);
-		waitpid(pid2, NULL, 0);
-		newbody += readFileCgi(".cgi.txt");
-		std::remove(".cgi.txt");
 	}
 	body = newbody;
 	return *this;
@@ -266,14 +281,9 @@ Response &Response::expireCookie()
 
 void Response::send()
 {
-	// if (!body.empty())
-
 	headers["Content-length"] = std::to_string(body.length());
 	headers["Connection"] = "close";
 	string response = stringifyResponse();
-	// cout << "-------------res-------------\n";
-	// cout << response;
-	// cout << "-----------------------------\n";
 	write(clientId, response.c_str(), response.length());
 	clearResponse();
 };

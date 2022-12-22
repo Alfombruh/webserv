@@ -91,6 +91,8 @@ bool Router::accepExtension(const string extension) const
 	}
 	if (extension == ".py")
 		return true;
+	if (extension == ".cgi")
+		return true;
 	if (extension == ".sh")
 		return true;
 	if (extension == ".png")
@@ -127,11 +129,8 @@ bool Router::get(void (*get)(Request &, Response &, string)) const
 	if (filename.empty() == false &&
 		accepExtension(filename.substr(filename.rfind('.'))) == false)
 		return false;
-	// cout << "filename: " << filename << "$\n";
 	if (filename.empty() == false)
 		filePath = configuration.getRoot() + (req.getRoute() == "/" ? "" : req.getRoute());
-	// cout << "root:" << configuration.getRoot() << " route:" << req.getRoute() << "$\n";
-	// cout << "filePath: " << filePath << "$\n";
 	if (!fileExists(filePath))
 		return false;
 	if (configuration.getIndex().empty())
@@ -156,14 +155,11 @@ bool Router::get(const Location &location, void (*get)(Request &, Response &, st
 	if (filename.empty() == false &&
 		accepExtension(filename.substr(filename.rfind('.'))) == false)
 		return false;
-	// cout << "location filename: " << filename << "$\n";
 	if (filename.empty() == false)
 	{
 		filePath = location.destination.empty() ? root + (req.getRoute() == "/" ? "" : req.getRoute())
 												: location.destination + (req.getRoute() == "/" ? "" : req.getRoute());
 	}
-	// cout << "location root:" << root << " route:" << req.getRoute() << "$\n";
-	// cout << "location filePath: " << filePath << "$\n";
 	if (!fileExists(filePath))
 		return false;
 	if (location.index.empty())
@@ -194,11 +190,7 @@ bool Router::post(void (*post)(Request &, Response &, string, bool)) const
 	if (filename.empty() ||
 		accepExtension(filename.substr(filename.rfind('.'))) == false)
 		return false;
-	// cout << "filename: " << filename << "$\n";
 	string filePath = configuration.getRoot() + "/" + req.getRoute();
-
-	// cout << "root:" << configuration.getRoot() << " route:" << req.getRoute() << "$\n";
-	// cout << "filePath: " << filePath << "$\n";
 	post(req, res, filePath, false);
 	return true;
 };
@@ -214,14 +206,10 @@ bool Router::post(const Location &location, void (*post)(Request &, Response &, 
 	if (filename.empty() ||
 		accepExtension(filename.substr(filename.rfind('.'))) == false)
 		return false;
-	// cout << "filename: " << filename << "$\n";
 
-	cout << "dest:"<< location.destination << "$\n";
 	string filePath = location.destination.empty() ? root + req.getRoute()
 												   : location.destination + "/" + req.getRoute();
 
-	// cout << "root:" << configuration.getRoot() << " route:" << req.getRoute() << "$\n";
-	cout << "filePath: " << filePath << "$\n";
 	if (!location.cgi_destination.empty())
 	{
 		post(req, res, filePath, true);
@@ -250,11 +238,8 @@ bool Router::delet(void (*delet)(Request &, Response &, string, bool)) const
 	if (filename.empty() ||
 		accepExtension(filename.substr(filename.rfind('.'))) == false)
 		return false;
-	// cout << "filename: " << filename << "$\n";
 	string filePath = configuration.getRoot() + req.getRoute();
 
-	// cout << "root:" << configuration.getRoot() << " route:" << req.getRoute() << "$\n";
-	// cout << "filePath: " << filePath << "$\n";
 	delet(req, res, filePath, false);
 	return true;
 };
@@ -270,13 +255,9 @@ bool Router::delet(const Location &location, void (*delet)(Request &, Response &
 	if (filename.empty() ||
 		accepExtension(filename.substr(filename.rfind('.'))) == false)
 		return false;
-	// cout << "filename: " << filename << "$\n";
-
 	string filePath = location.destination.empty() ? root + req.getRoute()
 												   : location.destination + req.getRoute();
 
-	// cout << "root:" << configuration.getRoot() << " route:" << req.getRoute() << "$\n";
-	// cout << "filePath: " << filePath << "$\n";
 	if (!location.cgi_destination.empty())
 	{
 		delet(req, res, filePath, true);
@@ -332,9 +313,5 @@ void Router::parseEnv() // https://datatracker.ietf.org/doc/html/rfc3875#section
 	req.env.env.push_back("SERVER_NAME=" + req.env.SERVER_NAME);
 	req.env.env.push_back("SERVER_PORT=" + req.env.SERVER_PORT);
 	req.env.env.push_back("SERVER_PROTOCOL=" + req.env.SERVER_PROTOCOL);
-	// for(size_t i = 0; i < req.env.env.size(); ++i) {
-	// 	cout << req.env.env[i] << "\n";
-	// }
-	// cout << "\n";
-	// req.printReqAtributes();
+
 };

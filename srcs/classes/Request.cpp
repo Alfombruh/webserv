@@ -46,11 +46,8 @@ bool Request::readChunkedRequest(int clientSd, Response &res)
 		{
 			body.push_back(c[i]);
 		}
-		// cout << c;
 	}
-	// cout << "REQUEST BODY\n" << body;
 	parseChunkedBody(body.substr(0, body.size() - 7));
-	// cout << "REQUEST BODY\n" << body;
 	return true;
 };
 

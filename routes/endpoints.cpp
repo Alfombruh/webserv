@@ -32,15 +32,14 @@ void get(Request &req, Response &res, const string filePath)
 		res.status(STATUS_200).js(filePath).send();
 	else if (extension == ".png" || extension == ".jpg")
 		res.status(STATUS_200).img(filePath).send();
-	else if (extension == ".sh" || extension == ".py")
+	else if (extension == ".sh" || extension == ".py"  || extension == ".cgi")
 		getPython(req, res, filePath.substr(1));
 };
 
 static void cgi(Request &req, Response &res, const string filePath)
 {
 	string extension = filePath.substr(filePath.rfind('.'));
-	cout << filePath.substr(1) << "\n";
-	if (extension == ".sh" || extension == ".py")
+	if (extension == ".sh" || extension == ".py"  || extension == ".cgi")
 		getPython(req, res, filePath.substr(1));
 }
 
