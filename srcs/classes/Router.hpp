@@ -38,12 +38,12 @@ public:
 	bool get(const Location &, void (*get)(Request &, Response &, string)) const;
 
 	bool post(const string route, void (*post)(Request &, Response &)) const;
-	bool post(void (*post)(Request &, Response &, string)) const;
-	bool post(const Location &, void (*post)(Request &, Response &, string)) const;
+	bool post(void (*post)(Request &, Response &, string, bool)) const;
+	bool post(const Location &, void (*post)(Request &, Response &, string, bool)) const;
 
 	bool delet(const string route, void (*delet)(Request &, Response &)) const;
-	bool delet(void (*delet)(Request &, Response &, string)) const;
-	bool delet(const Location &, void (*delet)(Request &, Response &, string)) const;
+	bool delet(void (*delet)(Request &, Response &, string, bool)) const;
+	bool delet(const Location &, void (*delet)(Request &, Response &, string, bool)) const;
 
 	bool notFound() const;
 	const string getReqRoute() const;

@@ -8,10 +8,11 @@ static bool fileExists(const string &filePath)
 
 static void getPython(Request &req, Response &res, const string filePath)
 {
-	std::vector<char*> cstrings;
+	std::vector<char *> cstrings;
 	cstrings.reserve(req.env.env.size());
-	for(size_t i = 0; i < req.env.env.size(); ++i) {
-		cstrings.push_back(const_cast<char*>(req.env.env[i].c_str()));
+	for (size_t i = 0; i < req.env.env.size(); ++i)
+	{
+		cstrings.push_back(const_cast<char *>(req.env.env[i].c_str()));
 	}
 	cstrings.push_back(NULL);
 	res.setBody(req.getBody());
@@ -35,11 +36,25 @@ void get(Request &req, Response &res, const string filePath)
 		getPython(req, res, filePath.substr(1));
 };
 
-void post(Request &req, Response &res, const string filePath)
+static void cgi(Request &req, Response &res, const string filePath)
+{
+	string extension = filePath.substr(filePath.rfind('.'));
+	cout << filePath.substr(1) << "\n";
+	if (extension == ".sh" || extension == ".py")
+		getPython(req, res, filePath.substr(1));
+}
+
+void post(Request &req, Response &res, const string filePath, bool isCgi)
 {
 	string contentType = req.getHeader("content-type");
 	string extension = filePath.substr(filePath.rfind('.'));
 	string filename = filePath.substr(filePath.rfind('/') + 1);
+
+	if (isCgi)
+	{
+		cgi(req, res, filePath);
+		return;
+	}
 
 	if (fileExists(filePath))
 	{
@@ -72,12 +87,17 @@ void post(Request &req, Response &res, const string filePath)
 	res.status(STATUS_201).text("filename: " + filename + " uploaded").send();
 };
 
-void delet(Request &req, Response &res, const string filePath)
+void delet(Request &req, Response &res, const string filePath, bool isCgi)
 {
-	(void) req;
+	(void)req;
+	if (isCgi)
+	{
+		cgi(req, res, filePath);
+		return;
+	}
 	string extension = filePath.substr(filePath.rfind('.'));
 	string filename = filePath.substr(filePath.rfind('/') + 1);
-	cout << "filePath:"<< filePath << "\n";
+	cout << "filePath:" << filePath << "\n";
 	if (!fileExists(filePath))
 	{
 		res.status(STATUS_409).text("filename: " + filename + " does not exist").send();

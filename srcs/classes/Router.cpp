@@ -184,7 +184,7 @@ bool Router::post(const string route, void (*post)(Request &, Response &)) const
 	return true;
 };
 
-bool Router::post(void (*post)(Request &, Response &, string)) const
+bool Router::post(void (*post)(Request &, Response &, string, bool)) const
 {
 	if (req.getMethod() != POST)
 		return false;
@@ -199,11 +199,11 @@ bool Router::post(void (*post)(Request &, Response &, string)) const
 
 	// cout << "root:" << configuration.getRoot() << " route:" << req.getRoute() << "$\n";
 	// cout << "filePath: " << filePath << "$\n";
-	post(req, res, filePath);
+	post(req, res, filePath, false);
 	return true;
 };
 
-bool Router::post(const Location &location, void (*post)(Request &, Response &, string)) const
+bool Router::post(const Location &location, void (*post)(Request &, Response &, string, bool)) const
 {
 	if (req.getMethod() != POST)
 		return false;
@@ -216,12 +216,18 @@ bool Router::post(const Location &location, void (*post)(Request &, Response &, 
 		return false;
 	// cout << "filename: " << filename << "$\n";
 
+	cout << "dest:"<< location.destination << "$\n";
 	string filePath = location.destination.empty() ? root + req.getRoute()
 												   : location.destination + "/" + req.getRoute();
 
 	// cout << "root:" << configuration.getRoot() << " route:" << req.getRoute() << "$\n";
-	// cout << "filePath: " << filePath << "$\n";
-	post(req, res, filePath);
+	cout << "filePath: " << filePath << "$\n";
+	if (!location.cgi_destination.empty())
+	{
+		post(req, res, filePath, true);
+		return true;
+	}
+	post(req, res, filePath, false);
 	return true;
 };
 
@@ -234,7 +240,7 @@ bool Router::delet(const string route, void (*delet)(Request &, Response &)) con
 	return true;
 };
 
-bool Router::delet(void (*delet)(Request &, Response &, string)) const
+bool Router::delet(void (*delet)(Request &, Response &, string, bool)) const
 {
 	if (req.getMethod() != DELETE)
 		return false;
@@ -249,11 +255,11 @@ bool Router::delet(void (*delet)(Request &, Response &, string)) const
 
 	// cout << "root:" << configuration.getRoot() << " route:" << req.getRoute() << "$\n";
 	// cout << "filePath: " << filePath << "$\n";
-	delet(req, res, filePath);
+	delet(req, res, filePath, false);
 	return true;
 };
 
-bool Router::delet(const Location &location, void (*delet)(Request &, Response &, string)) const
+bool Router::delet(const Location &location, void (*delet)(Request &, Response &, string, bool)) const
 {
 	if (req.getMethod() != DELETE)
 		return false;
@@ -271,7 +277,12 @@ bool Router::delet(const Location &location, void (*delet)(Request &, Response &
 
 	// cout << "root:" << configuration.getRoot() << " route:" << req.getRoute() << "$\n";
 	// cout << "filePath: " << filePath << "$\n";
-	delet(req, res, filePath);
+	if (!location.cgi_destination.empty())
+	{
+		delet(req, res, filePath, true);
+		return true;
+	}
+	delet(req, res, filePath, false);
 	return true;
 };
 

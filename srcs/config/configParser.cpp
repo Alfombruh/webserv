@@ -13,7 +13,7 @@ ConfigParser::ConfigParser(const string configPath)
 	while (i < rawConfig.size())
 	{
 		if (rawConfig[i] == '#')
-			i = rawConfig.find('\n', i) == string::npos ? rawConfig.size() : rawConfig.find('\n', i)  + 1;
+			i = rawConfig.find('\n', i) == string::npos ? rawConfig.size() : rawConfig.find('\n', i) + 1;
 		if (i >= rawConfig.size())
 			break;
 		if (i < rawConfig.size() && rawConfig[i] == '{')
@@ -153,29 +153,35 @@ string ConfigParser::parseVar(const string line, const string key)
 
 	if ((pos = line.find(key)) == string::npos)
 		return "";
+	if (pos - 1 > 0 && pos - 1 < line.size() && line[pos - 1] != ';')
+		return "";
 
 	pos += (key.size() + 1);
 	tmp = line.substr(pos);
+
 	return tmp.substr(0, tmp.find(";"));
 }
 
 void ConfigParser::parseLocation(const string line)
 {
 	Location location = {.maxBody = -1};
-	string cgiInfo;
+	string tmp;
 
 	location.location = line.substr(0, line.find(" "));
-	location.alowedMethods = parseMethods(parseVar(line, "allow_methods"));
-	location.index = parseVar(line, "index");
-	location.root = parseVar(line, "root");
-	location.maxBody = stringToSize_t(parseVar(line, "client_body_limit"));
-	location.api = parseVar(line, "api");
-	location.destination = parseVar(line, "destination");
-	if (!(cgiInfo = parseVar(line, "cgi_info")).empty())
-	{
-		location.cgiInfo.first = cgiInfo.substr(0, cgiInfo.find(" "));
-		location.cgiInfo.second = cgiInfo.substr(cgiInfo.find(" ") + 1, cgiInfo.find(";"));
-	}
+	tmp = line.substr(line.find("{") + 1);
+	location.alowedMethods = parseMethods(parseVar(tmp, "allow_methods"));
+	location.index = parseVar(tmp, "index");
+	location.root = parseVar(tmp, "root");
+	location.maxBody = stringToSize_t(parseVar(tmp, "client_body_limit"));
+	location.api = parseVar(tmp, "api");
+	location.destination = parseVar(tmp, "destination");
+	location.cgi_destination = parseVar(tmp, "cgi_destination");
+
+	if (!location.cgi_destination.empty() && !location.destination.empty())
+		throw ConfigParseException("cgi_destination and destination together not possible");
+	if (!location.cgi_destination.empty())
+		location.destination = location.cgi_destination;
+
 	configuration.setLocations(location);
 };
 

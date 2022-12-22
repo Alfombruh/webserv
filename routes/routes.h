@@ -18,8 +18,8 @@ bool cgi(Router &router);
 
 //ENDPOINTS
 void get(Request &req, Response &res, const string filePath);
-void post(Request &req, Response &res, const string filePath);
-void delet(Request &req, Response &res, const string filePath);
+void post(Request &req, Response &res, const string filePath, bool);
+void delet(Request &req, Response &res, const string filePath, bool);
 
 //TESTER
 bool useDirect(Router &router);
