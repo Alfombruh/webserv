@@ -166,7 +166,7 @@ bool Router::get(const Location &location, void (*get)(Request &, Response &, st
 	// cout << "location filePath: " << filePath << "$\n";
 	if (!fileExists(filePath))
 		return false;
-	if (configuration.getIndex().empty())
+	if (location.index.empty())
 	{
 		res.status(STATUS_200).lsDir(filePath.substr(2)).send();
 		return true;
