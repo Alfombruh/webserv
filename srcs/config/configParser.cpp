@@ -228,6 +228,14 @@ static bool methodsCheck(std::vector<METHOD> method)
     return (true);
 }
 
+static bool portsLimits(std::vector<int> ports)
+{
+    for (std::vector<int>::iterator it = ports.begin(); it != ports.end(); it++)
+        if (*it < 10 || *it > 65535)
+            return false;
+    return true;
+}
+
 bool ConfigParser::missingElements(void)
 {
     if (configuration.getPorts().empty() ||
@@ -241,6 +249,7 @@ void ConfigParser::locationElements(void)
     std::vector<Location> locations = configuration.getLocations();
     for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
     {
+        cout << it->location << "\n";
         if (it->location.empty())
             throw(ConfigParseException("Location must have at least a location defined"));
         if (!it->alowedMethods.empty() && !methodsCheck(it->alowedMethods))
@@ -255,6 +264,9 @@ void ConfigParser::errorChecking(void)
     locationElements();
     if (!methodsCheck(configuration.getAlowedMethods()))
         throw(ConfigParseException("Main allowed methods are not correct"));
+    if (!portsLimits(configuration.getPorts()))
+        throw(ConfigParseException("Cannot assing a port smaller than 10 or bigger than 65535"));
+    
 }
 
 // GETTERS
