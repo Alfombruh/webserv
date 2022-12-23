@@ -5,6 +5,7 @@
 
 void signalHandler(int signal)
 {
+    system("leaks webserv");
 	exit(signal);
 }
 
@@ -14,7 +15,7 @@ int main(int argc, char **argv)
 {
 	if (argc != 2)
 		return (errorMessage("./webserv configFile.conf"));
-	std::signal(SIGINT, signalHandler);
+    std::signal(SIGINT, signalHandler);
 	try
 	{
 		ConfigParser parser(argv[1]);
