@@ -133,7 +133,7 @@ bool Router::get(void (*get)(Request &, Response &, string)) const
 		filePath = configuration.getRoot() + (req.getRoute() == "/" ? "" : req.getRoute());
 	if (!fileExists(filePath))
 		return false;
-	if (configuration.getIndex().empty())
+	if (configuration.getIndex().empty() && filename.empty())
 	{
 		res.status(STATUS_200).lsDir(filePath.substr(2)).send();
 		return true;
@@ -162,7 +162,7 @@ bool Router::get(const Location &location, void (*get)(Request &, Response &, st
 	}
 	if (!fileExists(filePath))
 		return false;
-	if (location.index.empty())
+	if (location.index.empty() && filename.empty())
 	{
 		res.status(STATUS_200).lsDir(filePath.substr(2)).send();
 		return true;
