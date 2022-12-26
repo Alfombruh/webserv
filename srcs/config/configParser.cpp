@@ -249,7 +249,7 @@ void ConfigParser::locationElements(void)
     std::vector<Location> locations = configuration.getLocations();
     for (std::vector<Location>::iterator it = locations.begin(); it != locations.end(); it++)
     {
-        cout << it->location << "\n";
+        // cout << it->location << "\n";
         if (it->location.empty())
             throw(ConfigParseException("Location must have at least a location defined"));
         if (!it->alowedMethods.empty() && !methodsCheck(it->alowedMethods))

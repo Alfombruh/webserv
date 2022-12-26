@@ -96,7 +96,7 @@ void delet(Request &req, Response &res, const string filePath, bool isCgi)
 	}
 	string extension = filePath.substr(filePath.rfind('.'));
 	string filename = filePath.substr(filePath.rfind('/') + 1);
-	cout << "filePath:" << filePath << "\n";
+	// cout << "filePath:" << filePath << "\n";
 	if (!fileExists(filePath))
 	{
 		res.status(STATUS_409).text("filename: " + filename + " does not exist").send();
